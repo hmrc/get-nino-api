@@ -27,6 +27,7 @@ lazy val microservice = Project(appName, file("."))
     libraryDependencies ++= AppDependencies.compile ++ AppDependencies.test,
     dependencyOverrides ++= AppDependencies.overrides
   )
+  .settings(PlayKeys.playDefaultPort := 9750)
   .settings(publishingSettings: _*)
   .configs(IntegrationTest)
   .settings(integrationTestSettings(): _*)
