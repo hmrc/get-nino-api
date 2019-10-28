@@ -28,10 +28,10 @@ object AppDependencies {
   val test: Seq[ModuleID] = Seq(
     "com.typesafe.play" %% "play-test" % current % "test",
     "org.scalatest" %% "scalatest" % "3.0.8" % "test",
-    "org.scalamock" %% "scalamock" % "4.2.0" % "test",
+    "org.scalamock" %% "scalamock" % "4.4.0" % "test",
     "org.scalatestplus.play" %% "scalatestplus-play" % "3.1.2" % "test, it",
     "org.pegdown" % "pegdown" % "1.6.0" % "test, it",
-    "com.github.tomakehurst" % "wiremock" % "2.23.2" % "test, it"
+    "com.github.tomakehurst" % "wiremock" % "2.25.1" % "test, it"
   )
 
   // Fixes a transitive dependency clash between wiremock and scalatestplus-play
