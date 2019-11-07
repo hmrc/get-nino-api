@@ -14,20 +14,19 @@
  * limitations under the License.
  */
 
-package controllers
+package v1.stubs
 
-import javax.inject.Inject
-import play.api.libs.json.Json
-import play.api.mvc.{Action, AnyContent, ControllerComponents}
-import uk.gov.hmrc.play.bootstrap.controller.BackendController
+import com.github.tomakehurst.wiremock.stubbing.StubMapping
+import play.api.http.Status._
+import support.WireMockMethods
 
-import scala.concurrent.Future
+object AuditStub extends WireMockMethods {
 
+  private val auditUri: String = s"/write/audit.*"
 
-class HelloWorldController @Inject()(cc: ControllerComponents) extends BackendController(cc) {
-
-  def hello(): Action[AnyContent] = Action.async { implicit request =>
-    Future.successful(Ok(Json.obj("message" -> "Hello World")))
+  def audit(): StubMapping = {
+    when(method = POST, uri = auditUri)
+      .thenReturn(status = NO_CONTENT)
   }
 
 }

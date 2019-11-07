@@ -14,18 +14,22 @@
  * limitations under the License.
  */
 
-package stubs
+package v1.models.errors
 
-import com.github.tomakehurst.wiremock.stubbing.StubMapping
-import play.api.http.Status._
-import support.WireMockMethods
+import play.api.libs.json.{JsValue, Json, Writes}
 
-object AuthStub extends WireMockMethods {
+case class Errors(errors: Seq[Error])
 
-  private val authoriseUri: String = "/auth/authorise"
+object Errors {
+  def apply(error: Error): Errors = Errors(Seq(error))
 
-  def authorised(): StubMapping = {
-    when(method = POST, uri = authoriseUri)
-      .thenReturn(status = OK)
+  implicit val writes: Writes[Errors] = new Writes[Errors] {
+    override def writes(data: Errors): JsValue = {
+      if (data.errors.size > 1) {
+        Json.obj("errors" -> Json.toJson(data.errors))
+      } else {
+        Json.toJson(data.errors.head)
+      }
+    }
   }
 }

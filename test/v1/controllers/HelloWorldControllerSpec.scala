@@ -14,19 +14,23 @@
  * limitations under the License.
  */
 
-package stubs
+package v1.controllers
 
-import com.github.tomakehurst.wiremock.stubbing.StubMapping
-import play.api.http.Status._
-import support.WireMockMethods
+import play.api.http.Status
+import play.api.test.Helpers._
+import support.ControllerBaseSpec
 
-object AuditStub extends WireMockMethods {
+class HelloWorldControllerSpec extends ControllerBaseSpec {
 
-  private val auditUri: String = s"/write/audit.*"
+  "Calling the hello action" when {
 
-  def audit(): StubMapping = {
-    when(method = POST, uri = auditUri)
-      .thenReturn(status = NO_CONTENT)
+    "the request is valid" should {
+
+      "return 200" in {
+        val controller = new HelloWorldController(stubControllerComponents())
+        val result = controller.hello()(fakeRequest)
+        status(result) shouldBe Status.OK
+      }
+    }
   }
-
 }

@@ -14,13 +14,12 @@
  * limitations under the License.
  */
 
-package controllers
+package support
 
 import play.api.http.{HeaderNames, MimeTypes, Status}
 import play.api.mvc.{AnyContentAsEmpty, ControllerComponents}
 import play.api.test.Helpers.stubControllerComponents
 import play.api.test._
-import support.UnitSpec
 
 class ControllerBaseSpec extends UnitSpec
   with Status

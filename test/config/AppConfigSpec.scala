@@ -16,16 +16,18 @@
 
 package config
 
+import play.api.Configuration
 import support.UnitSpec
 import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 
 class AppConfigSpec extends UnitSpec {
 
   trait Test {
-    lazy val mockConfig: ServicesConfig = mock[ServicesConfig]
+    lazy val mockServiceConfig: ServicesConfig = mock[ServicesConfig]
+    lazy val mockConfig: Configuration = mock[Configuration]
 
     lazy val target: AppConfigImpl = {
-      new AppConfigImpl(mockConfig)
+      new AppConfigImpl(mockServiceConfig, mockConfig)
     }
   }
 
@@ -34,7 +36,7 @@ class AppConfigSpec extends UnitSpec {
 
       val url = "http://des-host"
 
-      (mockConfig.baseUrl(_: String))
+      (mockServiceConfig.baseUrl(_: String))
         .expects("des")
         .returns(url)
 
@@ -49,7 +51,7 @@ class AppConfigSpec extends UnitSpec {
 
         val env = "TEST_ENV"
 
-        (mockConfig.getString(_: String))
+        (mockServiceConfig.getString(_: String))
           .stubs("microservice.services.des.env")
           .returns(env)
 
@@ -73,7 +75,7 @@ class AppConfigSpec extends UnitSpec {
 
         val token = "some-token"
 
-        (mockConfig.getString(_: String))
+        (mockServiceConfig.getString(_: String))
           .stubs("microservice.services.des.token")
           .returns(token)
 
