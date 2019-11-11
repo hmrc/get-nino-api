@@ -1,0 +1,29 @@
+{
+    "scopes": [
+    {
+      "key": "read:get-nino",
+      "name": "Get NINO",
+      "description": "Get NINO"
+    }
+  ],
+  "api": {
+    "name": "Get NINO",
+    "description": "Get NINO information for downstream service",
+    "context": "get-nino-api",
+    "categories": ["PRIVATE_GOVERNMENT"],
+    "versions": [
+      {
+        "version": "1.0",
+        "status": "${apiConfig.status()}",
+        "endpointsEnabled": true,
+        "access" : {
+          "type": "someType",
+          "whitelistedApplicationIds": [
+            "someId",
+            "someOtherId"
+          ]
+        }
+      }
+    ]
+  }
+}

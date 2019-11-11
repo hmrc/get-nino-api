@@ -1,0 +1,1 @@
+- Raise technical issues on the [get-nino-api](https://github.com/hmrc/get-nino-api/issues) issues page

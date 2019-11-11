@@ -1,0 +1,29 @@
+#%RAML 1.0
+
+uses:
+  sec: https://developer.service.hmrc.gov.uk/api-documentation/assets/common/modules/securitySchemes.raml
+  annotations: https://developer.service.hmrc.gov.uk/api-documentation/assets/common/modules/annotations.raml
+  types: https://developer.service.hmrc.gov.uk/api-documentation/assets/common/modules/types.raml
+
+title: Get Nino Api
+description: This is the draft for the Get Nino Api
+version: 1.0
+protocols: [ HTTPS ]
+baseUri: https://api.service.hmrc.gov.uk/
+mediaType: application/json
+
+documentation:
+  - title: Overview
+    content: !include docs/overview.md
+  - title: Support
+    content: !include docs/support.md
+  - title: Changelog
+    content: !include docs/changelog.md
+  - title: Versioning
+    content: !include https://developer.service.hmrc.gov.uk/api-documentation/assets/common/docs/versioning.md
+  - title: Errors
+    content: !include https://developer.service.hmrc.gov.uk/api-documentation/assets/common/docs/errors.md
+
+'/get-nino-api/api':
+  '/definition':
+     get: !include definition-get.raml
