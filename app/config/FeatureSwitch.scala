@@ -27,7 +27,7 @@ case class FeatureSwitch(value: Option[Configuration]) {
       version match {
         case versionRegex(ver) => Some(ver)
         case _ => {
-          Logger.warn("unable to version")
+          Logger.warn("[FeatureSwitch][isVersionEnabled] - version found does not match regex")
           None
         }
       }

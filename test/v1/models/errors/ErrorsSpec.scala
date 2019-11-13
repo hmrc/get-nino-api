@@ -16,7 +16,7 @@
 
 package v1.models.errors
 
-import play.api.libs.json.Json
+import play.api.libs.json.{JsValue, Json}
 import support.UnitSpec
 
 class ErrorsSpec extends UnitSpec {
@@ -35,6 +35,24 @@ class ErrorsSpec extends UnitSpec {
       val error = Errors(Error("SOME_CODE", "some message"))
 
       val result = Json.toJson(error)
+
+      result shouldBe expected
+    }
+  }
+
+  "Serialising no errors into JSON" should {
+    "generate the correct JSON" in {
+
+      val errors = Errors(Seq())
+
+      val result: JsValue = Json.toJson(errors)
+
+      val expected = Json.parse(
+        """
+          |{
+          |  "errors": []
+          |}
+        """.stripMargin)
 
       result shouldBe expected
     }

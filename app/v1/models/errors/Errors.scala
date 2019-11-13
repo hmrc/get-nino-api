@@ -25,10 +25,10 @@ object Errors {
 
   implicit val writes: Writes[Errors] = new Writes[Errors] {
     override def writes(data: Errors): JsValue = {
-      if (data.errors.size > 1) {
-        Json.obj("errors" -> Json.toJson(data.errors))
-      } else {
-        Json.toJson(data.errors.head)
+
+      data.errors.size match {
+        case 1 => Json.toJson(data.errors.head)
+        case _ => Json.obj("errors" -> Json.toJson(data.errors))
       }
     }
   }
