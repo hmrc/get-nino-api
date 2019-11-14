@@ -14,13 +14,14 @@
  * limitations under the License.
  */
 
-package endpoints
+package v1.endpoints
 
 import com.github.tomakehurst.wiremock.stubbing.StubMapping
+import play.api.http.HeaderNames.ACCEPT
 import play.api.http.Status
 import play.api.libs.ws.{WSRequest, WSResponse}
-import stubs.{AuditStub, AuthStub}
 import support.IntegrationBaseSpec
+import v1.stubs.{AuditStub, AuthStub}
 
 class HelloWorldISpec extends IntegrationBaseSpec {
 
@@ -29,7 +30,8 @@ class HelloWorldISpec extends IntegrationBaseSpec {
     def setupStubs(): StubMapping
 
     def request(): WSRequest = {
-      buildRequest("/get-nino-api/hello-world")
+      buildRequest("/hello-world")
+        .withHttpHeaders((ACCEPT, "application/vnd.hmrc.1.0+json"))
     }
   }
 

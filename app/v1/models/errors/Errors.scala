@@ -14,20 +14,22 @@
  * limitations under the License.
  */
 
-package controllers
+package v1.models.errors
 
-import javax.inject.Inject
-import play.api.libs.json.Json
-import play.api.mvc.{Action, AnyContent, ControllerComponents}
-import uk.gov.hmrc.play.bootstrap.controller.BackendController
+import play.api.libs.json.{JsValue, Json, Writes}
 
-import scala.concurrent.Future
+case class Errors(errors: Seq[Error])
 
+object Errors {
+  def apply(error: Error): Errors = Errors(Seq(error))
 
-class HelloWorldController @Inject()(cc: ControllerComponents) extends BackendController(cc) {
+  implicit val writes: Writes[Errors] = new Writes[Errors] {
+    override def writes(data: Errors): JsValue = {
 
-  def hello(): Action[AnyContent] = Action.async { implicit request =>
-    Future.successful(Ok(Json.obj("message" -> "Hello World")))
+      data.errors.size match {
+        case 1 => Json.toJson(data.errors.head)
+        case _ => Json.obj("errors" -> Json.toJson(data.errors))
+      }
+    }
   }
-
 }
