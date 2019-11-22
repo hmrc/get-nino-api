@@ -14,11 +14,10 @@
  * limitations under the License.
  */
 
-package v1.models.errors
+package v1.models
 
 import org.scalatest.{Matchers, WordSpec}
 import play.api.libs.json.{JsValue, Json}
-import v1.models.AddressModel
 
 class AddressModelSpec extends WordSpec with Matchers {
 
@@ -27,7 +26,7 @@ class AddressModelSpec extends WordSpec with Matchers {
   )
 
   val maximumAddressJson: JsValue = Json.obj(
-    "addressType" -> "Residential",
+    "addressType" -> "RESIDENTIAL",
     "line1" -> "1234 Test Avenue",
     "line2" -> "Test Line 2",
     "line3" -> "Test Line 3",
@@ -55,7 +54,7 @@ class AddressModelSpec extends WordSpec with Matchers {
 
   val maximumAddressModel =
     AddressModel(
-      addressType = Some("Residential"),
+      addressType = Some(Residential),
       line1 = "1234 Test Avenue",
       line2 = Some("Test Line 2"),
       line3 = Some("Test Line 3"),
