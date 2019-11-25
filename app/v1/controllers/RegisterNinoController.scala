@@ -16,21 +16,18 @@
 
 package v1.controllers
 
-import play.api.http.Status
-import play.api.test.Helpers._
-import support.ControllerBaseSpec
+import javax.inject.Inject
+import play.api.libs.json.Json
+import play.api.mvc.{Action, AnyContent, ControllerComponents}
+import uk.gov.hmrc.play.bootstrap.controller.BackendController
 
-class HelloWorldControllerSpec extends ControllerBaseSpec {
+import scala.concurrent.Future
 
-  "Calling the hello action" when {
 
-    "the request is valid" should {
+class RegisterNinoController @Inject()(cc: ControllerComponents) extends BackendController(cc) {
 
-      "return 200" in {
-        val controller = new HelloWorldController(stubControllerComponents())
-        val result = controller.hello()(fakeRequest)
-        status(result) shouldBe Status.OK
-      }
-    }
+  def register(): Action[AnyContent] = Action.async { implicit request =>
+    Future.successful(Ok("A response"))
   }
+
 }
