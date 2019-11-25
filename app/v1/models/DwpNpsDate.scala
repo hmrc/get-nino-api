@@ -20,42 +20,35 @@ import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
 import play.api.Logger
-import play.api.libs.functional.syntax._
 import play.api.libs.json._
 
-case class StartDateEndDateModel(
-                             startDate: String,
-                             endDate: String
-                           )
+case class DwpNpsDate(
+                      dateString: String
+                    )
 
-object StartDateEndDateModel {
+object DwpNpsDate {
+
+  private val dwpDateFormatter = DateTimeFormatter.ofPattern("dd-MM-yyyy")
   private val npsDateRegex: String =
     """^(((19|20)([2468][048]|[13579][26]|0[48])|2000)[-]02[-]29|((19|20)[0-9]{2}[-]
       |(0[469]|11)[-](0[1-9]|1[0-9]|2[0-9]|30)|(19|20)[0-9]{2}[-](0[13578]|1[02])[-](0[1-9]|[12][0-9]|3[01])|(19|20)[0-9]{2}[-]02[-](0[1-9]|1[0-9]|2[0-8])))$""".stripMargin
 
-  private val startDatePath: JsPath = __ \ "startDate"
-  private val endDatePath: JsPath = __ \ "endDate"
-
-  private def changeDateFormatAndValidateNps(dateInput: OWrites[String], fieldName: String): OWrites[String] = {
-    dateInput.transform { jsObj =>
-      val transformedDateString = (jsObj \ fieldName).as[String].split("-").reverse.mkString("-")
-      if (transformedDateString.matches(npsDateRegex)) {
-        Json.obj(fieldName -> transformedDateString)
-      } else {
-        throw new IllegalArgumentException(
-          "[StartDateEndDate][changeDateFormatAndValidateNps] The following date failed validation against NPS regex:" + transformedDateString
-        )
-      }
+  private def changeDateFormatAndValidateNps(dateInput: String): String = {
+    val transformedDateString = dateInput.split("-").reverse.mkString("-")
+    if (transformedDateString.matches(npsDateRegex)) {
+      transformedDateString
+    } else {
+      throw new IllegalArgumentException(
+        "[StartDateEndDate][changeDateFormatAndValidateNps] The following date failed validation against NPS regex: " + transformedDateString
+      )
     }
   }
 
-  implicit val writes: Writes[StartDateEndDateModel] = (
-    changeDateFormatAndValidateNps(startDatePath.write[String], "startDate") and
-      changeDateFormatAndValidateNps(endDatePath.write[String], "endDate")
-    ) (unlift(StartDateEndDateModel.unapply))
+  implicit val writes: Writes[DwpNpsDate] = Writes[DwpNpsDate] { dateModel =>
+    JsString(changeDateFormatAndValidateNps(dateModel.dateString))
+  }
 
   private def validateDwpDate(dateInput: Reads[String]): Reads[String] = {
-    val dwpDateFormatter = DateTimeFormatter.ofPattern("dd-MM-yyyy")
     val isValidDwpDate: String => Boolean = dateInput => {
       try {
         LocalDate.parse(dateInput, dwpDateFormatter)
@@ -71,8 +64,9 @@ object StartDateEndDateModel {
     )(dateString => isValidDwpDate(dateString))
   }
 
-  implicit val reads: Reads[StartDateEndDateModel] = (
-    validateDwpDate(startDatePath.read[String]) and
-      validateDwpDate(endDatePath.read[String])
-    ) (StartDateEndDateModel.apply _)
+  implicit val reads: Reads[DwpNpsDate] = for {
+    dateString <- validateDwpDate(__.read[String])
+  } yield {
+    DwpNpsDate(dateString)
+  }
 }
