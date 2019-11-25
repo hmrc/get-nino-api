@@ -41,7 +41,7 @@ class AddressModelSpec extends WordSpec with Matchers {
   val minimumAddressModel =
     AddressModel(
       addressType = None,
-      line1 = "1234 Test Avenue",
+      line1 = AddressLine("1234 Test Avenue"),
       line2 = None,
       line3 = None,
       line4 = None,
@@ -55,11 +55,11 @@ class AddressModelSpec extends WordSpec with Matchers {
   val maximumAddressModel =
     AddressModel(
       addressType = Some(Residential),
-      line1 = "1234 Test Avenue",
-      line2 = Some("Test Line 2"),
-      line3 = Some("Test Line 3"),
-      line4 = Some("Test Line 4"),
-      line5 = Some("Test Line 5"),
+      line1 = AddressLine("1234 Test Avenue"),
+      line2 = Some(AddressLine("Test Line 2")),
+      line3 = Some(AddressLine("Test Line 3")),
+      line4 = Some(AddressLine("Test Line 4")),
+      line5 = Some(AddressLine("Test Line 5")),
       postcode = Some("TE5 5LN"),
       countryCode = Some("GBR"),
       startDate = Some("2019-01-01"),
