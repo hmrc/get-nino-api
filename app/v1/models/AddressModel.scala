@@ -25,7 +25,7 @@ case class AddressModel(addressType: Option[AddressType],
                         line3: Option[AddressLine],
                         line4: Option[AddressLine],
                         line5: Option[AddressLine],
-                        postcode: Option[String],
+                        postcode: Option[Postcode],
                         countryCode: Option[String],
                         startDate: Option[String],
                         endDate: Option[String])
@@ -50,7 +50,7 @@ object AddressModel {
       line3Path.readNullable[AddressLine] and
       line4Path.readNullable[AddressLine] and
       line5Path.readNullable[AddressLine] and
-      postcodePath.readNullable[String] and
+      postcodePath.readNullable[Postcode] and
       countryCodePath.readNullable[String] and
       startDatePath.readNullable[String] and
       endDatePath.readNullable[String]
@@ -63,7 +63,7 @@ object AddressModel {
       line3Path.writeNullable[AddressLine] and
       line4Path.writeNullable[AddressLine] and
       line5Path.writeNullable[AddressLine] and
-      postcodePath.writeNullable[String] and
+      postcodePath.writeNullable[Postcode] and
       countryCodePath.writeNullable[String] and
       startDatePath.writeNullable[String] and
       endDatePath.writeNullable[String]

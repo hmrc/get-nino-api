@@ -60,7 +60,7 @@ class AddressModelSpec extends WordSpec with Matchers {
       line3 = Some(AddressLine("Test Line 3")),
       line4 = Some(AddressLine("Test Line 4")),
       line5 = Some(AddressLine("Test Line 5")),
-      postcode = Some("TE5 5LN"),
+      postcode = Some(Postcode("TE5 5LN")),
       countryCode = Some("GBR"),
       startDate = Some("2019-01-01"),
       endDate = Some("2019-12-31")
