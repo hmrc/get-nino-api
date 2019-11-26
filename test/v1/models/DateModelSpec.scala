@@ -16,10 +16,10 @@
 
 package v1.models
 
-import play.api.libs.json.{JsObject, JsResultException, JsString, Json}
+import play.api.libs.json.{JsResultException, JsString, Json}
 import support.UnitSpec
 
-class DwpNpsDateSpec extends UnitSpec {
+class DateModelSpec extends UnitSpec {
 
   val jsonForRead: JsString = JsString (
     "06-01-1993"
@@ -33,12 +33,12 @@ class DwpNpsDateSpec extends UnitSpec {
     "1993-01-06"
   )
 
-  val validModel = DwpNpsDate("06-01-1993")
+  val validModel = DateModel("06-01-1993")
 
-  "DwpNpsDate model" should {
+  "Date model" should {
     "correctly parse from Json" when {
       "all fields are present" in {
-        jsonForRead.as[DwpNpsDate] shouldBe validModel
+        jsonForRead.as[DateModel] shouldBe validModel
       }
     }
     "correctly parse to Json" when {
@@ -48,7 +48,7 @@ class DwpNpsDateSpec extends UnitSpec {
     }
     "fail to parse to json and throw an error" when {
       "the date in the model does not match the NPS regex" in {
-        val errorModel = DwpNpsDate("2222222-111-222")
+        val errorModel = DateModel("2222222-111-222")
 
         val thrownException = intercept[IllegalArgumentException] {
           Json.toJson(errorModel)
@@ -60,7 +60,7 @@ class DwpNpsDateSpec extends UnitSpec {
     "fail to parse from json and throw an error" when {
       "the startDate field is not a valid date" in {
         val thrownException = intercept[JsResultException] {
-          jsonForReadInvalidStart.as[DwpNpsDate]
+          jsonForReadInvalidStart.as[DateModel]
         }
 
         thrownException.getMessage should include("Date has failed validation. Needs to be in format: dd-MM-yyyy")

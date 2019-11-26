@@ -16,19 +16,16 @@
 
 package v1.models
 
-import java.time.LocalDate
-import java.time.format.DateTimeFormatter
-
 import play.api.Logger
 import play.api.libs.json._
 
-case class DwpNpsDate(
+case class DateModel(
                       dateString: String
                     )
 
-object DwpNpsDate {
+object DateModel {
 
-  private val dwpDateFormatter = DateTimeFormatter.ofPattern("dd-MM-yyyy")
+  private val dwpDateRegex: String = """^\d{2}-\d{2}-\d{4}$"""
   private val npsDateRegex: String =
     """^(((19|20)([2468][048]|[13579][26]|0[48])|2000)[-]02[-]29|((19|20)[0-9]{2}[-]
       |(0[469]|11)[-](0[1-9]|1[0-9]|2[0-9]|30)|(19|20)[0-9]{2}[-](0[13578]|1[02])[-](0[1-9]|[12][0-9]|3[01])|(19|20)[0-9]{2}[-]02[-](0[1-9]|1[0-9]|2[0-8])))$""".stripMargin
@@ -44,29 +41,24 @@ object DwpNpsDate {
     }
   }
 
-  implicit val writes: Writes[DwpNpsDate] = Writes[DwpNpsDate] { dateModel =>
+  implicit val writes: Writes[DateModel] = Writes[DateModel] { dateModel =>
     JsString(changeDateFormatAndValidateNps(dateModel.dateString))
   }
 
   private def validateDwpDate(dateInput: Reads[String]): Reads[String] = {
     val isValidDwpDate: String => Boolean = dateInput => {
-      try {
-        LocalDate.parse(dateInput, dwpDateFormatter)
-        true
-      } catch {
-        case e: Throwable =>
-          Logger.warn(s"[StartDateEndDate][validateDwpDate] Unable to parse the following date: $dateInput", e)
-          false
-      }
+      val passedValidation = dateInput.matches(dwpDateRegex)
+      if(!passedValidation) Logger.warn(s"[StartDateEndDate][validateDwpDate] Unable to parse the following date: $dateInput")
+      passedValidation
     }
     dateInput.filter(
       JsonValidationError("Date has failed validation. Needs to be in format: dd-MM-yyyy")
     )(dateString => isValidDwpDate(dateString))
   }
 
-  implicit val reads: Reads[DwpNpsDate] = for {
+  implicit val reads: Reads[DateModel] = for {
     dateString <- validateDwpDate(__.read[String])
   } yield {
-    DwpNpsDate(dateString)
+    DateModel(dateString)
   }
 }
