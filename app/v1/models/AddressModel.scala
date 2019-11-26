@@ -43,14 +43,13 @@ object AddressModel {
   val startDatePath: JsPath = __ \ "startDate"
   val endDatePath: JsPath = __ \ "endDate"
 
-  private[models] def checkPostcodeMandated(postcode: Option[Postcode], countryCode: Option[String]): Option[Postcode] = countryCode match {
-    case Some(countryCde) =>
-      countryCde.toLowerCase match {
-        case "gbr" => postcode.fold(throw new IllegalArgumentException("Postcode required if Country code is GBR"))(postcode => Some(postcode))
+  private[models] def checkPostcodeMandated(postcode: Option[Postcode], countryCode: Option[String]): Option[Postcode] = {
+    countryCode.fold(postcode)(
+      countryCde => countryCde.toUpperCase match {
+        case "GBR" => postcode.fold(throw new IllegalArgumentException("Postcode required if Country code is GBR"))(postcode => Some(postcode))
         case _ => postcode
-
       }
-    case _ => postcode
+    )
   }
 
   implicit val reads: Reads[AddressModel] = for {

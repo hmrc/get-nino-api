@@ -136,6 +136,19 @@ class AddressModelSpec extends WordSpec with Matchers {
         }
       }
 
+      "the country code is gbr" when {
+
+        "a postcode is supplied" should {
+
+          "return a postcode object" in {
+
+            val result = AddressModel.checkPostcodeMandated(Some(Postcode("TF3 4NT")), Some("gbr"))
+
+            result shouldBe Some(Postcode("TF3 4NT"))
+          }
+        }
+      }
+
       "the country code is not GBR" when {
 
         "a postcode is supplied" should {
