@@ -43,18 +43,39 @@ object AddressModel {
   val startDatePath: JsPath = __ \ "startDate"
   val endDatePath: JsPath = __ \ "endDate"
 
-  implicit val reads: Reads[AddressModel] = (
-    addressTypePath.readNullable[AddressType] and
-      line1Path.read[AddressLine] and
-      line2Path.readNullable[AddressLine] and
-      line3Path.readNullable[AddressLine] and
-      line4Path.readNullable[AddressLine] and
-      line5Path.readNullable[AddressLine] and
-      postcodePath.readNullable[Postcode] and
-      countryCodePath.readNullable[String] and
-      startDatePath.readNullable[String] and
-      endDatePath.readNullable[String]
-    ) (AddressModel.apply _)
+  private[models] def checkPostcodeMandated(postcode: Option[Postcode], countryCode: Option[String]): Option[Postcode] = countryCode match {
+    case Some(countryCde) =>
+      countryCde.toLowerCase match {
+        case "gbr" => postcode.fold(throw new IllegalArgumentException("Postcode required if Country code is GBR"))(postcode => Some(postcode))
+        case _ => postcode
+
+      }
+    case _ => postcode
+  }
+
+  implicit val reads: Reads[AddressModel] = for {
+    addressType <- addressTypePath.readNullable[AddressType]
+    line1 <- line1Path.read[AddressLine]
+    line2 <- line2Path.readNullable[AddressLine]
+    line3 <- line3Path.readNullable[AddressLine]
+    line4 <- line4Path.readNullable[AddressLine]
+    line5 <- line5Path.readNullable[AddressLine]
+    postcode <- postcodePath.readNullable[Postcode]
+    countryCode <- countryCodePath.readNullable[String]
+    startDate <- startDatePath.readNullable[String]
+    endDate <- endDatePath.readNullable[String]
+  } yield AddressModel(
+    addressType,
+    line1,
+    line2,
+    line3,
+    line4,
+    line5,
+    checkPostcodeMandated(postcode, countryCode),
+    countryCode,
+    startDate,
+    endDate
+  )
 
   implicit val writes: Writes[AddressModel] = (
     addressTypePath.writeNullable[AddressType] and
