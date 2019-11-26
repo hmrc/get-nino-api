@@ -78,30 +78,16 @@ class AddressTypeSpec extends WordSpec with Matchers {
     }
   }
 
-  "AddressType.apply" when {
+  "AddressType.regexCheck" when {
 
     "provided with a valid AddressType" should {
 
       "return a Residential object" in {
-        AddressType(Residential.value) shouldBe Residential
+        AddressType.regexCheck(Residential.value) shouldBe Residential
       }
 
       "return a Correspondence object" in {
-        AddressType(Correspondence.value) shouldBe Correspondence
-      }
-    }
-  }
-
-  "AddressType.unapply" when {
-
-    "provided with a valid AddressType" should {
-
-      "return Residential AddressType value" in {
-        AddressType.unapply(Residential) shouldBe Residential.value
-      }
-
-      "return Correspondence AddressType value" in {
-        AddressType.unapply(Correspondence) shouldBe Correspondence.value
+        AddressType.regexCheck(Correspondence.value) shouldBe Correspondence
       }
     }
   }

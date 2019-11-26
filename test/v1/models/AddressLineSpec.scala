@@ -71,25 +71,29 @@ class AddressLineSpec extends WordSpec with Matchers {
 
     "provided with an AddressLine" which {
 
-      val addressLineStartingWithLetter: AddressLine = AddressLine("Test Avenue")
-      val maxLimitAddressLine = AddressLine("This address line is 35 characterss")
-      val minLimitAddressLine = AddressLine("Add")
-      val tooLongAddressLine = "This address is unfortunately over 35 characters"
-
       "is within the character length limit" should {
         "return an AddressLine object" in {
+
+          val addressLineStartingWithLetter: AddressLine = AddressLine("Test Avenue")
+
           AddressLine.regexCheck(addressLineStartingWithLetter.addressLine) shouldBe addressLineStartingWithLetter
         }
       }
 
       "is on the character length limit" should {
         "return an AddressLine object" in {
+
+          val maxLimitAddressLine = AddressLine("This address line is 35 characterss")
+
           AddressLine.regexCheck(maxLimitAddressLine.addressLine) shouldBe maxLimitAddressLine
         }
       }
 
       "is on the minimum character length limit" should {
         "return an AddressLine object" in {
+
+          val minLimitAddressLine = AddressLine("Add")
+
           AddressLine.regexCheck(minLimitAddressLine.addressLine) shouldBe minLimitAddressLine
         }
       }
@@ -102,6 +106,8 @@ class AddressLineSpec extends WordSpec with Matchers {
 
       "is too long" should {
         "return an exception" in {
+
+          val tooLongAddressLine = "This address is unfortunately over 35 characters"
 
           val exception = intercept[IllegalArgumentException] {
             AddressLine.regexCheck(tooLongAddressLine)

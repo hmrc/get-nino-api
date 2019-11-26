@@ -16,8 +16,9 @@
 
 package v1.models
 
-import play.api.libs.json._
+import play.api.Logger
 import play.api.libs.functional.syntax._
+import play.api.libs.json._
 
 case class AddressModel(addressType: Option[AddressType],
                         line1: AddressLine,
@@ -27,8 +28,8 @@ case class AddressModel(addressType: Option[AddressType],
                         line5: Option[AddressLine],
                         postcode: Option[Postcode],
                         countryCode: Option[String],
-                        startDate: Option[String],
-                        endDate: Option[String])
+                        startDate: DateModel,
+                        endDate: Option[DateModel])
 
 object AddressModel {
 
@@ -46,7 +47,10 @@ object AddressModel {
   private[models] def checkPostcodeMandated(postcode: Option[Postcode], countryCode: Option[String]): Option[Postcode] = {
     countryCode.fold(postcode)(
       countryCde => countryCde.toUpperCase match {
-        case "GBR" => postcode.fold(throw new IllegalArgumentException("Postcode required if Country code is GBR"))(postcode => Some(postcode))
+        case "GBR" => postcode.fold({
+          Logger.warn("[AddressModel][checkPostcodeMandated] - postcode is required if country code is GBR")
+          throw new IllegalArgumentException("Postcode required if Country code is GBR")
+        })(postcode => Some(postcode))
         case _ => postcode
       }
     )
@@ -61,8 +65,8 @@ object AddressModel {
     line5 <- line5Path.readNullable[AddressLine]
     postcode <- postcodePath.readNullable[Postcode]
     countryCode <- countryCodePath.readNullable[String]
-    startDate <- startDatePath.readNullable[String]
-    endDate <- endDatePath.readNullable[String]
+    startDate <- startDatePath.read[DateModel]
+    endDate <- endDatePath.readNullable[DateModel]
   } yield AddressModel(
     addressType,
     line1,
@@ -85,7 +89,7 @@ object AddressModel {
       line5Path.writeNullable[AddressLine] and
       postcodePath.writeNullable[Postcode] and
       countryCodePath.writeNullable[String] and
-      startDatePath.writeNullable[String] and
-      endDatePath.writeNullable[String]
+      startDatePath.write[DateModel] and
+      endDatePath.writeNullable[DateModel]
     ) (unlift(AddressModel.unapply))
 }

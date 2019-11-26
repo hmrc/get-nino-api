@@ -16,6 +16,7 @@
 
 package v1.models
 
+import play.api.Logger
 import play.api.libs.json.{JsString, Reads, Writes, __}
 
 import scala.util.matching.Regex
@@ -32,6 +33,8 @@ object AddressLine {
 
   def regexCheck(value: String): AddressLine = regex.findFirstIn(value) match {
     case Some(_) => AddressLine(value)
-    case None => throw new IllegalArgumentException("Invalid AddressLine")
+    case None =>
+      Logger.warn("[AddressLine][regexCheck] - Invalid address line has been provided")
+      throw new IllegalArgumentException("Invalid AddressLine")
   }
 }

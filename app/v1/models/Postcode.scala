@@ -16,6 +16,7 @@
 
 package v1.models
 
+import play.api.Logger
 import play.api.libs.json.{JsString, Reads, Writes, __}
 
 import scala.util.matching.Regex
@@ -35,6 +36,8 @@ object Postcode {
 
   def regexCheck(value: String): Postcode = regex.findFirstIn(value) match {
     case Some(_) => Postcode(value)
-    case None => throw new IllegalArgumentException("Invalid Postcode")
+    case None =>
+      Logger.warn("[Postcode][regexCheck] - Invalid postcode has been provided")
+      throw new IllegalArgumentException("Invalid Postcode")
   }
 }

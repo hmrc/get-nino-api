@@ -16,6 +16,7 @@
 
 package v1.models
 
+import play.api.Logger
 import play.api.libs.json.{JsString, Reads, Writes, __}
 
 sealed trait AddressType {
@@ -24,20 +25,19 @@ sealed trait AddressType {
 
 object AddressType {
 
-  implicit val reads: Reads[AddressType] = __.read[String] map apply
+  implicit val reads: Reads[AddressType] = __.read[String] map regexCheck
 
   implicit val writes: Writes[AddressType] = Writes {
     addressType => JsString(addressType.value)
   }
 
-  def apply(value: String): AddressType = value match {
+  def regexCheck(value: String): AddressType = value match {
     case Residential.value => Residential
     case Correspondence.value => Correspondence
-    case _ => throw new IllegalArgumentException("Invalid AddressType")
+    case _ =>
+      Logger.warn("[AddressType][regexCheck] - Invalid address line has been provided")
+      throw new IllegalArgumentException("Invalid AddressType")
   }
-
-  def unapply: AddressType => String = _.value
-
 }
 
 case object Residential extends AddressType {

@@ -21,22 +21,45 @@ import play.api.libs.json.{JsValue, Json}
 
 class AddressModelSpec extends WordSpec with Matchers {
 
-  val minimumAddressJson: JsValue = Json.obj(
-    "line1" -> "1234 Test Avenue"
-  )
+  val minimumAddressJson: Boolean => JsValue = isReads =>
 
-  val maximumAddressJson: JsValue = Json.obj(
-    "addressType" -> "RESIDENTIAL",
-    "line1" -> "1234 Test Avenue",
-    "line2" -> "Test Line 2",
-    "line3" -> "Test Line 3",
-    "line4" -> "Test Line 4",
-    "line5" -> "Test Line 5",
-    "postcode" -> "TE5 5LN",
-    "countryCode" -> "GBR",
-    "startDate" -> "2019-01-01",
-    "endDate" -> "2019-12-31"
-  )
+    Json.obj(
+      "line1" -> "1234 Test Avenue",
+      if (isReads) {
+        "startDate" -> "01-01-2019"
+      } else {
+        "startDate" -> "2019-01-01"
+      }
+    )
+
+
+  def maximumAddressJson: Boolean => JsValue = isReads => {
+
+    val maxAddress = Json.obj(
+      "addressType" -> "RESIDENTIAL",
+      "line1" -> "1234 Test Avenue",
+      "line2" -> "Test Line 2",
+      "line3" -> "Test Line 3",
+      "line4" -> "Test Line 4",
+      "line5" -> "Test Line 5",
+      "postcode" -> "TE5 5LN",
+      "countryCode" -> "GBR"
+    )
+
+    if (isReads) {
+      maxAddress ++ Json.obj(
+        "startDate" -> "01-01-2019",
+        "endDate" -> "31-12-2019"
+      )
+    }
+    else {
+      maxAddress ++ Json.obj(
+        "startDate" -> "2019-01-01",
+        "endDate" -> "2019-12-31"
+      )
+    }
+  }
+
 
   val minimumAddressModel =
     AddressModel(
@@ -48,7 +71,7 @@ class AddressModelSpec extends WordSpec with Matchers {
       line5 = None,
       postcode = None,
       countryCode = None,
-      startDate = None,
+      startDate = DateModel("01-01-2019"),
       endDate = None
     )
 
@@ -62,8 +85,8 @@ class AddressModelSpec extends WordSpec with Matchers {
       line5 = Some(AddressLine("Test Line 5")),
       postcode = Some(Postcode("TE5 5LN")),
       countryCode = Some("GBR"),
-      startDate = Some("2019-01-01"),
-      endDate = Some("2019-12-31")
+      startDate = DateModel("01-01-2019"),
+      endDate = Some(DateModel("31-12-2019"))
     )
 
 
@@ -73,7 +96,7 @@ class AddressModelSpec extends WordSpec with Matchers {
 
       "return a minimum AddressModel" in {
 
-        minimumAddressJson.as[AddressModel] shouldBe minimumAddressModel
+        minimumAddressJson(true).as[AddressModel] shouldBe minimumAddressModel
       }
     }
 
@@ -81,7 +104,7 @@ class AddressModelSpec extends WordSpec with Matchers {
 
       "return a full AddressModel" in {
 
-        maximumAddressJson.as[AddressModel] shouldBe maximumAddressModel
+        maximumAddressJson(true).as[AddressModel] shouldBe maximumAddressModel
       }
     }
   }
@@ -92,8 +115,7 @@ class AddressModelSpec extends WordSpec with Matchers {
 
       "correctly parse to json" in {
 
-        Json.toJson(minimumAddressModel) shouldBe minimumAddressJson
-
+        Json.toJson(minimumAddressModel) shouldBe minimumAddressJson(false)
       }
     }
 
@@ -101,8 +123,7 @@ class AddressModelSpec extends WordSpec with Matchers {
 
       "correctly parse to json" in {
 
-        Json.toJson(maximumAddressModel) shouldBe maximumAddressJson
-
+        Json.toJson(maximumAddressModel) shouldBe maximumAddressJson(false)
       }
     }
   }
