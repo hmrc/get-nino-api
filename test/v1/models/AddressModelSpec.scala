@@ -35,7 +35,7 @@ class AddressModelSpec extends WordSpec with Matchers {
 
   def maximumAddressJson: Boolean => JsValue = isReads => {
 
-    val maxAddress = Json.obj(
+    Json.obj(
       "addressType" -> "RESIDENTIAL",
       "line1" -> "1234 Test Avenue",
       "line2" -> "Test Line 2",
@@ -44,20 +44,18 @@ class AddressModelSpec extends WordSpec with Matchers {
       "line5" -> "Test Line 5",
       "postcode" -> "TE5 5LN",
       "countryCode" -> "GBR"
-    )
-
-    if (isReads) {
-      maxAddress ++ Json.obj(
+    ) ++ (if (isReads) {
+      Json.obj(
         "startDate" -> "01-01-2019",
         "endDate" -> "31-12-2019"
       )
     }
     else {
-      maxAddress ++ Json.obj(
+      Json.obj(
         "startDate" -> "2019-01-01",
         "endDate" -> "2019-12-31"
       )
-    }
+    })
   }
 
 
