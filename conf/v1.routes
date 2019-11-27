@@ -1,3 +1,4 @@
 # microservice specific routes
 
-GET        /hello-world             controllers.HelloWorldController.hello
+GET        /hello-world         controllers.HelloWorldController.hello
+POST       /register            controllers.RegisterNinoController.register

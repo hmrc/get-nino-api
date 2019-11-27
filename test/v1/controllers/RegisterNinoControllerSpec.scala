@@ -20,17 +20,21 @@ import play.api.http.Status
 import play.api.test.Helpers._
 import support.ControllerBaseSpec
 
-class HelloWorldControllerSpec extends ControllerBaseSpec {
+class RegisterNinoControllerSpec extends ControllerBaseSpec {
 
-  "Calling the hello action" when {
+  "Calling the register action" when {
 
     "the request is valid" should {
-
       "return 200" in {
-        val controller = new HelloWorldController(stubControllerComponents())
-        val result = controller.hello()(fakeRequest)
+        val controller = new RegisterNinoController(stubControllerComponents())
+        val result = controller.register()(
+          fakeRequest
+            .withHeaders("Accept" -> "application/vnd.hmrc.1.0+json")
+        )
         status(result) shouldBe Status.OK
+        contentAsString(result) shouldBe "A response"
       }
     }
+
   }
 }
