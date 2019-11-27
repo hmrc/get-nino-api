@@ -30,7 +30,7 @@ class RegisterNinoISpec extends IntegrationBaseSpec {
     def setupStubs(): StubMapping
 
     def request(): WSRequest = {
-      buildRequest("/api/register")
+      buildRequest("/register")
         .withHttpHeaders((ACCEPT, "application/vnd.hmrc.1.0+json"))
     }
   }
