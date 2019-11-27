@@ -49,7 +49,6 @@ object OriginData {
   private lazy val lastEUAddressPath = __ \ "lastEUAddress"
 
   private val stringRegex = "^(?=.{1,35}$)([A-Z]([-'.&\\\\/ ]{0,1}[A-Za-z]+)*[A-Za-z]?)$"
-  private val countryCodeRegex = "^(?=.{0,286}([0-9])?)$"
 
   private[models] def stringValidation(item: Option[String], itemName: String): Boolean = {
     if (item.fold(true)(dataItem => dataItem.matches(stringRegex))) {
@@ -92,5 +91,19 @@ object OriginData {
         .filter(JsonValidationError("Foreign social security does not match regex"))(socialSecurity => stringValidation(socialSecurity, "birth surname")) and
       lastEUAddressPath.readNullable[LastEUAddress]
     ) (OriginData.apply _)
+
+  implicit val writes: Writes[OriginData] = (
+    birthTownPath.writeNullable[String] and
+      birthProvincePath.writeNullable[String] and
+      birthCountryCodePath.writeNullable[Int] and
+      nationalityPath.writeNullable[Int] and
+      birthSurnamePath.writeNullable[String] and
+      maternalForenamePath.writeNullable[String] and
+      maternalSurnamePath.writeNullable[String] and
+      paternalForenamePath.writeNullable[String] and
+      paternalSurnamePath.writeNullable[String] and
+      foreignSocialSecurityPath.writeNullable[String] and
+      lastEUAddressPath.writeNullable[LastEUAddress]
+    ) (unlift(OriginData.unapply))
 
 }
