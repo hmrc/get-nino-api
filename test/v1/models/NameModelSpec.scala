@@ -16,30 +16,32 @@
 
 package v1.models
 
-import play.api.libs.json.{JsObject, JsResultException, Json}
+import play.api.libs.json._
 import support.UnitSpec
 
 class NameModelSpec extends UnitSpec {
 
-  val validJsonWrite: JsObject = Json.obj(
-    "title" -> "MR",
-    "forename" -> "Dovah",
-    "secondForename" -> "Dragon",
-    "surname" -> "Kin",
-    "startDate" -> "2020-10-10",
-    "endDate" -> "2020-10-10"
-  )
+  private def readWriteDate(isWrite: Boolean): String = {
+    if (isWrite) "2020-10-10" else "10-10-2020"
+  }
 
-  val validJsonRead: JsObject = Json.obj(
-    "title" -> "MR",
-    "forename" -> "Dovah",
-    "secondForename" -> "Dragon",
-    "surname" -> "Kin",
-    "startDate" -> "10-10-2020",
-    "endDate" -> "10-10-2020"
-  )
+  val minJson: Boolean => JsObject = isWrite =>
+    Json.obj(
+      "surname" -> "MinimumMan",
+      "startDate" -> readWriteDate(isWrite)
+    )
 
-  val validModel = NameModel(
+  val maxJson: Boolean => JsObject = isWrite =>
+    Json.obj(
+      "title" -> "MR",
+      "forename" -> "Dovah",
+      "secondForename" -> "Dragon",
+      "surname" -> "Kin",
+      "startDate" -> readWriteDate(isWrite),
+      "endDate" -> readWriteDate(isWrite)
+    )
+
+  val maxModel = NameModel(
     Some("MR"),
     Some("Dovah"),
     Some("Dragon"),
@@ -48,107 +50,91 @@ class NameModelSpec extends UnitSpec {
     Some(DateModel("10-10-2020"))
   )
 
+  val minModel = NameModel(
+    surname = "MinimumMan",
+    startDate = DateModel("10-10-2020")
+  )
+
   "NameModelSpec" should {
-    "correctly parse to Json" in {
-      Json.toJson(validModel) shouldBe validJsonWrite
+    "correctly parse to Json" when {
+      "all optional fields are present" in {
+        Json.toJson(maxModel) shouldBe maxJson(true)
+      }
+      "no optional fields are present" in {
+        Json.toJson(minModel) shouldBe minJson(true)
+      }
     }
-    "correctly parse from Json" in {
-      validJsonRead.as[NameModel] shouldBe validModel
+    "correctly parse from Json" when {
+      "all optional fields are present" in {
+        maxJson(false).as[NameModel] shouldBe maxModel
+      }
+      "no optional fields are present" in {
+        minJson(false).as[NameModel] shouldBe minModel
+      }
     }
+    ".validateTitle" should {
+      "return true" when {
+        "a valid title is input" which {
+          val validTitle: Seq[String] = Seq(
+            "NOT KNOWN",
+            "MR",
+            "MRS",
+            "MISS",
+            "MS",
+            "DR",
+            "REV"
+          )
 
-    "throw an error when parsing from json" when {
-      "the Title field fails validation" in {
-        val dodgeyJson = Json.obj(
-          "title" -> "FAKE",
-          "forename" -> "Dovah",
-          "secondForename" -> "Dragon",
-          "surname" -> "Kin",
-          "startDate" -> "10-10-2020"
-        )
-
-        val exceptionResult = intercept[JsResultException] {
-          dodgeyJson.as[NameModel]
+          validTitle.foreach(title => s"is $title" in { NameModel.validateTitle(Some(title)) shouldBe true })
         }
-
-        exceptionResult.getMessage should include("Title failed validation. Must be one of: 'NOT KNOWN, MR, MRS, MISS, MS, DR, REV'")
       }
-      "the forename field fails validation" in {
-        val dodgeyJsonCharacters = Json.obj(
-          "forename" -> "{}:@~NOTANAME:@~<>?}",
-          "secondForename" -> "Dragon",
-          "surname" -> "Kin",
-          "startDate" -> "10-10-2020"
-        )
-        val dodgeyJsonLength = Json.obj(
-          "forename" -> "DOVAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAH",
-          "secondForename" -> "Dragon",
-          "surname" -> "Kin",
-          "startDate" -> "10-10-2020"
-        )
-
-        val expectedMessage = "Unable to validate forename. Ensure it matches the regex."
-
-        val exceptionResultInvalidCharacters = intercept[JsResultException] {
-          dodgeyJsonCharacters.as[NameModel]
+      "return false" when {
+        "an invalid title is entered" in {
+          NameModel.validateTitle(Some("NOT A TITLE")) shouldBe false
         }
-        val exceptionResultInvalidLength = intercept[JsResultException] {
-          dodgeyJsonLength.as[NameModel]
-        }
-
-        exceptionResultInvalidCharacters.getMessage should include(expectedMessage)
-        exceptionResultInvalidLength.getMessage should include(expectedMessage)
       }
-      "the secondForename field fails validation" in {
-        val dodgeyJsonCharacters = Json.obj(
-          "title" -> "MR",
-          "secondForename" -> ":@~{}<>?Dragon:~@{}<>?",
-          "surname" -> "Kin",
-          "startDate" -> "10-10-2020"
-        )
-        val dodgeyJsonLength = Json.obj(
-          "title" -> "MR",
-          "secondForename" -> "Dragoooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooon",
-          "surname" -> "Kin",
-          "startDate" -> "10-10-2020"
-        )
+    }
+    ".validateName" should {
+      def runValidation[T](input: T): Boolean = NameModel.validateName(input)
 
-        val expectedMessage = "Unable to validate second forename. Ensure it matches the regex."
-
-        val exceptionResultInvalidCharacters = intercept[JsResultException] {
-          dodgeyJsonCharacters.as[NameModel]
+      "return true" when {
+        "a valid String is entered" which {
+          "is less than the maximum length (35)" in {
+            runValidation("Immaname") shouldBe true
+          }
+          "is equal to the maximum length (35)" in {
+            runValidation("Thisnameissolongthatitmightjustcuto") shouldBe true
+          }
+          "is equal to the minimum length (3)" in {
+            runValidation("Hij") shouldBe true
+          }
         }
-        val exceptionResultInvalidLength = intercept[JsResultException] {
-          dodgeyJsonLength.as[NameModel]
+        "a valid Optional String is entered" in {
+          runValidation(Some("Immaoptionalname")) shouldBe true
         }
-
-        exceptionResultInvalidCharacters.getMessage should include(expectedMessage)
-        exceptionResultInvalidLength.getMessage should include(expectedMessage)
+        "a None is entered" in {
+          runValidation(None) shouldBe true
+        }
       }
-      "the surname field fails validation" in {
-        val dodgeyJsonCharacters = Json.obj(
-          "title" -> "MR",
-          "forename" -> "Dovah",
-          "surname" -> ":@~{}<>?Kin:@~{}<>?",
-          "startDate" -> "10-10-2020"
-        )
-        val dodgeyJsonLength = Json.obj(
-          "title" -> "MR",
-          "forename" -> "Dovah",
-          "surname" -> "Kiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiin",
-          "startDate" -> "10-10-2020"
-        )
-
-        val expectedMessage = "Unable to validate surname. Ensure it matches the regex."
-
-        val exceptionResultInvalidCharacters = intercept[JsResultException] {
-          dodgeyJsonCharacters.as[NameModel]
+      "return false" when {
+        "the name has disallowed special characters" in {
+          runValidation("-=[];#'/./") shouldBe false
         }
-        val exceptionResultInvalidLength = intercept[JsResultException] {
-          dodgeyJsonLength.as[NameModel]
+        "the name is longer 35 characters" in {
+          runValidation("Thisnameisreallyreallylongmorethanthemaximumthatsforsure") shouldBe false
         }
+        "the name is less than 3 characters" in {
+          runValidation("as") shouldBe false
+        }
+      }
+      "throw an IllegalArgumentException" when {
+        "a value is entered that is not a String, or an Optional String (including None)" in {
+          val expectedException = intercept[IllegalArgumentException] {
+            runValidation(123)
+          }
 
-        exceptionResultInvalidCharacters.getMessage should include(expectedMessage)
-        exceptionResultInvalidLength.getMessage should include(expectedMessage)
+          expectedException.getMessage shouldBe s"Unsupported type attempted validation: java.lang.Integer"
+        }
       }
     }
   }

@@ -20,6 +20,8 @@ import play.api.Logger
 import play.api.libs.json._
 import play.api.libs.functional.syntax._
 
+import scala.reflect.ClassTag
+
 case class NameModel(
                       title: Option[String] = None,
                       forename: Option[String] = None,
@@ -37,6 +39,11 @@ object NameModel {
   private lazy val startDate = __ \ "startDate"
   private lazy val endDate = __ \ "endDate"
 
+  private val titleValidationError: JsonValidationError = JsonValidationError("Title failed validation. Must be one of: \'NOT KNOWN, MR, " +
+    "MRS, MISS, MS, DR, REV\'")
+  private def nameValidationError: String => JsonValidationError = fieldName => JsonValidationError(s"Unable to validate $fieldName. " +
+    s"Ensure it matches the regex.")
+
   private val validTitles = Seq(
     "NOT KNOWN",
     "MR",
@@ -47,50 +54,39 @@ object NameModel {
     "REV"
   )
 
-  private def validateTitle(titleInput: Reads[Option[String]]): Reads[Option[String]] = {
-    val validationCheck: Option[String] => Boolean = {
-      case Some(inputString) =>
-        val passedValidation = validTitles.contains(inputString)
-        if(!passedValidation) Logger.warn(s"[NameModel][]validateTitle] The following title failed validation: $inputString")
-        passedValidation
-      case None => true
-    }
-
-    titleInput.filter(
-      JsonValidationError("Title failed validation. Must be one of: \'NOT KNOWN, MR, MRS, MISS, MS, DR, REV\'"))(
-      titleInputString => validationCheck(titleInputString)
-    )
+  private[models] def validateTitle: Option[String] => Boolean = {
+    case Some(inputString) =>
+      val passedValidation = validTitles.contains(inputString)
+      if (!passedValidation) Logger.warn(s"[NameModel][validateTitle] The following title failed validation: $inputString")
+      passedValidation
+    case None => true
   }
 
   private val nameRegex = "^(?=.{1,35}$)([A-Z]([-'.&\\\\/ ]{0,1}[A-Za-z]+)*[A-Za-z]?)$"
-  private def jsError: String => JsonValidationError = fieldName => JsonValidationError(s"Unable to validate $fieldName. Ensure it matches the regex.")
 
-  private def checkAgainstNameRegex(nameString: String): Boolean = {
-    nameString.matches(nameRegex)
-  }
-
-  private def validateName[T](input: Reads[T], fieldName: String): Reads[T] = {
+  private[models] def validateName[T](input: T): Boolean = {
     val checkValidity: String => Boolean = { fieldValue =>
-            val passedValidation = checkAgainstNameRegex(fieldValue)
-            if(!passedValidation) Logger.warn(s"Unable to validate the name: $fieldValue")
-            passedValidation
+      val passedValidation = fieldValue.matches(nameRegex)
+      if (!passedValidation) Logger.warn(s"Unable to validate the name: $fieldValue")
+      passedValidation
     }
 
-    input.filter(jsError(fieldName)) {
+    input match {
       case stringValue: String => checkValidity(stringValue)
       case Some(stringValue: String) => checkValidity(stringValue)
       case None => true
+      case other:T => throw new IllegalArgumentException(s"Unsupported type attempted validation: ${other.getClass.getCanonicalName}")
     }
   }
 
   implicit val reads: Reads[NameModel] = (
-    validateTitle(titlePath.readNullable[String]) and
-    validateName(forename.readNullable[String], "forename") and
-    validateName(secondForename.readNullable[String], "second forename") and
-    validateName(surname.read[String], "surname") and
-    startDate.read[DateModel] and
-    endDate.readNullable[DateModel]
-  )(NameModel.apply _)
+    titlePath.readNullable[String].filter(titleValidationError)(validateTitle) and
+      forename.readNullable[String].filter(nameValidationError("forename"))(validateName) and
+      secondForename.readNullable[String].filter(nameValidationError("second forename"))(validateName) and
+      surname.read[String].filter(nameValidationError("surname"))(validateName) and
+      startDate.read[DateModel] and
+      endDate.readNullable[DateModel]
+    ) (NameModel.apply _)
 
   implicit val writes: Writes[NameModel] = Json.writes[NameModel]
 }
