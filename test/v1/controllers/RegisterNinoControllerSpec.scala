@@ -17,6 +17,7 @@
 package v1.controllers
 
 import play.api.http.Status
+import play.api.libs.json.Json
 import play.api.test.Helpers._
 import support.ControllerBaseSpec
 
@@ -32,7 +33,7 @@ class RegisterNinoControllerSpec extends ControllerBaseSpec {
             .withHeaders("Accept" -> "application/vnd.hmrc.1.0+json")
         )
         status(result) shouldBe Status.OK
-        contentAsString(result) shouldBe "A response"
+        contentAsJson(result) shouldBe Json.obj("message"->"A response")
       }
     }
 

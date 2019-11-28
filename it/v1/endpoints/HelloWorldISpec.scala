@@ -30,6 +30,7 @@ class HelloWorldISpec extends IntegrationBaseSpec {
     def setupStubs(): StubMapping
 
     def request(): WSRequest = {
+      setupStubs()
       buildRequest("/hello-world")
         .withHttpHeaders((ACCEPT, "application/vnd.hmrc.1.0+json"))
     }
@@ -43,10 +44,9 @@ class HelloWorldISpec extends IntegrationBaseSpec {
 
         override def setupStubs(): StubMapping = {
           AuditStub.audit()
-          AuthStub.authorised()
         }
 
-        val response: WSResponse = await(request().get())
+        lazy val response: WSResponse = await(request().get())
         response.status shouldBe Status.OK
       }
 

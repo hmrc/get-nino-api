@@ -19,9 +19,10 @@ package v1.endpoints
 import com.github.tomakehurst.wiremock.stubbing.StubMapping
 import play.api.http.HeaderNames.ACCEPT
 import play.api.http.Status
+import play.api.libs.json.{JsValue, Json}
 import play.api.libs.ws.{WSRequest, WSResponse}
 import support.IntegrationBaseSpec
-import v1.stubs.{AuditStub, AuthStub}
+import v1.stubs.AuditStub
 
 class RegisterNinoISpec extends IntegrationBaseSpec {
 
@@ -30,6 +31,7 @@ class RegisterNinoISpec extends IntegrationBaseSpec {
     def setupStubs(): StubMapping
 
     def request(): WSRequest = {
+      setupStubs()
       buildRequest("/register")
         .withHttpHeaders((ACCEPT, "application/vnd.hmrc.1.0+json"))
     }
@@ -43,15 +45,21 @@ class RegisterNinoISpec extends IntegrationBaseSpec {
 
         override def setupStubs(): StubMapping = {
           AuditStub.audit()
-          AuthStub.authorised()
         }
 
-        val response: WSResponse = await(request().post(""))
+        lazy val response: WSResponse = await(request().post(""))
         response.status shouldBe Status.OK
       }
 
+      "return 'A response'" in new Test {
+
+        override def setupStubs(): StubMapping = {
+          AuditStub.audit()
+        }
+
+        lazy val response: WSResponse = await(request().post(""))
+        response.body[JsValue] shouldBe Json.obj("message" -> "A response")
+      }
     }
-
   }
-
 }
