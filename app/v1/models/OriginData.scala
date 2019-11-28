@@ -92,18 +92,6 @@ object OriginData {
       lastEUAddressPath.readNullable[LastEUAddress]
     ) (OriginData.apply _)
 
-  implicit val writes: Writes[OriginData] = (
-    birthTownPath.writeNullable[String] and
-      birthProvincePath.writeNullable[String] and
-      birthCountryCodePath.writeNullable[Int] and
-      nationalityPath.writeNullable[Int] and
-      birthSurnamePath.writeNullable[String] and
-      maternalForenamePath.writeNullable[String] and
-      maternalSurnamePath.writeNullable[String] and
-      paternalForenamePath.writeNullable[String] and
-      paternalSurnamePath.writeNullable[String] and
-      foreignSocialSecurityPath.writeNullable[String] and
-      lastEUAddressPath.writeNullable[LastEUAddress]
-    ) (unlift(OriginData.unapply))
+  implicit val writes: Writes[OriginData] = Json.writes[OriginData]
 
 }
