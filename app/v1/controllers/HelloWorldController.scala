@@ -16,14 +16,14 @@
 
 package v1.controllers
 
-import javax.inject.Inject
+import javax.inject.{Inject, Singleton}
 import play.api.libs.json.Json
 import play.api.mvc.{Action, AnyContent, ControllerComponents}
 import uk.gov.hmrc.play.bootstrap.controller.BackendController
 
 import scala.concurrent.Future
 
-
+@Singleton()
 class HelloWorldController @Inject()(cc: ControllerComponents) extends BackendController(cc) {
 
   def hello(): Action[AnyContent] = Action.async { implicit request =>

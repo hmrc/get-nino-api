@@ -16,17 +16,18 @@
 
 package v1.controllers
 
-import javax.inject.Inject
+import javax.inject.{Inject, Singleton}
+import play.api.libs.json.Json
 import play.api.mvc.{Action, AnyContent, ControllerComponents}
 import uk.gov.hmrc.play.bootstrap.controller.BackendController
 
 import scala.concurrent.Future
 
-
+@Singleton()
 class RegisterNinoController @Inject()(cc: ControllerComponents) extends BackendController(cc) {
 
   def register(): Action[AnyContent] = Action.async { implicit request =>
-    Future.successful(Ok("A response"))
+    Future.successful(Ok(Json.obj("message" -> "A response")))
   }
 
 }
