@@ -70,25 +70,25 @@ object OriginData {
 
   implicit val reads: Reads[OriginData] = (
     birthTownPath.readNullable[String]
-      .filter(JsonValidationError("Birth town does not match regex"))(birthTown => stringValidation(birthTown, "birth town")) and
+      .filter(JsonValidationError("Birth town does not match regex"))(stringValidation(_, "birth town")) and
       birthProvincePath.readNullable[String]
-        .filter(JsonValidationError("Birth province does not match regex"))(birthProvince => stringValidation(birthProvince, "birth town")) and
+        .filter(JsonValidationError("Birth province does not match regex"))(stringValidation(_, "birth town")) and
       birthCountryCodePath.readNullable[Int]
         .filter(JsonValidationError("Country code is not valid"))(countryCodeValidation) and
       nationalityPath.readNullable[Int]
         .filter(JsonValidationError("Nationality code is not valid"))(countryCodeValidation) and
       birthSurnamePath.readNullable[String]
-        .filter(JsonValidationError("Birth surname does not match regex"))(surname => stringValidation(surname, "birth surname")) and
+        .filter(JsonValidationError("Birth surname does not match regex"))(stringValidation(_, "birth surname")) and
       maternalForenamePath.readNullable[String]
-        .filter(JsonValidationError("Maternal forename does not match regex"))(forename => stringValidation(forename, "maternal forename")) and
+        .filter(JsonValidationError("Maternal forename does not match regex"))(stringValidation(_, "maternal forename")) and
       maternalSurnamePath.readNullable[String]
-        .filter(JsonValidationError("Maternal surname does not match regex"))(surname => stringValidation(surname, "maternal surname")) and
+        .filter(JsonValidationError("Maternal surname does not match regex"))(stringValidation(_, "maternal surname")) and
       paternalForenamePath.readNullable[String]
-        .filter(JsonValidationError("Paternal forename does not match regex"))(forename => stringValidation(forename, "paternal forename")) and
+        .filter(JsonValidationError("Paternal forename does not match regex"))(stringValidation(_, "paternal forename")) and
       paternalSurnamePath.readNullable[String]
-        .filter(JsonValidationError("Paternal surname does not match regex"))(surname => stringValidation(surname, "paternal surname")) and
+        .filter(JsonValidationError("Paternal surname does not match regex"))(stringValidation(_, "paternal surname")) and
       foreignSocialSecurityPath.readNullable[String]
-        .filter(JsonValidationError("Foreign social security does not match regex"))(socialSecurity => stringValidation(socialSecurity, "birth surname")) and
+        .filter(JsonValidationError("Foreign social security does not match regex"))(stringValidation(_, "social security")) and
       lastEUAddressPath.readNullable[LastEUAddress]
     ) (OriginData.apply _)
 
