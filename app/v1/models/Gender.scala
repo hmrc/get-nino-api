@@ -28,7 +28,7 @@ object Gender {
       case Male.value => Male
       case Female.value => Female
       case GenderNotKnown.value => GenderNotKnown
-      case _ => throw new IllegalArgumentException(s"Provided gender, $input, does not match available options: MALE, FEMALE, NOT-KNOWN")
+      case _ => throw new IllegalArgumentException(s"Provided gender does not match available options: MALE, FEMALE, NOT-KNOWN")
     }
   }
 

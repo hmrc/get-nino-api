@@ -54,7 +54,7 @@ class DateModelSpec extends UnitSpec {
           Json.toJson(errorModel)
         }
 
-        thrownException.getMessage should include("The following date failed validation against NPS regex: 222-111-2222222")
+        thrownException.getMessage should include("Date failed validation")
       }
     }
     "fail to parse from json and throw an error" when {

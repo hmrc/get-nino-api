@@ -36,7 +36,7 @@ object DateModel {
       transformedDateString
     } else {
       throw new IllegalArgumentException(
-        "[StartDateEndDate][changeDateFormatAndValidateNps] The following date failed validation against NPS regex: " + transformedDateString
+        "[StartDateEndDate][changeDateFormatAndValidateNps] Date failed validation"
       )
     }
   }
@@ -48,7 +48,10 @@ object DateModel {
   private def validateDwpDate(dateInput: Reads[String]): Reads[String] = {
     val isValidDwpDate: String => Boolean = dateInput => {
       val passedValidation = dateInput.matches(dwpDateRegex)
-      if(!passedValidation) Logger.warn(s"[StartDateEndDate][validateDwpDate] Unable to parse the following date: $dateInput")
+      if(!passedValidation) {
+        Logger.debug(s"[StartDateEndDate][validateDwpDate] Unable to parse the following date: $dateInput")
+        Logger.warn(s"[StartDateEndDate][validateDwpDate] Unable to parse the provided date.")
+      }
       passedValidation
     }
     dateInput.filter(

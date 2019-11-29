@@ -20,7 +20,7 @@ import play.api.libs.json.{JsString, Json}
 import support.UnitSpec
 
 class GenderSpec extends UnitSpec {
-  val invalidGender = "SWAHSWAH"
+  val invalidGender = "NOTAGENDER"
 
   "Gender" should {
     "correctly parse from a JSON String" when {
@@ -51,7 +51,7 @@ class GenderSpec extends UnitSpec {
           JsString(invalidGender).as[Gender]
         }
 
-        expectedException.getMessage should include (s"Provided gender, $invalidGender, does not match available options: MALE, FEMALE, NOT-KNOWN")
+        expectedException.getMessage should include (s"Provided gender does not match available options: MALE, FEMALE, NOT-KNOWN")
       }
     }
   }

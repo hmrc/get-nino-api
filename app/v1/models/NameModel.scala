@@ -57,17 +57,23 @@ object NameModel {
   private[models] def validateTitle: Option[String] => Boolean = {
     case Some(inputString) =>
       val passedValidation = validTitles.contains(inputString)
-      if (!passedValidation) Logger.warn(s"[NameModel][validateTitle] The following title failed validation: $inputString")
+      if (!passedValidation) {
+        Logger.debug(s"[NameModel][validateTitle] The following title failed validation: $inputString")
+        Logger.warn(s"[NameModel][validateTitle] Unable to parse entered title.")
+      }
       passedValidation
     case None => true
   }
 
   private val nameRegex = "^(?=.{1,35}$)([A-Z]([-'.&\\\\/ ]{0,1}[A-Za-z]+)*[A-Za-z]?)$"
 
-  private[models] def validateName[T](input: T): Boolean = {
+  private[models] def validateName[T](input: T, fieldName: String): Boolean = {
     val checkValidity: String => Boolean = { fieldValue =>
       val passedValidation = fieldValue.matches(nameRegex)
-      if (!passedValidation) Logger.warn(s"Unable to validate the name: $fieldValue")
+      if (!passedValidation) {
+        Logger.debug(s"[NameModel][validateName] Unable to validate the name: $fieldValue")
+        Logger.warn(s"[NameModel][validateName] Unable to validate the field: $fieldName")
+      }
       passedValidation
     }
 
@@ -75,15 +81,15 @@ object NameModel {
       case stringValue: String => checkValidity(stringValue)
       case Some(stringValue: String) => checkValidity(stringValue)
       case None => true
-      case other:T => throw new IllegalArgumentException(s"Unsupported type attempted validation: ${other.getClass.getCanonicalName}")
+      case other => throw new IllegalArgumentException(s"Unsupported type attempted validation: ${other.getClass.getCanonicalName}")
     }
   }
 
   implicit val reads: Reads[NameModel] = (
     titlePath.readNullable[String].filter(titleValidationError)(validateTitle) and
-      forename.readNullable[String].filter(nameValidationError("forename"))(validateName) and
-      secondForename.readNullable[String].filter(nameValidationError("second forename"))(validateName) and
-      surname.read[String].filter(nameValidationError("surname"))(validateName) and
+      forename.readNullable[String].filter(nameValidationError("forename"))(validateName(_, "forename")) and
+      secondForename.readNullable[String].filter(nameValidationError("second forename"))(validateName(_, "secondForename")) and
+      surname.read[String].filter(nameValidationError("surname"))(validateName(_, "surname")) and
       startDate.read[DateModel] and
       endDate.readNullable[DateModel]
     ) (NameModel.apply _)

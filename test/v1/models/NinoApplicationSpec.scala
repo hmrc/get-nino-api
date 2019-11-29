@@ -30,14 +30,14 @@ class NinoApplicationSpec extends UnitSpec {
   val validOfficeNumberMid = "123456"
   val validOfficeNumberMax = "1234567890"
   val invalidOfficeNumberCharacters = "thishasletterssoisntanumber"
-  val invalidOfficeNumberLength = "12345678901234567890"
+  val invalidOfficeNumberLength = "12345678901"
   val invalidOfficeNumberNoLength = ""
 
   val validContactNumberMin = "1"
   val validContactNumberMid = "12345678901234567893456"
   val validContactNumberMax = "123456789012345678901234567890123456789012345678901234567890123456789012"
   val invalidContactNumberCharacters = "thishasletterssoisntanumber"
-  val invalidContactNumberLength = "12345678901234567890123456789012345678901234567890123456789012345678901234567890"
+  val invalidContactNumberLength = "1234567890123456789012345678901234567890123456789012345678901234567890123"
   val invalidContactNumberNoLength = ""
 
   private val ninoRegex = "^([ACEHJLMOPRSWXY][A-CEGHJ-NPR-TW-Z]|B[A-CEHJ-NPR-TW-Z]|" +

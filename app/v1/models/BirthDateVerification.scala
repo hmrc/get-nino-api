@@ -29,7 +29,7 @@ object BirthDateVerification {
       case Verified.value => Verified
       case VerificationNotKnown.value => VerificationNotKnown
       case CoegConfirmed.value => CoegConfirmed
-      case _ => throw new IllegalArgumentException(s"Unable to parse $input into a valid value. Available values are: " +
+      case _ => throw new IllegalArgumentException(s"Unable to parse birthDateVerification field. Available values are: " +
         s"UNVERIFIED, VERIFIED, NOT KNOWN, COEG CONFIRMED")
     }
   }

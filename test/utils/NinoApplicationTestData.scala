@@ -34,11 +34,11 @@ object NinoApplicationTestData {
     "officeNumber" -> "1234",
     "country" -> 1,
     "name" -> Json.obj(
-      "surname" -> "Ishigami",
+      "surname" -> "ASurname",
       "startDate" -> thisOrThatDate
     ),
     "address" -> Json.obj(
-      "line1" -> "4 Stoneworld",
+      "line1" -> "4 AStreetName",
       "startDate" -> thisOrThatDate
     )
   )
@@ -53,11 +53,11 @@ object NinoApplicationTestData {
     "contactNumber" -> "'sd;f][a;w3#'f;#'s",
     "country" -> 1,
     "name" -> Json.obj(
-      "surname" -> "Ishigami",
+      "surname" -> "ASurname",
       "startDate" -> thisOrThatDate
     ),
     "address" -> Json.obj(
-      "line1" -> "4 Stoneworld",
+      "line1" -> "4 AStreetName",
       "startDate" -> thisOrThatDate
     )
   )
@@ -73,37 +73,37 @@ object NinoApplicationTestData {
     "country" -> 1,
     "name" -> Json.obj(
       "title" -> "MR",
-      "forename" -> "Senku",
+      "forename" -> "AForename",
       "secondForename" -> "NotSure",
-      "surname" -> "Ishigami",
+      "surname" -> "ASurname",
       "startDate" -> thisOrThatDate,
       "endDate" -> thisOrThatDate
     ),
     "historicNames" -> Json.arr(
       Json.obj(
-        "title" -> "MR",
-        "forename" -> "Taiju",
+        "title" -> "MRS",
+        "forename" -> "AForename",
         "secondForename" -> "NotSure",
-        "surname" -> "Oki",
+        "surname" -> "ASurname",
         "startDate" -> thisOrThatDate,
         "endDate" -> thisOrThatDate
       ),
       Json.obj(
         "title" -> "MISS",
-        "forename" -> "Yuzuriha",
+        "forename" -> "AForename",
         "secondForename" -> "NotSure",
-        "surname" -> "Ogawa",
+        "surname" -> "ASurname",
         "startDate" -> thisOrThatDate,
         "endDate" -> thisOrThatDate
       )
     ),
     "address" -> Json.obj(
       "addressType" -> "RESIDENTIAL",
-      "line1" -> "4 Ishigami Village",
-      "line2" -> "Osaka",
+      "line1" -> "4 AStreetName",
+      "line2" -> "Some",
       "line3" -> "Old",
       "line4" -> "Place",
-      "line5" -> "Bruh",
+      "line5" -> "ItsTheFinalLine",
       "postcode" -> "AA11AA",
       "countryCode" -> "GBR",
       "startDate" -> thisOrThatDate,
@@ -112,11 +112,11 @@ object NinoApplicationTestData {
     "historicAddresses" -> Json.arr(
       Json.obj(
         "addressType" -> "RESIDENTIAL",
-        "line1" -> "1 Personal Hovel",
-        "line2" -> "Osaka",
+        "line1" -> "1 AStreetName",
+        "line2" -> "Some",
         "line3" -> "Old",
         "line4" -> "Place",
-        "line5" -> "Bruh",
+        "line5" -> "ItsTheFinalLine",
         "postcode" -> "AA11AA",
         "countryCode" -> "GBR",
         "startDate" -> thisOrThatDate,
@@ -124,11 +124,11 @@ object NinoApplicationTestData {
       ),
       Json.obj(
         "addressType" -> "RESIDENTIAL",
-        "line1" -> "4 Daini Hanna",
-        "line2" -> "Osaka",
+        "line1" -> "4 AStreetName",
+        "line2" -> "Some",
         "line3" -> "Old",
         "line4" -> "Place",
-        "line5" -> "Bruh",
+        "line5" -> "ItsTheFinalLine",
         "postcode" -> "AA11AA",
         "countryCode" -> "GBR",
         "startDate" -> thisOrThatDate,
@@ -136,22 +136,22 @@ object NinoApplicationTestData {
       )
     ),
     "originData" -> Json.obj(
-      "birthTown" -> "Who Knows",
-      "birthProvince" -> "Shrugs Shoulders",
+      "birthTown" -> "ATown",
+      "birthProvince" -> "SomeProvince",
       "birthCountryCode" -> 200,
       "nationality" -> 2,
-      "birthSurname" -> "Ishigami",
-      "maternalForename" -> "LadyName",
-      "maternalSurname" -> "LostForAllTime",
-      "paternalForename" -> "Byakuya",
-      "paternalSurname" -> "Ishigami",
+      "birthSurname" -> "ASurname",
+      "maternalForename" -> "MotherForename",
+      "maternalSurname" -> "AnotherSurname",
+      "paternalForename" -> "AForename",
+      "paternalSurname" -> "ASurname",
       "foreignSocialSecurity" -> "SomeSocialSecurityNumber",
       "lastEUAddress" -> Json.obj(
-        "line1" -> "4 Daini Hanna",
-        "line2" -> "Osaka",
+        "line1" -> "4 AStreetName",
+        "line2" -> "Some",
         "line3" -> "Old",
         "line4" -> "Place",
-        "line5" -> "Bruh"
+        "line5" -> "ItsTheFinalLine"
       )
     ),
     "priorResidency" -> Json.arr(
@@ -173,13 +173,13 @@ object NinoApplicationTestData {
       None,
       1,
       NameModel(
-        surname = "Ishigami",
+        surname = "ASurname",
         startDate = DateModel(thisOrThatDate)
       ),
       None,
       AddressModel(
         None,
-        AddressLine("4 Stoneworld"),
+        AddressLine("4 AStreetName"),
         None, None, None, None, None, None,
         DateModel(thisOrThatDate), None
       ),
@@ -199,13 +199,13 @@ object NinoApplicationTestData {
       None,
       1,
       NameModel(
-        surname = "Ishigami",
+        surname = "ASurname",
         startDate = DateModel(thisOrThatDate)
       ),
       None,
       AddressModel(
         None,
-        AddressLine("4 Stoneworld"),
+        AddressLine("4 AStreetName"),
         None, None, None, None, None, None,
         DateModel(thisOrThatDate), None
       ),
@@ -227,37 +227,37 @@ object NinoApplicationTestData {
       1,
       NameModel(
         Some("MR"),
-        Some("Senku"),
+        Some("AForename"),
         Some("NotSure"),
-        "Ishigami",
+        "ASurname",
         DateModel(thisOrThatDate),
         Some(DateModel(thisOrThatDate))
       ),
       Some(Seq(
         NameModel(
-          Some("MR"),
-          Some("Taiju"),
+          Some("MRS"),
+          Some("AForename"),
           Some("NotSure"),
-          "Oki",
+          "ASurname",
           DateModel(thisOrThatDate),
           Some(DateModel(thisOrThatDate))
         ),
         NameModel(
           Some("MISS"),
-          Some("Yuzuriha"),
+          Some("AForename"),
           Some("NotSure"),
-          "Ogawa",
+          "ASurname",
           DateModel(thisOrThatDate),
           Some(DateModel(thisOrThatDate))
         )
       )),
       AddressModel(
         Some(Residential),
-        AddressLine("4 Ishigami Village"),
-        Some(AddressLine("Osaka")),
+        AddressLine("4 AStreetName"),
+        Some(AddressLine("Some")),
         Some(AddressLine("Old")),
         Some(AddressLine("Place")),
-        Some(AddressLine("Bruh")),
+        Some(AddressLine("ItsTheFinalLine")),
         Some(Postcode("AA11AA")),
         Some("GBR"),
         DateModel(thisOrThatDate),
@@ -266,11 +266,11 @@ object NinoApplicationTestData {
       Some(Seq(
         AddressModel(
           Some(Residential),
-          AddressLine("1 Personal Hovel"),
-          Some(AddressLine("Osaka")),
+          AddressLine("1 AStreetName"),
+          Some(AddressLine("Some")),
           Some(AddressLine("Old")),
           Some(AddressLine("Place")),
-          Some(AddressLine("Bruh")),
+          Some(AddressLine("ItsTheFinalLine")),
           Some(Postcode("AA11AA")),
           Some("GBR"),
           DateModel(thisOrThatDate),
@@ -278,11 +278,11 @@ object NinoApplicationTestData {
         ),
         AddressModel(
           Some(Residential),
-          AddressLine("4 Daini Hanna"),
-          Some(AddressLine("Osaka")),
+          AddressLine("4 AStreetName"),
+          Some(AddressLine("Some")),
           Some(AddressLine("Old")),
           Some(AddressLine("Place")),
-          Some(AddressLine("Bruh")),
+          Some(AddressLine("ItsTheFinalLine")),
           Some(Postcode("AA11AA")),
           Some("GBR"),
           DateModel(thisOrThatDate),
@@ -290,22 +290,22 @@ object NinoApplicationTestData {
         )
       )),
       Some(OriginData(
-        Some("Who Knows"),
-        Some("Shrugs Shoulders"),
+        Some("ATown"),
+        Some("SomeProvince"),
         Some(200),
         Some(2),
-        Some("Ishigami"),
-        Some("LadyName"),
-        Some("LostForAllTime"),
-        Some("Byakuya"),
-        Some("Ishigami"),
+        Some("ASurname"),
+        Some("MotherForename"),
+        Some("AnotherSurname"),
+        Some("AForename"),
+        Some("ASurname"),
         Some("SomeSocialSecurityNumber"),
         Some(LastEUAddress(
-          Some(AddressLine("4 Daini Hanna")),
-          Some(AddressLine("Osaka")),
+          Some(AddressLine("4 AStreetName")),
+          Some(AddressLine("Some")),
           Some(AddressLine("Old")),
           Some(AddressLine("Place")),
-          Some(AddressLine("Bruh"))
+          Some(AddressLine("ItsTheFinalLine"))
         ))
       )),
       Some(Seq(
