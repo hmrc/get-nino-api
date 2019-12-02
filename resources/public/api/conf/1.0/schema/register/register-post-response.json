@@ -1,0 +1,15 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "register post response schema",
+  "description": "The schema for the response to a register request",
+  "type": "object",
+  "required": [
+    "message"
+  ],
+  "properties": {
+    "message": {
+      "description": "Response message",
+      "type": "string"
+    }
+  }
+}

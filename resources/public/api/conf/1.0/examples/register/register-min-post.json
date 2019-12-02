@@ -1,0 +1,17 @@
+{
+  "nino": "TC452994B",
+  "gender": "MALE",
+  "entryDate": "10-10-2020",
+  "birthDate": "10-10-2020",
+  "birthDateVerification": "VERIFIED",
+  "officeNumber": "1234",
+  "country": 1,
+  "name": {
+    "surname": "ASurname",
+    "startDate": "10-10-2020"
+  },
+  "address": {
+    "line1": "4 AStreetName",
+    "startDate": "10-10-2020"
+  }
+}
