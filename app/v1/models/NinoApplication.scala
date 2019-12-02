@@ -16,8 +16,8 @@
 
 package v1.models
 
-import play.api.libs.json._
 import play.api.libs.functional.syntax._
+import play.api.libs.json._
 
 case class NinoApplication(
                             nino: String,
@@ -32,6 +32,7 @@ case class NinoApplication(
                             historicNames: Option[Seq[NameModel]],
                             address: AddressModel,
                             historicAddresses: Option[Seq[AddressModel]],
+                            marriages: Option[Seq[Marriage]],
                             originData: Option[OriginData],
                             priorResidency: Option[Seq[PriorResidencyModel]],
                             abroadLiability: Option[AbroadLiabilityModel]
@@ -65,6 +66,7 @@ object NinoApplication {
   private val historicalNamesPath = __ \ "historicNames"
   private val addressPath = __ \ "address"
   private val historicalAddressesPath = __ \ "historicAddresses"
+  private val marriagesPath = __ \ "marriages"
   private val originDataPath = __ \ "originData"
   private val priorResidencyPath = __ \ "priorResidency"
   private val abroadLiabilityPath = __ \ "abroadLiability"
@@ -75,19 +77,20 @@ object NinoApplication {
 
   implicit val reads: Reads[NinoApplication] = (
     ninoPath.read[String].filter(commonError("nino"))(validateAgainstRegex(_, ninoRegex)) and
-    genderPath.read[Gender] and
-    entryDatePath.read[DateModel] and
-    birthDatePath.read[DateModel] and
-    birthDateVerificationPath.read[BirthDateVerification] and
-    officeNumberPath.read[String].filter(commonError("office number"))(validateAgainstRegex(_, officeNumberRegex)) and
-    contactNumberPath.readNullable[String].filter(commonError("contact number"))(_.fold(true)(validateAgainstRegex(_, contactNumberRegex))) and
-    countryPath.read[Int] and
-    namePath.read[NameModel] and
-    historicalNamesPath.readNullable[Seq[NameModel]] and
-    addressPath.read[AddressModel] and
-    historicalAddressesPath.readNullable[Seq[AddressModel]] and
-    originDataPath.readNullable[OriginData] and
-    priorResidencyPath.readNullable[Seq[PriorResidencyModel]] and
-    abroadLiabilityPath.readNullable[AbroadLiabilityModel]
-  )(NinoApplication.apply _)
+      genderPath.read[Gender] and
+      entryDatePath.read[DateModel] and
+      birthDatePath.read[DateModel] and
+      birthDateVerificationPath.read[BirthDateVerification] and
+      officeNumberPath.read[String].filter(commonError("office number"))(validateAgainstRegex(_, officeNumberRegex)) and
+      contactNumberPath.readNullable[String].filter(commonError("contact number"))(_.fold(true)(validateAgainstRegex(_, contactNumberRegex))) and
+      countryPath.read[Int] and
+      namePath.read[NameModel] and
+      historicalNamesPath.readNullable[Seq[NameModel]] and
+      addressPath.read[AddressModel] and
+      historicalAddressesPath.readNullable[Seq[AddressModel]] and
+      marriagesPath.readNullable[Seq[Marriage]] and
+      originDataPath.readNullable[OriginData] and
+      priorResidencyPath.readNullable[Seq[PriorResidencyModel]] and
+      abroadLiabilityPath.readNullable[AbroadLiabilityModel]
+    ) (NinoApplication.apply _)
 }

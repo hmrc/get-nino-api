@@ -51,13 +51,18 @@ class NinoApplicationSpec extends UnitSpec {
   private def validateContact: String => Boolean = input => NinoApplication.validateAgainstRegex(input, contactNumberRegex)
 
   ".validateAgainstRegex" when {
+
     "using the nino regex" should {
+
       "return true" when {
+
         "the NINO passes validation" in {
           validateNino(validNino) shouldBe true
         }
       }
+
       "return false" when {
+
         "the NINO fails validation" in {
           validateNino(invalidNino) shouldBe false
         }
@@ -65,24 +70,32 @@ class NinoApplicationSpec extends UnitSpec {
     }
 
     "using the officeNumber regex" should {
+
       "return true" when {
+
         "the number passes validation with maximum length" in {
           validateOffice(validOfficeNumberMax) shouldBe true
         }
+
         "the number passes validation when in between length limits" in {
           validateOffice(validOfficeNumberMid) shouldBe true
         }
+
         "the number passes validation with minimum length" in {
           validateOffice(validOfficeNumberMin) shouldBe true
         }
       }
+
       "return false" when {
+
         "the number fails validation due to invalid characters" in {
           validateOffice(invalidOfficeNumberCharacters) shouldBe false
         }
+
         "the number fails validation due to length" in {
           validateOffice(invalidOfficeNumberLength) shouldBe false
         }
+
         "the number fails validation due to having zero length" in {
           validateOffice(invalidOfficeNumberNoLength) shouldBe false
         }
@@ -90,24 +103,32 @@ class NinoApplicationSpec extends UnitSpec {
     }
 
     "using the contactNumber regex" should {
+
       "return true" when {
+
         "the number passes validation with maximum length" in {
           validateContact(validContactNumberMax) shouldBe true
         }
+
         "the number passes validation when in between the length limits" in {
           validateContact(validContactNumberMid) shouldBe true
         }
+
         "the number passes validation with minimum length" in {
           validateContact(validContactNumberMin) shouldBe true
         }
       }
+
       "return false" when {
+
         "the number fails validation due to invalid characters" in {
           validateContact(invalidContactNumberCharacters) shouldBe false
         }
+
         "the number fails validation due to length" in {
           validateContact(invalidContactNumberLength) shouldBe false
         }
+
         "the number fails validation due to having zero length" in {
           validateContact(invalidContactNumberNoLength) shouldBe false
         }
@@ -116,21 +137,28 @@ class NinoApplicationSpec extends UnitSpec {
   }
 
   ".validateCountry" should {
+
     "return true" when {
+
       "the country value is at the minimum" in {
         NinoApplication.validateCountry(0) shouldBe true
       }
+
       "the country value is at the maximum" in {
         NinoApplication.validateCountry(286) shouldBe true
       }
+
       "the country value is within range" in {
         NinoApplication.validateCountry(143) shouldBe true
       }
     }
+
     "return false" when {
+
       "the number is below the minimum" in {
         NinoApplication.validateCountry(-1) shouldBe false
       }
+
       "the number is above the maximum" in {
         NinoApplication.validateCountry(287) shouldBe false
       }
@@ -138,24 +166,33 @@ class NinoApplicationSpec extends UnitSpec {
   }
 
   "NinoApplication" should {
+
     "correctly parse from json" when {
+
       "using json with all optional fields filled in" in {
         maxRegisterNinoRequestJson(false).as[NinoApplication] shouldBe maxRegisterNinoRequestModel
       }
+
       "using json with no optional fields filled in" in {
         minRegisterNinoRequestJson(false).as[NinoApplication] shouldBe minRegisterNinoRequestModel
       }
     }
+
     "correctly parse to json" when {
+
       "all optional fields are filled in" in {
         Json.toJson(maxRegisterNinoRequestModel) shouldBe maxRegisterNinoRequestJson(true)
       }
+
       "no optional fields are filled in" in {
         Json.toJson(minRegisterNinoRequestModel) shouldBe minRegisterNinoRequestJson(true)
       }
     }
+
     "fail to parse from json" when {
+
       "one of the fields fails validation" which {
+
         val expectedException: JsResultException = intercept[JsResultException] {
           faultyRegisterNinoRequestJson(false).as[NinoApplication]
         }
@@ -163,9 +200,11 @@ class NinoApplicationSpec extends UnitSpec {
         "generates an exception for the nino field" in {
           expectedException.getMessage should include("There has been an error parsing the nino field. Please check against the regex.")
         }
+
         "generates an exception for the office number field" in {
           expectedException.getMessage should include("There has been an error parsing the office number field. Please check against the regex.")
         }
+
         "generates an exception for the contact number field" in {
           expectedException.getMessage should include("There has been an error parsing the contact number field. Please check against the regex.")
         }
