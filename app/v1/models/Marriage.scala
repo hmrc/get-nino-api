@@ -53,17 +53,30 @@ object Marriage {
   private val ninoRegex = "^([ACEHJLMOPRSWXY][A-CEGHJ-NPR-TW-Z]|B[A-CEHJ-NPR-TW-Z]|" +
     "G[ACEGHJ-NPR-TW-Z]|[KT][A-CEGHJ-MPR-TW-Z]|N[A-CEGHJL-NPR-SW-Z]|Z[A-CEGHJ-NPR-TW-Y])[0-9]{6}[A-D]$"
 
-  private val nameStringRegex = "^(?=.{1,35}$)([A-Z]([-'.&\\\\/ ]{0,1}[A-Za-z]+)*[A-Za-z]?)$"
+  private val stringRegex = "^(?=.{1,35}$)([A-Z]([-'.&\\\\/ ]{0,1}[A-Za-z]+)*[A-Za-z]?)$"
+
+  private[models] def stringValidation(item: Option[String], itemName: String): Boolean = {
+    if (item.fold(true)(dataItem => dataItem.matches(stringRegex))) {
+      true
+    } else {
+      Logger.warn(s"[OriginData][stringValidation] - $itemName does not match regex")
+      false
+    }
+  }
+
+  private[models] def commonError(fieldName: String) = {
+    JsonValidationError(s"There has been an error parsing the $fieldName field. Please check against the regex.")
+  }
 
   implicit val reads: Reads[Marriage] = (
-    maritalStatusPath.readNullable[Int].filter(JsonValidationError("Marital status does not match regex"))(maritalStatusValidation) and
+    maritalStatusPath.readNullable[Int].filter(commonError("Marital status"))(maritalStatusValidation) and
       startDatePath.readNullable[DateModel] and
       endDatePath.readNullable[DateModel] and
-      partnerNinoPath.read[String].filter(JsonValidationError("Partner NINO does not match regex"))(_.matches(ninoRegex)) and
+      partnerNinoPath.read[String].filter(commonError("Partner NINO"))(_.matches(ninoRegex)) and
       birthDatePath.read[DateModel] and
-      forenamePath.readNullable[String].filter(JsonValidationError("Forename does not match regex"))(_.fold(true)(_.matches(nameStringRegex))) and
-      secondForenamePath.readNullable[String].filter(JsonValidationError("Second forename does not match regex"))(_.fold(true)(_.matches(nameStringRegex))) and
-      surnamePath.readNullable[String].filter(JsonValidationError("Surname does not match regex"))(_.fold(true)(_.matches(nameStringRegex)))
+      forenamePath.readNullable[String].filter(commonError("Forename"))(stringValidation(_, "forename")) and
+      secondForenamePath.readNullable[String].filter(commonError("Second forename"))(stringValidation(_, "secondForename")) and
+      surnamePath.readNullable[String].filter(commonError("Surname"))(stringValidation(_, "surname"))
     ) (Marriage.apply _)
 
   implicit val writes: Writes[Marriage] = Json.writes[Marriage]

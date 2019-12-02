@@ -167,4 +167,37 @@ class MarriageSpec extends WordSpec with Matchers {
       }
     }
   }
+
+  "Marriage. .stringValidation" when {
+
+    "provided with a valid string" should {
+
+      "return true" in {
+
+        val result = Marriage.stringValidation(item = Some("Name"), itemName = "example")
+
+        result shouldBe true
+      }
+    }
+
+    "provided with a string which does not match the regex" should {
+
+      "return false" in {
+
+        val result = Marriage.stringValidation(item = Some("!incorrectName!"), itemName = "example")
+
+        result shouldBe false
+      }
+    }
+
+    "not provided with the optional item value" should {
+
+      "return true" in {
+
+        val result = Marriage.stringValidation(item = None, itemName = "failed example")
+
+        result shouldBe true
+      }
+    }
+  }
 }
