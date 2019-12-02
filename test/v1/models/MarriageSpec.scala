@@ -21,20 +21,20 @@ import play.api.libs.json.{JsObject, Json}
 
 class MarriageSpec extends WordSpec with Matchers {
 
-  private lazy val maxMarriageJson: JsObject = Json.obj(
+  private lazy val maxMarriageJson: Boolean => JsObject = isReads => Json.obj(
     "maritalStatus" -> 1,
-    "startDate" -> "01-01-1990",
-    "endDate" -> "01-01-2000",
+    "startDate" -> (if (isReads) "01-01-1990" else "1990-01-01"),
+    "endDate" -> (if (isReads) "01-01-2000" else "2000-01-01"),
     "partnerNino" -> "AA000000B",
-    "birthDate" -> "01-01-1970",
+    "birthDate" -> (if (isReads) "01-01-1970" else "1970-01-01"),
     "forename" -> "Testforename",
     "secondForename" -> "Testsecondforename",
     "surname" -> "Testsurname"
   )
 
-  private lazy val minMarriageJson: JsObject = Json.obj(
+  private lazy val minMarriageJson: Boolean => JsObject = isReads => Json.obj(
     "partnerNino" -> "AA000000B",
-    "birthDate" -> "01-01-1970"
+    "birthDate" -> (if (isReads) "01-01-1970" else "1970-01-01")
   )
 
   private lazy val maxMarriageModel: Marriage = Marriage(
@@ -60,7 +60,7 @@ class MarriageSpec extends WordSpec with Matchers {
 
       "return a fully populated Marriage model" in {
 
-        maxMarriageJson.as[Marriage] shouldBe maxMarriageModel
+        maxMarriageJson(true).as[Marriage] shouldBe maxMarriageModel
       }
     }
 
@@ -68,7 +68,17 @@ class MarriageSpec extends WordSpec with Matchers {
 
       "return a Marriage model with only mandatory items" in {
 
-        minMarriageJson.as[Marriage] shouldBe minMarriageModel
+        minMarriageJson(true).as[Marriage] shouldBe minMarriageModel
+      }
+    }
+
+    "provided with invalid json" should {
+
+      "throw an JsResultException" in {
+
+        val json = Json.obj("bad" -> "json")
+
+        json.validate[Marriage].isError shouldBe true
       }
     }
   }
@@ -79,6 +89,7 @@ class MarriageSpec extends WordSpec with Matchers {
 
       "correctly parse to JSON" in {
 
+        Json.toJson(maxMarriageModel) shouldBe maxMarriageJson(false)
       }
     }
 
@@ -86,6 +97,73 @@ class MarriageSpec extends WordSpec with Matchers {
 
       "correctly parse to JSON" in {
 
+        Json.toJson(minMarriageModel) shouldBe minMarriageJson(false)
+      }
+    }
+  }
+
+  "Marriage .maritalStatusValidation" when {
+
+    "provided with an optional int" which {
+
+      "is within the valid range" should {
+
+        "return true" in {
+
+          val result = Marriage.maritalStatusValidation(Some(6))
+
+          result shouldBe true
+        }
+      }
+
+      "is on the lower allowed limit" should {
+
+        "return true" in {
+
+          val result = Marriage.maritalStatusValidation(Some(0))
+
+          result shouldBe true
+        }
+      }
+
+      "is on the upper allowed limit" should {
+
+        "return true" in {
+
+          val result = Marriage.maritalStatusValidation(Some(12))
+
+          result shouldBe true
+        }
+      }
+
+      "is below the lower allowed limit" should {
+
+        "return false" in {
+
+          val result = Marriage.maritalStatusValidation(Some(-1))
+
+          result shouldBe false
+        }
+      }
+
+      "is above the upper allowed limit" should {
+
+        "return false" in {
+
+          val result = Marriage.maritalStatusValidation(Some(13))
+
+          result shouldBe false
+        }
+      }
+    }
+
+    "not provided with the optional int" should {
+
+      "return true" in {
+
+        val result = Marriage.maritalStatusValidation(None)
+
+        result shouldBe true
       }
     }
   }

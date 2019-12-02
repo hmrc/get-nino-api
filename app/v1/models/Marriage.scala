@@ -42,7 +42,7 @@ object Marriage {
   private lazy val secondForenamePath = __ \ "secondForename"
   private lazy val surnamePath = __ \ "surname"
 
-  private val maritalStatusValidation: Option[Int] => Boolean = {
+  private[models] def maritalStatusValidation: Option[Int] => Boolean = {
     case Some(maritalValue) =>
       val passedValidation: Boolean = (maritalValue >= 0) && (maritalValue <= 12)
       if (!passedValidation) Logger.warn("[Marriage][maritalStatusValidation] - maritalStatus is not valid")
@@ -65,5 +65,7 @@ object Marriage {
       secondForenamePath.readNullable[String].filter(JsonValidationError("Second forename does not match regex"))(_.fold(true)(_.matches(nameStringRegex))) and
       surnamePath.readNullable[String].filter(JsonValidationError("Surname does not match regex"))(_.fold(true)(_.matches(nameStringRegex)))
     ) (Marriage.apply _)
+
+  implicit val writes: Writes[Marriage] = Json.writes[Marriage]
 
 }
