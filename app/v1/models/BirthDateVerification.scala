@@ -16,7 +16,8 @@
 
 package v1.models
 
-import play.api.libs.json.{JsString, Json, Reads, Writes, __}
+import play.api.Logger
+import play.api.libs.json.{JsString, Reads, Writes, __}
 
 sealed trait BirthDateVerification{
   val value: String
@@ -29,8 +30,10 @@ object BirthDateVerification {
       case Verified.value => Verified
       case VerificationNotKnown.value => VerificationNotKnown
       case CoegConfirmed.value => CoegConfirmed
-      case _ => throw new IllegalArgumentException(s"Unable to parse birthDateVerification field. Available values are: " +
-        s"UNVERIFIED, VERIFIED, NOT KNOWN, COEG CONFIRMED")
+      case _ =>
+        Logger.debug(s"[BirthDateVerification][valueCheck] birthDateVerification field is invalid: $input")
+        Logger.warn("[BirthDateVerification][valueCheck] birthDateVerification field is invalid")
+        throw new IllegalArgumentException(s"birthDateVerification field is invalid")
     }
   }
 

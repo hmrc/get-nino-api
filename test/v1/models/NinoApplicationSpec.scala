@@ -16,8 +16,7 @@
 
 package v1.models
 
-import org.scalatest.Pending
-import play.api.libs.json.{JsObject, JsResultException, Json}
+import play.api.libs.json.{JsResultException, Json}
 import support.UnitSpec
 import utils.NinoApplicationTestData._
 
@@ -133,7 +132,7 @@ class NinoApplicationSpec extends UnitSpec {
         NinoApplication.validateCountry(-1) shouldBe false
       }
       "the number is above the maximum" in {
-        NinoApplication.validateCountry(300) shouldBe false
+        NinoApplication.validateCountry(287) shouldBe false
       }
     }
   }
@@ -141,24 +140,24 @@ class NinoApplicationSpec extends UnitSpec {
   "NinoApplication" should {
     "correctly parse from json" when {
       "using json with all optional fields filled in" in {
-        jsonMax(false).as[NinoApplication] shouldBe modelMax
+        maxRegisterNinoRequestJson(false).as[NinoApplication] shouldBe maxRegisterNinoRequestModel
       }
       "using json with no optional fields filled in" in {
-        jsonMin(false).as[NinoApplication] shouldBe modelMin
+        minRegisterNinoRequestJson(false).as[NinoApplication] shouldBe minRegisterNinoRequestModel
       }
     }
     "correctly parse to json" when {
       "all optional fields are filled in" in {
-        Json.toJson(modelMax) shouldBe jsonMax(true)
+        Json.toJson(maxRegisterNinoRequestModel) shouldBe maxRegisterNinoRequestJson(true)
       }
       "no optional fields are filled in" in {
-        Json.toJson(modelMin) shouldBe jsonMin(true)
+        Json.toJson(minRegisterNinoRequestModel) shouldBe minRegisterNinoRequestJson(true)
       }
     }
     "fail to parse from json" when {
       "one of the fields fails validation" which {
         val expectedException: JsResultException = intercept[JsResultException] {
-          jsonFaulty(false).as[NinoApplication]
+          faultyRegisterNinoRequestJson(false).as[NinoApplication]
         }
 
         "generates an exception for the nino field" in {

@@ -21,52 +21,52 @@ import v1.models._
 
 object NinoApplicationTestData {
 
-  private def thisOrThatDate(implicit isWrite: Boolean): String = {
+  private def writeOrReadDate(implicit isWrite: Boolean): String = {
     if (isWrite) "2020-10-10" else "10-10-2020"
   }
 
-  val jsonMin: Boolean => JsObject = implicit isWrite => Json.obj(
+  val minRegisterNinoRequestJson: Boolean => JsObject = implicit isWrite => Json.obj(
     "nino" -> "TC452994B",
     "gender" -> "MALE",
-    "entryDate" -> thisOrThatDate,
-    "birthDate" -> thisOrThatDate,
+    "entryDate" -> writeOrReadDate,
+    "birthDate" -> writeOrReadDate,
     "birthDateVerification" -> "VERIFIED",
     "officeNumber" -> "1234",
     "country" -> 1,
     "name" -> Json.obj(
       "surname" -> "ASurname",
-      "startDate" -> thisOrThatDate
+      "startDate" -> writeOrReadDate
     ),
     "address" -> Json.obj(
       "line1" -> "4 AStreetName",
-      "startDate" -> thisOrThatDate
+      "startDate" -> writeOrReadDate
     )
   )
 
-  val jsonFaulty: Boolean => JsObject = implicit isWrite => Json.obj(
+  val faultyRegisterNinoRequestJson: Boolean => JsObject = implicit isWrite => Json.obj(
     "nino" -> "TC452994BAAAAAAAAA",
     "gender" -> "MALE",
-    "entryDate" -> thisOrThatDate,
-    "birthDate" -> thisOrThatDate,
+    "entryDate" -> writeOrReadDate,
+    "birthDate" -> writeOrReadDate,
     "birthDateVerification" -> "VERIFIED",
     "officeNumber" -> "1234KJAHSDKJHA*SHDH£HA{DA:SLLFJKALSJF",
     "contactNumber" -> "'sd;f][a;w3#'f;#'s",
     "country" -> 1,
     "name" -> Json.obj(
       "surname" -> "ASurname",
-      "startDate" -> thisOrThatDate
+      "startDate" -> writeOrReadDate
     ),
     "address" -> Json.obj(
       "line1" -> "4 AStreetName",
-      "startDate" -> thisOrThatDate
+      "startDate" -> writeOrReadDate
     )
   )
 
-  val jsonMax: Boolean => JsObject = implicit isWrite => Json.obj(
+  val maxRegisterNinoRequestJson: Boolean => JsObject = implicit isWrite => Json.obj(
     "nino" -> "TC452994B",
     "gender" -> "MALE",
-    "entryDate" -> thisOrThatDate,
-    "birthDate" -> thisOrThatDate,
+    "entryDate" -> writeOrReadDate,
+    "birthDate" -> writeOrReadDate,
     "birthDateVerification" -> "VERIFIED",
     "officeNumber" -> "1234",
     "contactNumber" -> "1234567890",
@@ -76,8 +76,8 @@ object NinoApplicationTestData {
       "forename" -> "AForename",
       "secondForename" -> "NotSure",
       "surname" -> "ASurname",
-      "startDate" -> thisOrThatDate,
-      "endDate" -> thisOrThatDate
+      "startDate" -> writeOrReadDate,
+      "endDate" -> writeOrReadDate
     ),
     "historicNames" -> Json.arr(
       Json.obj(
@@ -85,16 +85,16 @@ object NinoApplicationTestData {
         "forename" -> "AForename",
         "secondForename" -> "NotSure",
         "surname" -> "ASurname",
-        "startDate" -> thisOrThatDate,
-        "endDate" -> thisOrThatDate
+        "startDate" -> writeOrReadDate,
+        "endDate" -> writeOrReadDate
       ),
       Json.obj(
         "title" -> "MISS",
         "forename" -> "AForename",
         "secondForename" -> "NotSure",
         "surname" -> "ASurname",
-        "startDate" -> thisOrThatDate,
-        "endDate" -> thisOrThatDate
+        "startDate" -> writeOrReadDate,
+        "endDate" -> writeOrReadDate
       )
     ),
     "address" -> Json.obj(
@@ -106,8 +106,8 @@ object NinoApplicationTestData {
       "line5" -> "ItsTheFinalLine",
       "postcode" -> "AA11AA",
       "countryCode" -> "GBR",
-      "startDate" -> thisOrThatDate,
-      "endDate" -> thisOrThatDate
+      "startDate" -> writeOrReadDate,
+      "endDate" -> writeOrReadDate
     ),
     "historicAddresses" -> Json.arr(
       Json.obj(
@@ -119,8 +119,8 @@ object NinoApplicationTestData {
         "line5" -> "ItsTheFinalLine",
         "postcode" -> "AA11AA",
         "countryCode" -> "GBR",
-        "startDate" -> thisOrThatDate,
-        "endDate" -> thisOrThatDate
+        "startDate" -> writeOrReadDate,
+        "endDate" -> writeOrReadDate
       ),
       Json.obj(
         "addressType" -> "RESIDENTIAL",
@@ -131,8 +131,8 @@ object NinoApplicationTestData {
         "line5" -> "ItsTheFinalLine",
         "postcode" -> "AA11AA",
         "countryCode" -> "GBR",
-        "startDate" -> thisOrThatDate,
-        "endDate" -> thisOrThatDate
+        "startDate" -> writeOrReadDate,
+        "endDate" -> writeOrReadDate
       )
     ),
     "originData" -> Json.obj(
@@ -155,72 +155,72 @@ object NinoApplicationTestData {
       )
     ),
     "priorResidency" -> Json.arr(
-      Json.obj("priorStartDate" -> thisOrThatDate, "priorEndDate" -> thisOrThatDate),
-      Json.obj("priorStartDate" -> thisOrThatDate, "priorEndDate" -> thisOrThatDate)
+      Json.obj("priorStartDate" -> writeOrReadDate, "priorEndDate" -> writeOrReadDate),
+      Json.obj("priorStartDate" -> writeOrReadDate, "priorEndDate" -> writeOrReadDate)
     ),
-    "abroadLiability" -> Json.obj("liabilityStartDate" -> thisOrThatDate, "liabilityEndDate" -> thisOrThatDate)
+    "abroadLiability" -> Json.obj("liabilityStartDate" -> writeOrReadDate, "liabilityEndDate" -> writeOrReadDate)
   )
 
-  val modelMin: NinoApplication = {
+  val minRegisterNinoRequestModel: NinoApplication = {
     implicit val isWrite: Boolean = false
     NinoApplication(
       "TC452994B",
       Male,
-      DateModel(thisOrThatDate),
-      DateModel(thisOrThatDate),
+      DateModel(writeOrReadDate),
+      DateModel(writeOrReadDate),
       Verified,
       "1234",
       None,
       1,
       NameModel(
         surname = "ASurname",
-        startDate = DateModel(thisOrThatDate)
+        startDate = DateModel(writeOrReadDate)
       ),
       None,
       AddressModel(
         None,
         AddressLine("4 AStreetName"),
         None, None, None, None, None, None,
-        DateModel(thisOrThatDate), None
+        DateModel(writeOrReadDate), None
       ),
       None, None, None, None
     )
   }
 
-  val modelFaulty: NinoApplication = {
+  val faultyRegisterNinoRequestModel: NinoApplication = {
     implicit val isWrite: Boolean = false
     NinoApplication(
       "TC452994BAAAAAAAAA",
       Male,
-      DateModel(thisOrThatDate),
-      DateModel(thisOrThatDate),
+      DateModel(writeOrReadDate),
+      DateModel(writeOrReadDate),
       Verified,
       "1234",
       None,
       1,
       NameModel(
         surname = "ASurname",
-        startDate = DateModel(thisOrThatDate)
+        startDate = DateModel(writeOrReadDate)
       ),
       None,
       AddressModel(
         None,
         AddressLine("4 AStreetName"),
         None, None, None, None, None, None,
-        DateModel(thisOrThatDate), None
+        DateModel(writeOrReadDate), None
       ),
       None, None, None, None
     )
   }
 
 
-  val modelMax: NinoApplication = {
+  val maxRegisterNinoRequestModel: NinoApplication = {
     implicit val isWrite: Boolean = false
     NinoApplication(
       "TC452994B",
       Male,
-      DateModel(thisOrThatDate),
-      DateModel(thisOrThatDate),
+      DateModel(writeOrReadDate),
+      DateModel(writeOrReadDate),
       Verified,
       "1234",
       Some("1234567890"),
@@ -230,8 +230,8 @@ object NinoApplicationTestData {
         Some("AForename"),
         Some("NotSure"),
         "ASurname",
-        DateModel(thisOrThatDate),
-        Some(DateModel(thisOrThatDate))
+        DateModel(writeOrReadDate),
+        Some(DateModel(writeOrReadDate))
       ),
       Some(Seq(
         NameModel(
@@ -239,16 +239,16 @@ object NinoApplicationTestData {
           Some("AForename"),
           Some("NotSure"),
           "ASurname",
-          DateModel(thisOrThatDate),
-          Some(DateModel(thisOrThatDate))
+          DateModel(writeOrReadDate),
+          Some(DateModel(writeOrReadDate))
         ),
         NameModel(
           Some("MISS"),
           Some("AForename"),
           Some("NotSure"),
           "ASurname",
-          DateModel(thisOrThatDate),
-          Some(DateModel(thisOrThatDate))
+          DateModel(writeOrReadDate),
+          Some(DateModel(writeOrReadDate))
         )
       )),
       AddressModel(
@@ -260,8 +260,8 @@ object NinoApplicationTestData {
         Some(AddressLine("ItsTheFinalLine")),
         Some(Postcode("AA11AA")),
         Some("GBR"),
-        DateModel(thisOrThatDate),
-        Some(DateModel(thisOrThatDate))
+        DateModel(writeOrReadDate),
+        Some(DateModel(writeOrReadDate))
       ),
       Some(Seq(
         AddressModel(
@@ -273,8 +273,8 @@ object NinoApplicationTestData {
           Some(AddressLine("ItsTheFinalLine")),
           Some(Postcode("AA11AA")),
           Some("GBR"),
-          DateModel(thisOrThatDate),
-          Some(DateModel(thisOrThatDate))
+          DateModel(writeOrReadDate),
+          Some(DateModel(writeOrReadDate))
         ),
         AddressModel(
           Some(Residential),
@@ -285,8 +285,8 @@ object NinoApplicationTestData {
           Some(AddressLine("ItsTheFinalLine")),
           Some(Postcode("AA11AA")),
           Some("GBR"),
-          DateModel(thisOrThatDate),
-          Some(DateModel(thisOrThatDate))
+          DateModel(writeOrReadDate),
+          Some(DateModel(writeOrReadDate))
         )
       )),
       Some(OriginData(
@@ -309,11 +309,11 @@ object NinoApplicationTestData {
         ))
       )),
       Some(Seq(
-        PriorResidencyModel(Some(DateModel(thisOrThatDate)), Some(DateModel(thisOrThatDate))),
-        PriorResidencyModel(Some(DateModel(thisOrThatDate)), Some(DateModel(thisOrThatDate)))
+        PriorResidencyModel(Some(DateModel(writeOrReadDate)), Some(DateModel(writeOrReadDate))),
+        PriorResidencyModel(Some(DateModel(writeOrReadDate)), Some(DateModel(writeOrReadDate)))
       )),
       Some(
-        AbroadLiabilityModel(Some(DateModel(thisOrThatDate)), Some(DateModel(thisOrThatDate)))
+        AbroadLiabilityModel(Some(DateModel(writeOrReadDate)), Some(DateModel(writeOrReadDate)))
       )
     )
   }

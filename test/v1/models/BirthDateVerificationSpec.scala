@@ -61,8 +61,7 @@ class BirthDateVerificationSpec extends UnitSpec {
           JsString("I SAID SO").as[BirthDateVerification]
         }
 
-        expectedException.getMessage shouldBe s"Unable to parse birthDateVerification field. " +
-          s"Available values are: UNVERIFIED, VERIFIED, NOT KNOWN, COEG CONFIRMED"
+        expectedException.getMessage shouldBe "birthDateVerification field is invalid"
       }
     }
   }

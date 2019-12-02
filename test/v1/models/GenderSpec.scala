@@ -51,7 +51,7 @@ class GenderSpec extends UnitSpec {
           JsString(invalidGender).as[Gender]
         }
 
-        expectedException.getMessage should include (s"Provided gender does not match available options: MALE, FEMALE, NOT-KNOWN")
+        expectedException.getMessage should include (s"Provided gender invalid")
       }
     }
   }

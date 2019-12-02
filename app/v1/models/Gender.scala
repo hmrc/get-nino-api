@@ -16,6 +16,7 @@
 
 package v1.models
 
+import play.api.Logger
 import play.api.libs.json._
 
 sealed trait Gender {
@@ -28,7 +29,10 @@ object Gender {
       case Male.value => Male
       case Female.value => Female
       case GenderNotKnown.value => GenderNotKnown
-      case _ => throw new IllegalArgumentException(s"Provided gender does not match available options: MALE, FEMALE, NOT-KNOWN")
+      case _ =>
+        Logger.debug(s"[Gender][valueCheck] Provided gender failed check: $input")
+        Logger.warn("[Gender][valueCheck] Provided gender failed check")
+        throw new IllegalArgumentException(s"Provided gender invalid")
     }
   }
 

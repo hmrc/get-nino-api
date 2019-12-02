@@ -17,10 +17,8 @@
 package v1.models
 
 import play.api.Logger
-import play.api.libs.json._
 import play.api.libs.functional.syntax._
-
-import scala.reflect.ClassTag
+import play.api.libs.json._
 
 case class NameModel(
                       title: Option[String] = None,
