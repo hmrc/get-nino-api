@@ -1,6 +1,6 @@
 {
   "$schema": "http://json-schema.org/draft-04/schema#",
-  "title": "ITMP POST Account Creation Request Schema",
+  "title": "POST Account Creation Request Schema",
   "description": "JSON representation of POST Account Creation Request Payload",
   "type": "object",
   "additionalProperties": false,
@@ -101,7 +101,7 @@
       "additionalItems": false,
       "uniqueItems": true,
       "items": {
-        "description": "List of prior UK recidency periods (longer than 30 days)",
+        "description": "List of prior UK residency periods (longer than 30 days)",
         "type": "object",
         "additionalProperties": false,
         "properties": {
@@ -237,7 +237,11 @@
           "description": "Individuals address record end date",
           "$ref": "#/definitions/date"
         }
-      }
+      },
+      "required": [
+        "line1",
+        "startDate"
+      ]
     },
     "marriage": {
       "description": "Multi-Use Marriage Object",
