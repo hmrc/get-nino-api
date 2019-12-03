@@ -190,6 +190,17 @@ class MarriageSpec extends WordSpec with Matchers {
       }
     }
 
+    "provided with a string with a length which is too long for the regex" should {
+
+      "return false" in {
+
+        val result = Marriage.stringValidation(item = Some("thisnameisunfortunatelytoolongfortheregexthatitwillbematchingagainst"), itemName = "example")
+
+        result shouldBe false
+
+      }
+    }
+
     "not provided with the optional item value" should {
 
       "return true" in {
