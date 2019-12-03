@@ -1,0 +1,25 @@
+is:
+  - headers.acceptJson
+  - headers.contentTypeJson
+displayName: Register NINO API
+description: Sends data down to NPS to register a NINO
+body:
+  application/json:
+    description: The payload required for the post to be successful
+    type: !include schema/register-nino.json
+    examples:
+      example-1:
+        description: The maximum possible payload in a request
+        value: !include examples/register/register-max-post.json
+      example-2:
+        description: The minimum possible payload in a request
+        value: !include examples/register/register-min-post.json
+responses:
+  200:
+    body:
+      application/json:
+        type: !include schema/register/register-post-response.json
+        examples:
+          example-1:
+            description: Typical response received
+            value: !include examples/register/register-post-response.json

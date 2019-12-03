@@ -1,0 +1,107 @@
+{
+  "nino": "TC452994B",
+  "gender": "MALE",
+  "entryDate": "10-10-2020",
+  "birthDate": "10-10-2020",
+  "birthDateVerification": "VERIFIED",
+  "officeNumber": "1234",
+  "contactNumber": "1234567890",
+  "country": 1,
+  "name": {
+    "title": "MR",
+    "forename": "AForename",
+    "secondForename": "NotSure",
+    "surname": "ASurname",
+    "startDate": "10-10-2020",
+    "endDate": "10-10-2020"
+  },
+  "historicNames": [
+    {
+      "title": "MRS",
+      "forename": "AForename",
+      "secondForename": "NotSure",
+      "surname": "ASurname",
+      "startDate": "10-10-2020",
+      "endDate": "10-10-2020"
+    },
+    {
+      "title": "MISS",
+      "forename": "AForename",
+      "secondForename": "NotSure",
+      "surname": "ASurname",
+      "startDate": "10-10-2020",
+      "endDate": "10-10-2020"
+    }
+  ],
+  "address": {
+    "addressType": "RESIDENTIAL",
+    "line1": "4 AStreetName",
+    "line2": "Some",
+    "line3": "Old",
+    "line4": "Place",
+    "line5": "ItsTheFinalLine",
+    "postcode": "AA11AA",
+    "countryCode": "GBR",
+    "startDate": "10-10-2020",
+    "endDate": "10-10-2020"
+  },
+  "historicAddresses": [
+    {
+      "addressType": "RESIDENTIAL",
+      "line1": "1 AStreetName",
+      "line2": "Some",
+      "line3": "Old",
+      "line4": "Place",
+      "line5": "ItsTheFinalLine",
+      "postcode": "AA11AA",
+      "countryCode": "GBR",
+      "startDate": "10-10-2020",
+      "endDate": "10-10-2020"
+    },
+    {
+      "addressType": "RESIDENTIAL",
+      "line1": "4 AStreetName",
+      "line2": "Some",
+      "line3": "Old",
+      "line4": "Place",
+      "line5": "ItsTheFinalLine",
+      "postcode": "AA11AA",
+      "countryCode": "GBR",
+      "startDate": "10-10-2020",
+      "endDate": "10-10-2020"
+    }
+  ],
+  "originData": {
+    "birthTown": "ATown",
+    "birthProvince": "SomeProvince",
+    "birthCountryCode": 200,
+    "nationality": 2,
+    "birthSurname": "ASurname",
+    "maternalForename": "MotherForename",
+    "maternalSurname": "AnotherSurname",
+    "paternalForename": "AForename",
+    "paternalSurname": "ASurname",
+    "foreignSocialSecurity": "SomeSocialSecurityNumber",
+    "lastEUAddress": {
+      "line1": "4 AStreetName",
+      "line2": "Some",
+      "line3": "Old",
+      "line4": "Place",
+      "line5": "ItsTheFinalLine"
+    }
+  },
+  "priorResidency": [
+    {
+      "priorStartDate": "10-10-2020",
+      "priorEndDate": "10-10-2020"
+    },
+    {
+      "priorStartDate": "10-11-2020",
+      "priorEndDate": "10-11-2020"
+    }
+  ],
+  "abroadLiability": {
+    "liabilityStartDate": "10-10-2020",
+    "liabilityEndDate": "10-10-2020"
+  }
+}

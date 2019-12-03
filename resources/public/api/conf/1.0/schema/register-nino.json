@@ -51,7 +51,7 @@
     },
     "name": {
       "description": "Individuals current valid name details",
-      "$ref": "#/objects/name"
+      "$ref": "#/definitions/name"
     },
     "historicNames": {
       "type": "array",
@@ -61,12 +61,12 @@
       "uniqueItems": true,
       "items": {
         "description": "List of historic name details",
-        "$ref": "#/objects/name"
+        "$ref": "#/definitions/name"
       }
     },
     "address": {
       "description": "Individuals current valid address details",
-      "$ref": "#/objects/address"
+      "$ref": "#/definitions/address"
     },
     "historicAddresses": {
       "type": "array",
@@ -76,7 +76,7 @@
       "uniqueItems": true,
       "items": {
         "description": "List of historic address details",
-        "$ref": "#/objects/address"
+        "$ref": "#/definitions/address"
       }
     },
     "marriages": {
@@ -87,12 +87,12 @@
       "uniqueItems": true,
       "items": {
         "description": "List of marriage details",
-        "$ref": "#/objects/marriage"
+        "$ref": "#/definitions/marriage"
       }
     },
     "originData": {
       "description": "Individuals origin details",
-      "$ref": "#/objects/origins"
+      "$ref": "#/definitions/origins"
     },
     "priorResidency": {
       "type": "array",
@@ -143,7 +143,7 @@
     "name",
     "address"
   ],
-  "objects": {
+  "definitions": {
     "name": {
       "description": "Multi-Use Name Object",
       "type": "object",
@@ -227,7 +227,7 @@
         },
         "countryCode": {
           "description": "Address Country Code",
-          "$ref": "#/definitions/countryCode"
+          "$ref": "#/definitions/addressCountry"
         },
         "startDate": {
           "description": "Individuals address record start date",
@@ -367,9 +367,7 @@
           }
         }
       }
-    }
-  },
-  "definitions": {
+    },
     "nino": {
       "description": "Primary Account Identifier (with enforced trailing suffix character)",
       "type": "string",
@@ -410,6 +408,10 @@
       "type": "integer",
       "minimum": 0,
       "maximum": 286
+    },
+    "addressCountry": {
+      "description": "Country",
+      "type": "string"
     }
   }
 }

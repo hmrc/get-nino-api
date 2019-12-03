@@ -4,9 +4,10 @@ uses:
   sec: https://developer.service.hmrc.gov.uk/api-documentation/assets/common/modules/securitySchemes.raml
   annotations: https://developer.service.hmrc.gov.uk/api-documentation/assets/common/modules/annotations.raml
   types: https://developer.service.hmrc.gov.uk/api-documentation/assets/common/modules/types.raml
+  headers: headers.raml
 
-title: Get Nino Api
-description: This is the draft for the Get Nino Api
+title: Get NINO API
+description: Get NINO API Specifications
 version: 1.0
 protocols: [ HTTPS ]
 baseUri: https://api.service.hmrc.gov.uk/
@@ -24,6 +25,6 @@ documentation:
   - title: Errors
     content: !include https://developer.service.hmrc.gov.uk/api-documentation/assets/common/docs/errors.md
 
-'/get-nino-api/api':
-  '/definition':
-     get: !include definition-get.raml
+'/get-nino-api':
+  '/register':
+     post: !include register-post.raml
