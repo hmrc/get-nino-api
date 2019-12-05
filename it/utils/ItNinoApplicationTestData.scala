@@ -17,10 +17,9 @@
 package utils
 
 import play.api.libs.json.{JsObject, Json}
-import v1.models._
 import v1.models.request._
 
-object NinoApplicationTestData {
+object ItNinoApplicationTestData {
 
   private def writeOrReadDate(implicit isWrite: Boolean): String = {
     if (isWrite) "2020-10-10" else "10-10-2020"
@@ -45,13 +44,12 @@ object NinoApplicationTestData {
   )
 
   val faultyRegisterNinoRequestJson: Boolean => JsObject = implicit isWrite => Json.obj(
-    "nino" -> "TC452994BAAAAAAAAA",
-    "gender" -> "MALE",
+    "nino" -> "TC452994B",
+    "gender" -> "INVALID",
     "entryDate" -> writeOrReadDate,
     "birthDate" -> writeOrReadDate,
     "birthDateVerification" -> "VERIFIED",
-    "officeNumber" -> "1234KJAHSDKJHA*SHDH£HA{DA:SLLFJKALSJF",
-    "contactNumber" -> "'sd;f][a;w3#'f;#'s",
+    "officeNumber" -> "1234",
     "country" -> 1,
     "name" -> Json.obj(
       "surname" -> "ASurname",

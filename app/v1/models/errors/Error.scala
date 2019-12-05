@@ -39,5 +39,6 @@ object InvalidBodyTypeError extends Error("INVALID_BODY_TYPE", "Expecting text/j
 object InvalidAcceptHeaderError extends Error("ACCEPT_HEADER_INVALID", "The accept header is missing or invalid")
 object UnsupportedVersionError extends Error("NOT_FOUND", "The requested resource could not be found")
 
-
+object JsonValidationError extends Error("JSON_VALIDATION_ERROR", "The provided JSON was unable to be validated as the selected model.")
+object InvalidJsonResponseError extends Error("INVALID_JSON", "The Json returned from DES is invalid")
 

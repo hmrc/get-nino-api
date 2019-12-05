@@ -18,24 +18,91 @@ package v1.controllers
 
 import play.api.http.Status
 import play.api.libs.json.Json
+import play.api.mvc.Result
 import play.api.test.Helpers._
 import support.ControllerBaseSpec
+import uk.gov.hmrc.http.HeaderCarrier
+import utils.NinoApplicationTestData.{maxRegisterNinoRequestJson, maxRegisterNinoRequestModel}
+import v1.models.errors.{InvalidBodyTypeError, JsonValidationError}
+import v1.models.request.NinoApplication
+import v1.models.response.DesResponseModel
+import v1.services.DesService
+
+import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.{ExecutionContext, Future}
 
 class RegisterNinoControllerSpec extends ControllerBaseSpec {
+
+  val mockService = mock[DesService]
+  val controller = new RegisterNinoController(stubControllerComponents(), mockService)
 
   "Calling the register action" when {
 
     "the request is valid" should {
       "return 200" in {
-        val controller = new RegisterNinoController(stubControllerComponents())
+        (mockService.registerNino(_: NinoApplication)(_: HeaderCarrier, _: ExecutionContext))
+          .expects(maxRegisterNinoRequestModel, *, *)
+          .returning(Future.successful(Right(DesResponseModel("A response"))))
+
         val result = controller.register()(
           fakeRequest
             .withHeaders("Accept" -> "application/vnd.hmrc.1.0+json")
+            .withMethod("POST")
+            .withJsonBody(maxRegisterNinoRequestJson(false))
         )
+
         status(result) shouldBe Status.OK
         contentAsJson(result) shouldBe Json.obj("message"->"A response")
       }
     }
 
+    "the request body is not json" should {
+      "return 400" in {
+        val result = controller.register()(
+          fakeRequest
+            .withHeaders("Accept" -> "application/vnd.hmrc.1.0+json")
+            .withMethod("POST")
+        )
+
+        status(result) shouldBe Status.BAD_REQUEST
+        contentAsJson(result) shouldBe Json.toJson(InvalidBodyTypeError)
+      }
+    }
+
+    "the request body is valid json, but cannot be validated as a NinoApplication" should {
+      "return a 400" in {
+        val result = controller.register()(
+          fakeRequest
+            .withHeaders("Accept" -> "application/vnd.hmrc.1.0+json")
+            .withMethod("POST")
+            .withJsonBody(Json.obj(
+              "aField" -> "aValue"
+            ))
+        )
+
+        status(result) shouldBe Status.BAD_REQUEST
+        contentAsJson(result) shouldBe Json.toJson(JsonValidationError)
+      }
+    }
+
+  }
+
+  "The handleResponse function" should {
+    "return the response model as json" when {
+      "the input is a Right DesResponseModel" in {
+        val result: Future[Result] = Future.successful(controller.handleResponse(Right(DesResponseModel("some message"))))
+
+        status(result) shouldBe Status.OK
+        contentAsJson(result) shouldBe Json.obj("message" -> "some message")
+      }
+    }
+    "return an error" when {
+      "the input is a Left Error model" in {
+        val result: Future[Result] = Future.successful(controller.handleResponse(Left(JsonValidationError)))
+
+        status(result) shouldBe Status.BAD_REQUEST
+        contentAsJson(result) shouldBe Json.toJson(JsonValidationError)
+      }
+    }
   }
 }
