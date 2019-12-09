@@ -33,8 +33,8 @@ import scala.concurrent.{ExecutionContext, Future}
 
 class RegisterNinoControllerSpec extends ControllerBaseSpec {
 
-  val mockService = mock[DesService]
-  val controller = new RegisterNinoController(stubControllerComponents(), mockService)
+  val mockService: DesService = mock[DesService]
+  val controller: RegisterNinoController = new RegisterNinoController(stubControllerComponents(), mockService)
 
   "Calling the register action" when {
 
@@ -85,24 +85,5 @@ class RegisterNinoControllerSpec extends ControllerBaseSpec {
       }
     }
 
-  }
-
-  "The handleResponse function" should {
-    "return the response model as json" when {
-      "the input is a Right DesResponseModel" in {
-        val result: Future[Result] = Future.successful(controller.handleResponse(Right(DesResponseModel("some message"))))
-
-        status(result) shouldBe Status.OK
-        contentAsJson(result) shouldBe Json.obj("message" -> "some message")
-      }
-    }
-    "return an error" when {
-      "the input is a Left Error model" in {
-        val result: Future[Result] = Future.successful(controller.handleResponse(Left(JsonValidationError)))
-
-        status(result) shouldBe Status.BAD_REQUEST
-        contentAsJson(result) shouldBe Json.toJson(JsonValidationError)
-      }
-    }
   }
 }

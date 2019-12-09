@@ -18,12 +18,12 @@ package v1.controllers
 
 import javax.inject.{Inject, Singleton}
 import play.api.libs.json.Json
-import play.api.mvc.{Action, AnyContent, ControllerComponents, Result}
-import v1.connectors.httpParsers.HttpResponseTypes.HttpPostResponse
+import play.api.mvc.{Action, AnyContent, ControllerComponents}
+import uk.gov.hmrc.play.bootstrap.controller.BackendController
 import v1.models.errors.Error
 import v1.models.request.NinoApplication
-import v1.models.response.DesResponseModel
 import v1.services.DesService
+import v1.utils.JsonBodyUtil
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -31,23 +31,19 @@ import scala.concurrent.{ExecutionContext, Future}
 class RegisterNinoController @Inject()(
                                         cc: ControllerComponents,
                                         desService: DesService
-                                      )(implicit ec: ExecutionContext) extends MicroserviceBaseController(cc) {
+                                      )(implicit ec: ExecutionContext) extends BackendController(cc) with JsonBodyUtil {
 
   def register(): Action[AnyContent] = Action.async { implicit request =>
     Future(parsedJsonBody[NinoApplication]).flatMap {
       case Left(errors) => Future.successful(BadRequest(Json.toJson(errors)))
-      case Right(ninoModel) => desService.registerNino(ninoModel).map(handleResponse)
+      case Right(ninoModel) => desService.registerNino(ninoModel).map{
+        case Right(responseModel) => Ok(Json.toJson(responseModel))
+        case Left(error) => BadRequest(Json.toJson(error))
+      }
     }.recover {
       case t: Throwable => BadRequest(Json.toJson(Error(
         s"$BAD_REQUEST", t.getMessage
       )))
-    }
-  }
-
-  private[controllers] def handleResponse(httpPostResponse: HttpPostResponse[DesResponseModel]): Result = {
-    httpPostResponse match {
-      case Right(responseModel) => Ok(Json.toJson(responseModel))
-      case Left(error) => BadRequest(Json.toJson(error))
     }
   }
 

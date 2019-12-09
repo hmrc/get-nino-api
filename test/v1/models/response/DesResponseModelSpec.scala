@@ -27,7 +27,7 @@ class DesResponseModelSpec extends UnitSpec {
 
   val validModel: DesResponseModel = DesResponseModel("this is a valid message")
 
-  "NpsResponseModel" should {
+  "DesResponseModel" should {
     "correctly parse from json" in {
       validJson.as[DesResponseModel] shouldBe validModel
     }

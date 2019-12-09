@@ -14,15 +14,14 @@
  * limitations under the License.
  */
 
-package v1.controllers
+package v1.utils
 
 import play.api.Logger
 import play.api.libs.json.{JsError, JsSuccess, Reads}
-import play.api.mvc.{AnyContentAsJson, ControllerComponents, Request}
-import uk.gov.hmrc.play.bootstrap.controller.BackendController
+import play.api.mvc.{AnyContentAsJson, Request}
 import v1.models.errors.{Error, InvalidBodyTypeError, JsonValidationError}
 
-class MicroserviceBaseController(cc: ControllerComponents) extends BackendController(cc) {
+trait JsonBodyUtil {
 
   def parsedJsonBody[T](implicit request: Request[_], reads: Reads[T]): Either[Error, T] = request.body match {
     case body: AnyContentAsJson => body.json.validate[T] match {

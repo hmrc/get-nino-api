@@ -14,20 +14,19 @@
  * limitations under the License.
  */
 
-package v1.controllers
+package v1.utils
 
 import play.api.libs.json.Json
-import play.api.mvc.{AnyContentAsJson, ControllerComponents}
+import play.api.mvc.AnyContentAsJson
 import play.api.test.FakeRequest
 import support.UnitSpec
 import utils.NinoApplicationTestData.{maxRegisterNinoRequestJson, maxRegisterNinoRequestModel}
 import v1.models.errors.{InvalidBodyTypeError, JsonValidationError}
 import v1.models.request.NinoApplication
 
-class MicroserviceBaseControllerSpec extends UnitSpec {
+class JsonBodyUtilSpec extends UnitSpec {
 
-  val cc: ControllerComponents = mock[ControllerComponents]
-  val controller = new MicroserviceBaseController(cc)
+  object testUtil extends JsonBodyUtil
 
   "parsedBodyJson" should {
     "return a successful model" when {
@@ -36,7 +35,7 @@ class MicroserviceBaseControllerSpec extends UnitSpec {
           .withMethod("POST")
           .withJsonBody(maxRegisterNinoRequestJson(false))
 
-        controller.parsedJsonBody[NinoApplication] shouldBe Right(maxRegisterNinoRequestModel)
+        testUtil.parsedJsonBody[NinoApplication] shouldBe Right(maxRegisterNinoRequestModel)
       }
     }
     "return an error" when {
@@ -45,7 +44,7 @@ class MicroserviceBaseControllerSpec extends UnitSpec {
           .withMethod("POST")
           .withBody("this is just a string, and not json")
 
-        controller.parsedJsonBody[NinoApplication] shouldBe Left(InvalidBodyTypeError)
+        testUtil.parsedJsonBody[NinoApplication] shouldBe Left(InvalidBodyTypeError)
       }
       "the json body cannot be validated" in {
         implicit val request: FakeRequest[AnyContentAsJson] = FakeRequest()
@@ -55,7 +54,7 @@ class MicroserviceBaseControllerSpec extends UnitSpec {
             "putNotThe" -> "correctJson"
           ))
 
-        controller.parsedJsonBody[NinoApplication] shouldBe Left(JsonValidationError)
+        testUtil.parsedJsonBody[NinoApplication] shouldBe Left(JsonValidationError)
       }
     }
   }

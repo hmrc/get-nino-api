@@ -22,12 +22,16 @@ import play.api.http.Status
 import play.api.libs.json.Json
 import uk.gov.hmrc.http.HttpResponse
 import v1.models.response.DesResponseModel
-import v1.models.errors.Error
+import v1.models.errors.{Error, InvalidJsonResponseError}
 
 class RegisterNinoResponseHttpParserSpec extends UnitSpec {
 
   val successfulResponse = HttpResponse(Status.OK, Some(
     Json.obj("message" -> "this is a valid response"))
+  )
+
+  val invalidModelJson = HttpResponse(Status.OK, Some(
+    Json.obj("notMessage" -> 5))
   )
 
   val unsuccessfulResponse = HttpResponse(Status.INTERNAL_SERVER_ERROR)
@@ -39,6 +43,9 @@ class RegisterNinoResponseHttpParserSpec extends UnitSpec {
       }
     }
     "return an error model" when {
+      "valid json is passed in that fails validation as model" in {
+        RegisterNinoResponseReads.read("", "", invalidModelJson) shouldBe Left(InvalidJsonResponseError)
+      }
       "an unknown status is returned" in {
         RegisterNinoResponseReads.read("", "", unsuccessfulResponse)
           .shouldBe(

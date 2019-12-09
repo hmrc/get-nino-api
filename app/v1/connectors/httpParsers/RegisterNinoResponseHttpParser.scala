@@ -33,6 +33,7 @@ object RegisterNinoResponseHttpParser {
           response.json.validate[DesResponseModel].fold(
             invalid => {
               Logger.debug(s"[RegisterNinoResponseHttpParser][read] Invalid json - $invalid")
+              Logger.warn(s"[RegisterNinoResponseHttpParser][read] Invalid json")
               Left(InvalidJsonResponseError)
             },
             Right(_)
