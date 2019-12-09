@@ -28,6 +28,8 @@ trait AppConfig {
 
   def desToken(): String
 
+  def desContext(): String
+
   def featureSwitch: Option[Configuration]
 }
 
@@ -41,4 +43,5 @@ class AppConfigImpl @Inject()(configuration: ServicesConfig, config: Configurati
   override lazy val desBaseUrl: String = configuration.baseUrl("des")
   override lazy val desEnvironment: String = configuration.getString(s"$desServicePrefix.env")
   override lazy val desToken: String = configuration.getString(s"$desServicePrefix.token")
+  override lazy val desContext: String = configuration.getString(s"$desServicePrefix.context")
 }

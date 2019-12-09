@@ -22,7 +22,8 @@ import play.api.http.Status
 import play.api.libs.json.{JsValue, Json}
 import play.api.libs.ws.{WSRequest, WSResponse}
 import support.IntegrationBaseSpec
-import v1.stubs.AuditStub
+import utils.ItNinoApplicationTestData.{maxRegisterNinoRequestJson, faultyRegisterNinoRequestJson}
+import v1.stubs.{AuditStub, DesStub}
 
 class RegisterNinoISpec extends IntegrationBaseSpec {
 
@@ -45,9 +46,10 @@ class RegisterNinoISpec extends IntegrationBaseSpec {
 
         override def setupStubs(): StubMapping = {
           AuditStub.audit()
+          DesStub.stubCall(Status.OK, Json.obj("message" -> "A response"))
         }
 
-        lazy val response: WSResponse = await(request().post(""))
+        lazy val response: WSResponse = await(request().post(maxRegisterNinoRequestJson(false)))
         response.status shouldBe Status.OK
       }
 
@@ -55,10 +57,44 @@ class RegisterNinoISpec extends IntegrationBaseSpec {
 
         override def setupStubs(): StubMapping = {
           AuditStub.audit()
+          DesStub.stubCall(Status.OK, Json.obj("message" -> "A response"))
         }
 
-        lazy val response: WSResponse = await(request().post(""))
+        lazy val response: WSResponse = await(request().post(maxRegisterNinoRequestJson(false)))
         response.body[JsValue] shouldBe Json.obj("message" -> "A response")
+      }
+
+      "return an error status" when {
+
+        "DES returns an error" in new Test {
+
+          override def setupStubs(): StubMapping = {
+            AuditStub.audit()
+            DesStub.stubCall(Status.BAD_REQUEST, Json.obj("message" -> "A response"))
+          }
+
+          lazy val response: WSResponse = await(request().post(maxRegisterNinoRequestJson(false)))
+          response.body[JsValue] shouldBe Json.obj(
+            "code" -> s"${Status.BAD_REQUEST}",
+            "message" -> "Downstream error returned from DES when submitting a NINO register request"
+          )
+        }
+      }
+    }
+
+    "a request is made with valid json format, but invalid field values" should {
+
+      "return an error code" in new Test {
+
+        override def setupStubs(): StubMapping = {
+          AuditStub.audit()
+        }
+
+        lazy val response: WSResponse = await(request().post(faultyRegisterNinoRequestJson(false)))
+        response.body[JsValue] shouldBe Json.obj(
+          "code" -> s"${Status.BAD_REQUEST}",
+          "message" -> "Provided gender invalid"
+        )
       }
     }
   }
