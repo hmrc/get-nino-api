@@ -37,7 +37,11 @@ class DesConnector @Inject()(
   def sendRegisterRequest(request: NinoApplication)
                          (implicit hc: HeaderCarrier, ec: ExecutionContext): Future[HttpPostResponse[DesResponseModel]] = {
 
-    val url = s"${appConfig.desBaseUrl()}/${appConfig.desContext()}"
+    val url = if(appConfig.features.useDesStub()) {
+      s"${appConfig.desStubUrl}/${appConfig.desStubContext}"
+    } else {
+      s"${appConfig.desBaseUrl()}/${appConfig.desContext()}"
+    }
 
     http.POST(url, Json.toJson(request))(implicitly, RegisterNinoResponseReads, hc, ec)
   }

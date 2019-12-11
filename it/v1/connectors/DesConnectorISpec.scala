@@ -19,6 +19,7 @@ package v1.connectors
 import com.github.tomakehurst.wiremock.client.WireMock._
 import com.github.tomakehurst.wiremock.stubbing.StubMapping
 import config.AppConfig
+import javax.inject.Inject
 import play.api.http.Status
 import play.api.libs.json.Json
 import support.IntegrationBaseSpec
@@ -33,15 +34,15 @@ import scala.concurrent.ExecutionContext.Implicits.global
 
 class DesConnectorISpec extends IntegrationBaseSpec {
 
-  lazy val appConfig: AppConfig = app.injector.instanceOf[AppConfig]
-  lazy val http: HttpClient = app.injector.instanceOf[HttpClient]
+  implicit lazy val appConfig: AppConfig = app.injector.instanceOf[AppConfig]
+  implicit lazy val http: HttpClient = app.injector.instanceOf[HttpClient]
   implicit lazy val hc: HeaderCarrier = HeaderCarrier()
 
   lazy val connector = new DesConnector(http, appConfig)
 
   trait Test {
-    def stubSuccess: StubMapping = {
-      stubFor(post("/desEndpoint")
+    def stubSuccess(url: String): StubMapping = {
+      stubFor(post(url)
         .willReturn(
           aResponse()
             .withHeader("Content-Type", "application/json")
@@ -54,8 +55,8 @@ class DesConnectorISpec extends IntegrationBaseSpec {
         ))
     }
 
-    def stubFailure: StubMapping = {
-      stubFor(post("/desEndpoint")
+    def stubFailure(url: String): StubMapping = {
+      stubFor(post(url)
         .willReturn(
           aResponse()
             .withHeader("Content-Type", "application/json")
@@ -65,29 +66,67 @@ class DesConnectorISpec extends IntegrationBaseSpec {
 
   }
 
-  ".sendRegisterRequest" should {
+  ".sendRegisterRequest" when {
 
-    "return a DesResponse model" when {
+    "the feature switch is on" should {
 
-      "the request is successful" in new Test {
-        stubSuccess
+      "return a DesResponse model" when {
 
-        val response: HttpPostResponse[DesResponseModel] = await(connector.sendRegisterRequest(maxRegisterNinoRequestModel))
+        "the request is successful" in new Test {
+          stubSuccess("/register")
 
-        response shouldBe Right(DesResponseModel("YAY SUCCESS"))
+          val response: HttpPostResponse[DesResponseModel] = {
+            appConfig.features.useDesStub(true)
+            await(connector.sendRegisterRequest(maxRegisterNinoRequestModel))
+          }
+
+          response shouldBe Right(DesResponseModel("YAY SUCCESS"))
+        }
       }
+      "return an Error model" when {
 
+        "the request is unsuccessful" in new Test {
+          stubFailure("/register")
+
+          val response: HttpPostResponse[DesResponseModel] = {
+            appConfig.features.useDesStub(true)
+            await(connector.sendRegisterRequest(maxRegisterNinoRequestModel))
+          }
+
+          response shouldBe Left(Error(s"${Status.INTERNAL_SERVER_ERROR}", "Downstream error returned from DES when submitting a NINO register request"))
+        }
+      }
     }
-    "return an Error model" when {
 
-      "the request is unsuccessful" in new Test {
-        stubFailure
+    "the feature switch is off" should {
 
-        val response: HttpPostResponse[DesResponseModel] = await(connector.sendRegisterRequest(maxRegisterNinoRequestModel))
+      "return a DesResponse model" when {
 
-        response shouldBe Left(Error(s"${Status.INTERNAL_SERVER_ERROR}", "Downstream error returned from DES when submitting a NINO register request"))
+        "the request is successful" in new Test {
+          stubSuccess("/desContext")
+
+          val response: HttpPostResponse[DesResponseModel] = {
+            appConfig.features.useDesStub(false)
+            await(connector.sendRegisterRequest(maxRegisterNinoRequestModel))
+          }
+
+          response shouldBe Right(DesResponseModel("YAY SUCCESS"))
+        }
       }
+      "return an Error model" when {
 
+        "the request is unsuccessful" in new Test {
+          stubFailure("/desContext")
+
+          val response: HttpPostResponse[DesResponseModel] = {
+            appConfig.features.useDesStub(false)
+            await(connector.sendRegisterRequest(maxRegisterNinoRequestModel))
+          }
+
+          response shouldBe Left(Error(s"${Status.INTERNAL_SERVER_ERROR}", "Downstream error returned from DES when submitting a NINO register request"))
+        }
+      }
     }
   }
+
 }

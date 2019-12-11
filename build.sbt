@@ -20,6 +20,35 @@ import uk.gov.hmrc.sbtdistributables.SbtDistributablesPlugin.publishingSettings
 
 val appName = "get-nino-api"
 
+lazy val coverageSettings: Seq[Setting[_]] = {
+  import scoverage.ScoverageKeys
+
+  val excludedPackages = Seq(
+    "<empty>",
+    "Reverse.*",
+    ".*standardError*.*",
+    ".*govuk_wrapper*.*",
+    ".*main_template*.*",
+    "uk.gov.hmrc.BuildInfo",
+    "app.*",
+    "prod.*",
+    "uk.gov.hmrc.vatsubscription.config.*",
+    "testOnly.*",
+    "api.Routes*",
+    "api.RoutesPrefix*",
+    "v1.Routes*",
+    "v1.RoutesPrefix*",
+    "v1.config.featureSwitch.BaseFeature"
+  )
+
+  Seq(
+    ScoverageKeys.coverageExcludedPackages := excludedPackages.mkString(";"),
+    ScoverageKeys.coverageMinimum := 95,
+    ScoverageKeys.coverageFailOnMinimum := true,
+    ScoverageKeys.coverageHighlighting := true
+  )
+}
+
 lazy val microservice = Project(appName, file("."))
   .enablePlugins(play.sbt.PlayScala, SbtAutoBuildPlugin, SbtGitVersioning, SbtDistributablesPlugin, SbtArtifactory)
   .settings(
@@ -34,3 +63,5 @@ lazy val microservice = Project(appName, file("."))
   .settings(resolvers += Resolver.jcenterRepo)
   .settings(CodeCoverageSettings.settings: _*)
   .settings(scalaVersion := "2.11.12")
+  .settings(resourceDirectory in IntegrationTest := (baseDirectory apply { baseDir: File => baseDir / "it/resources" }).value)
+  .settings(coverageSettings)

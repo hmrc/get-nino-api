@@ -18,7 +18,6 @@ package v1.controllers
 
 import play.api.http.Status
 import play.api.libs.json.Json
-import play.api.mvc.Result
 import play.api.test.Helpers._
 import support.ControllerBaseSpec
 import uk.gov.hmrc.http.HeaderCarrier

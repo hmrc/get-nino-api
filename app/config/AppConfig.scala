@@ -19,6 +19,8 @@ package config
 import javax.inject.{Inject, Singleton}
 import play.api.Configuration
 import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
+import v1.config.featureSwitch.Features
+import config.ConfigKeys._
 
 trait AppConfig {
 
@@ -30,18 +32,28 @@ trait AppConfig {
 
   def desContext(): String
 
+  def desStubUrl: String
+
+  def desStubContext: String
+
   def featureSwitch: Option[Configuration]
+
+  def features: Features
 }
 
 @Singleton
-class AppConfigImpl @Inject()(configuration: ServicesConfig, config: Configuration)
+class AppConfigImpl @Inject()(implicit val configuration: ServicesConfig, config: Configuration)
   extends AppConfig {
 
   private val desServicePrefix = "microservice.services.des"
 
   def featureSwitch: Option[Configuration] = config.getOptional[Configuration]("feature-switch")
+
   override lazy val desBaseUrl: String = configuration.baseUrl("des")
   override lazy val desEnvironment: String = configuration.getString(s"$desServicePrefix.env")
   override lazy val desToken: String = configuration.getString(s"$desServicePrefix.token")
   override lazy val desContext: String = configuration.getString(s"$desServicePrefix.context")
+  override lazy val desStubUrl: String = configuration.baseUrl("desStub")
+  override lazy val desStubContext: String = configuration.getString(desStubContextKey)
+  override lazy val features: Features = new Features
 }

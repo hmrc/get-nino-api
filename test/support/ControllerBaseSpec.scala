@@ -16,12 +16,15 @@
 
 package support
 
+import akka.stream.Materializer
+import config.AppConfig
+import org.scalatestplus.play.guice.GuiceOneAppPerSuite
 import play.api.http.{HeaderNames, MimeTypes, Status}
 import play.api.mvc.{AnyContentAsEmpty, ControllerComponents}
 import play.api.test.Helpers.stubControllerComponents
 import play.api.test._
 
-class ControllerBaseSpec extends UnitSpec
+class ControllerBaseSpec extends UnitSpec with GuiceOneAppPerSuite
   with Status
   with MimeTypes
   with HeaderNames
@@ -30,6 +33,10 @@ class ControllerBaseSpec extends UnitSpec
   implicit lazy val fakeRequest: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()
 
   lazy val cc: ControllerComponents = stubControllerComponents()
+
+  lazy val mockAppConfig: AppConfig = app.injector.instanceOf[AppConfig]
+
+  implicit lazy val materializer: Materializer = app.injector.instanceOf[Materializer]
 
   def fakePostRequest[T](body: T): FakeRequest[T] = fakeRequest.withBody(body)
 }
