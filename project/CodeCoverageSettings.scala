@@ -25,8 +25,12 @@ object CodeCoverageSettings {
     "uk.gov.hmrc.BuildInfo",
     "app.*",
     "prod.*",
-    ".*Routes.*",
-    "testOnly.*"
+    "testOnly.*",
+    "api.Routes*",
+    "api.RoutesPrefix*",
+    "v1.Routes*",
+    "v1.RoutesPrefix*",
+    "v1.config.featureSwitch.BaseFeature"
   )
 
   val settings: Seq[Setting[_]] = Seq(

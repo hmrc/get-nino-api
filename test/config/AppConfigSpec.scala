@@ -23,11 +23,11 @@ import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 class AppConfigSpec extends UnitSpec {
 
   trait Test {
-    lazy val mockServiceConfig: ServicesConfig = mock[ServicesConfig]
-    lazy val mockConfig: Configuration = mock[Configuration]
+    implicit lazy val mockServiceConfig: ServicesConfig = mock[ServicesConfig]
+    implicit lazy val mockConfig: Configuration = mock[Configuration]
 
     lazy val target: AppConfigImpl = {
-      new AppConfigImpl(mockServiceConfig, mockConfig)
+      new AppConfigImpl
     }
   }
 

@@ -17,15 +17,18 @@
 package v1.endpoints
 
 import com.github.tomakehurst.wiremock.stubbing.StubMapping
+import config.AppConfig
 import play.api.http.HeaderNames.ACCEPT
 import play.api.http.Status
 import play.api.libs.json.{JsValue, Json}
 import play.api.libs.ws.{WSRequest, WSResponse}
 import support.IntegrationBaseSpec
-import utils.ItNinoApplicationTestData.{maxRegisterNinoRequestJson, faultyRegisterNinoRequestJson}
+import utils.ItNinoApplicationTestData.{faultyRegisterNinoRequestJson, maxRegisterNinoRequestJson}
 import v1.stubs.{AuditStub, DesStub}
 
 class RegisterNinoISpec extends IntegrationBaseSpec {
+
+  val appConfig: AppConfig = app.injector.instanceOf[AppConfig]
 
   private trait Test {
 
@@ -40,62 +43,135 @@ class RegisterNinoISpec extends IntegrationBaseSpec {
 
   "Calling the /api/register endpoint" when {
 
-    "any valid request is made" should {
+    "the feature switch is on" when {
 
-      "return a 200 status code" in new Test {
+      "any valid request is made" should {
 
-        override def setupStubs(): StubMapping = {
-          AuditStub.audit()
-          DesStub.stubCall(Status.OK, Json.obj("message" -> "A response"))
-        }
-
-        lazy val response: WSResponse = await(request().post(maxRegisterNinoRequestJson(false)))
-        response.status shouldBe Status.OK
-      }
-
-      "return 'A response'" in new Test {
-
-        override def setupStubs(): StubMapping = {
-          AuditStub.audit()
-          DesStub.stubCall(Status.OK, Json.obj("message" -> "A response"))
-        }
-
-        lazy val response: WSResponse = await(request().post(maxRegisterNinoRequestJson(false)))
-        response.body[JsValue] shouldBe Json.obj("message" -> "A response")
-      }
-
-      "return an error status" when {
-
-        "DES returns an error" in new Test {
+        "return a 200 status code" in new Test {
+          appConfig.features.useDesStub(true)
 
           override def setupStubs(): StubMapping = {
             AuditStub.audit()
-            DesStub.stubCall(Status.BAD_REQUEST, Json.obj("message" -> "A response"))
+            DesStub.stubCall(Status.OK, Json.obj("message" -> "A response"), stubbed = true)
           }
 
           lazy val response: WSResponse = await(request().post(maxRegisterNinoRequestJson(false)))
+          response.status shouldBe Status.OK
+        }
+
+        "return 'A response'" in new Test {
+          appConfig.features.useDesStub(true)
+
+          override def setupStubs(): StubMapping = {
+            AuditStub.audit()
+            DesStub.stubCall(Status.OK, Json.obj("message" -> "A response"), stubbed = true)
+          }
+
+          lazy val response: WSResponse = await(request().post(maxRegisterNinoRequestJson(false)))
+          response.body[JsValue] shouldBe Json.obj("message" -> "A response")
+        }
+
+        "return an error status" when {
+
+          "DES returns an error" in new Test {
+            appConfig.features.useDesStub(true)
+
+            override def setupStubs(): StubMapping = {
+              AuditStub.audit()
+              DesStub.stubCall(Status.BAD_REQUEST, Json.obj("message" -> "A response"), stubbed = true)
+            }
+
+            lazy val response: WSResponse = await(request().post(maxRegisterNinoRequestJson(false)))
+            response.body[JsValue] shouldBe Json.obj(
+              "code" -> s"${Status.BAD_REQUEST}",
+              "message" -> "Downstream error returned from DES when submitting a NINO register request"
+            )
+          }
+        }
+      }
+
+      "a request is made with valid json format, but invalid field values" should {
+
+        "return an error code" in new Test {
+          appConfig.features.useDesStub(true)
+
+          override def setupStubs(): StubMapping = {
+            AuditStub.audit()
+          }
+
+          lazy val response: WSResponse = await(request().post(faultyRegisterNinoRequestJson(false)))
           response.body[JsValue] shouldBe Json.obj(
             "code" -> s"${Status.BAD_REQUEST}",
-            "message" -> "Downstream error returned from DES when submitting a NINO register request"
+            "message" -> "Provided gender invalid"
           )
         }
       }
     }
 
-    "a request is made with valid json format, but invalid field values" should {
+    "the feature switch is off" when {
 
-      "return an error code" in new Test {
+      "any valid request is made" should {
 
-        override def setupStubs(): StubMapping = {
-          AuditStub.audit()
+        "return a 200 status code" in new Test {
+          appConfig.features.useDesStub(false)
+
+          override def setupStubs(): StubMapping = {
+            AuditStub.audit()
+            DesStub.stubCall(Status.OK, Json.obj("message" -> "A response"))
+          }
+
+          lazy val response: WSResponse = await(request().post(maxRegisterNinoRequestJson(false)))
+          response.status shouldBe Status.OK
         }
 
-        lazy val response: WSResponse = await(request().post(faultyRegisterNinoRequestJson(false)))
-        response.body[JsValue] shouldBe Json.obj(
-          "code" -> s"${Status.BAD_REQUEST}",
-          "message" -> "Provided gender invalid"
-        )
+        "return 'A response'" in new Test {
+          appConfig.features.useDesStub(false)
+
+          override def setupStubs(): StubMapping = {
+            AuditStub.audit()
+            DesStub.stubCall(Status.OK, Json.obj("message" -> "A response"))
+          }
+
+          lazy val response: WSResponse = await(request().post(maxRegisterNinoRequestJson(false)))
+          response.body[JsValue] shouldBe Json.obj("message" -> "A response")
+        }
+
+        "return an error status" when {
+
+          "DES returns an error" in new Test {
+            appConfig.features.useDesStub(false)
+
+            override def setupStubs(): StubMapping = {
+              AuditStub.audit()
+              DesStub.stubCall(Status.BAD_REQUEST, Json.obj("message" -> "A response"))
+            }
+
+            lazy val response: WSResponse = await(request().post(maxRegisterNinoRequestJson(false)))
+            response.body[JsValue] shouldBe Json.obj(
+              "code" -> s"${Status.BAD_REQUEST}",
+              "message" -> "Downstream error returned from DES when submitting a NINO register request"
+            )
+          }
+        }
+      }
+
+      "a request is made with valid json format, but invalid field values" should {
+
+        "return an error code" in new Test {
+          appConfig.features.useDesStub(false)
+
+          override def setupStubs(): StubMapping = {
+            AuditStub.audit()
+          }
+
+          lazy val response: WSResponse = await(request().post(faultyRegisterNinoRequestJson(false)))
+          response.body[JsValue] shouldBe Json.obj(
+            "code" -> s"${Status.BAD_REQUEST}",
+            "message" -> "Provided gender invalid"
+          )
+        }
       }
     }
+
   }
 }

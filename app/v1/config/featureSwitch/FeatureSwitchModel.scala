@@ -14,20 +14,14 @@
  * limitations under the License.
  */
 
-package v1.stubs
+package v1.config.featureSwitch
 
-import com.github.tomakehurst.wiremock.stubbing.StubMapping
-import play.api.libs.json.JsValue
-import support.WireMockMethods
+import play.api.libs.json.{Format, Json}
 
-object DesStub extends WireMockMethods {
+case class FeatureSwitchModel(
+                               useDesStub: Boolean
+                             )
 
-  private val desUrl = "/desContext"
-  private val desStubUrl = "/register"
-
-  def stubCall(responseStatus: Int, returnBody: JsValue, stubbed: Boolean = false): StubMapping = {
-    when(method = POST, uri = if(stubbed) desStubUrl else desUrl)
-      .thenReturn(responseStatus, returnBody)
-  }
-
+object FeatureSwitchModel {
+  implicit val formats: Format[FeatureSwitchModel] = Json.format[FeatureSwitchModel]
 }

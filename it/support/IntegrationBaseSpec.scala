@@ -42,6 +42,7 @@ trait IntegrationBaseSpec extends WordSpecLike
   def servicesConfig: Map[String, String] = Map(
     "microservice.services.des.host" -> mockHost,
     "microservice.services.des.port" -> mockPort,
+    "microservice.services.desStub.port" -> mockPort,
     "microservice.services.auth.host" -> mockHost,
     "microservice.services.auth.port" -> mockPort,
     "auditing.consumer.baseUri.port" -> mockPort
