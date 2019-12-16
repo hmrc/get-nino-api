@@ -22,11 +22,19 @@ object CodeCoverageSettings {
   private val excludedPackages: Seq[String] = Seq(
     "<empty>",
     "Reverse.*",
+    ".*standardError*.*",
+    ".*govuk_wrapper*.*",
+    ".*main_template*.*",
     "uk.gov.hmrc.BuildInfo",
     "app.*",
     "prod.*",
-    ".*Routes.*",
-    "testOnly.*"
+    "uk.gov.hmrc.vatsubscription.config.*",
+    "testOnly.*",
+    "api.Routes*",
+    "api.RoutesPrefix*",
+    "v1.Routes*",
+    "v1.RoutesPrefix*",
+    "v1.config.featureSwitch.BaseFeature"
   )
 
   val settings: Seq[Setting[_]] = Seq(
