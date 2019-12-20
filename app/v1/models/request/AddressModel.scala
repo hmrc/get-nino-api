@@ -44,16 +44,15 @@ object AddressModel {
   val startDatePath: JsPath = __ \ "startDate"
   val endDatePath: JsPath = __ \ "endDate"
 
-  private val regex = "^(([A-Z]{1,2}\\*)|([A-Z]{1,2}[0-9][0-9A-Z]?\\*)|([A-Z]{1,2}[0-9]" +
-    "[0-9A-Z]?\\s?[0-9]\\*)|([A-Z]{1,2}[0-9][0-9A-Z]?\\s?[0-9][A-Z]{2})|(BFPO\\s?[0-9]{1,4})|(BFPO\\*))$"
-
-  private[models] def postcodeValidation(postcode: Option[Postcode], countryCode: Option[String]): Option[Postcode] = {
-    if (countryCode.fold(postcode)
-      (countryCde => countryCde.matches(regex))) {
+  private[models] def postcodeValidation(postcode: Option[Postcode], countryCode: Option[String]): Boolean = {
+    countryCode.fold(true) {
       case "GBR" => postcode.fold({
         Logger.warn(s"[AddressModel][postcodeValidation] - $postcode is required if country code is GBR")
-      })(postcode => Some(postcode))
-      case _ => postcode
+        false
+      })(
+        _ => true
+      )
+      case _ => true
     }
   }
 
@@ -61,40 +60,18 @@ object AddressModel {
     JsonValidationError(s"There has been an error parsing the $fieldName field. Please check against the regex.")
   }
 
-  implicit val reads: Reads[AddressModel] = for {
-    addressType <- addressTypePath.readNullable[AddressType]
-    line1 <- line1Path.read[AddressLine]
-    line2 <- line2Path.readNullable[AddressLine]
-    line3 <- line3Path.readNullable[AddressLine]
-    line4 <- line4Path.readNullable[AddressLine]
-    line5 <- line5Path.readNullable[AddressLine]
-    postcode <- postcodePath.readNullable[Postcode]
-    countryCode <- countryCodePath.readNullable[String]
-    startDate <- startDatePath.read[DateModel]
-    endDate <- endDatePath.readNullable[DateModel]
-  } yield AddressModel(
-    addressType,
-    line1,
-    line2,
-    line3,
-    line4,
-    line5,
-    postcodeValidation(postcode, countryCode),
-    countryCode,
-    startDate,
-    endDate
-  )
+  implicit val reads: Reads[AddressModel] = (
+    addressTypePath.readNullable[AddressType] and
+      line1Path.read[AddressLine] and
+      line2Path.readNullable[AddressLine] and
+      line3Path.readNullable[AddressLine] and
+      line4Path.readNullable[AddressLine] and
+      line5Path.readNullable[AddressLine] and
+      postcodePath.readNullable[Postcode].filter(commonError("Post code"))(postcodeValidation(_ , Some(""))) and
+      countryCodePath.readNullable[String] and
+      startDatePath.read[DateModel] and
+      endDatePath.readNullable[DateModel]
+    ) (AddressModel.apply _)
 
-  implicit val writes: Writes[AddressModel] = (
-    addressTypePath.writeNullable[AddressType] and
-      line1Path.write[AddressLine] and
-      line2Path.writeNullable[AddressLine] and
-      line3Path.writeNullable[AddressLine] and
-      line4Path.writeNullable[AddressLine] and
-      line5Path.writeNullable[AddressLine] and
-      postcodePath.writeNullable[Postcode] and
-      countryCodePath.writeNullable[String] and
-      startDatePath.write[DateModel] and
-      endDatePath.writeNullable[DateModel]
-    ) (unlift(AddressModel.unapply))
+  implicit val writes: Writes[AddressModel] = Json.writes[AddressModel]
 }
