@@ -25,7 +25,7 @@ case class Postcode(postCode: String)
 
 object Postcode {
 
-  implicit val reads: Reads[Postcode] = __.read[String] map regexCheck
+  implicit val reads: Reads[Postcode] = __.read[String] map regexCheckValidation
 
   implicit val writes: Writes[Postcode] = Writes {
     value => JsString(value.postCode)
@@ -34,10 +34,12 @@ object Postcode {
   private val regex: Regex = ("^(([A-Z]{1,2}\\*)|([A-Z]{1,2}[0-9][0-9A-Z]?\\*)|([A-Z]{1,2}[0-9]" +
     "[0-9A-Z]?\\s?[0-9]\\*)|([A-Z]{1,2}[0-9][0-9A-Z]?\\s?[0-9][A-Z]{2})|(BFPO\\s?[0-9]{1,4})|(BFPO\\*))$").r
 
-  def regexCheck(value: String): Postcode = regex.findFirstIn(value) match {
+  private[models] def regexCheckValidation(value: String): Postcode = regex.findFirstIn(value) match {
     case Some(_) => Postcode(value)
-    case None =>
-      Logger.warn("[Postcode][regexCheck] - Invalid postcode has been provided")
-      throw new IllegalArgumentException("Invalid Postcode")
+      if ()
+      Logger.warn(s"[Postcode][regexCheckValidation] - $value Invalid postcode has been provided")
+
   }
 }
+
+
