@@ -36,7 +36,6 @@ object Postcode {
 
   private[models] def regexCheckValidation(value: String): Postcode = regex.findFirstIn(value) match {
     case Some(_) => Postcode(value)
-      if ()
       Logger.warn(s"[Postcode][regexCheckValidation] - $value Invalid postcode has been provided")
 
   }
