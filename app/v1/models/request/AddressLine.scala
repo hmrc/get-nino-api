@@ -17,24 +17,28 @@
 package v1.models.request
 
 import play.api.Logger
-import play.api.libs.json.{JsString, Reads, Writes, __}
+import play.api.libs.json._
 
-import scala.util.matching.Regex
 
 case class AddressLine(addressLine: String)
 
 object AddressLine {
 
-  implicit val reads: Reads[AddressLine] = __.read[String] map regexCheck
+  val regex: String = "^(?=.{1,35}$)([A-Z0-9][A-Za-z0-9-'.& ]+[A-Za-z0-9])$"
+
+  def addressLineValidation: String => Boolean = addressInput => {
+    val passedValidation = addressInput.matches(regex)
+    if (!passedValidation) {
+      Logger.warn("[AddressLine][regexCheck] Unable to parse the provided address line.")
+    }
+    passedValidation
+  }
+
+  implicit val reads: Reads[AddressLine] = for {
+    addressLineString <- __.read[String].filter(JsonValidationError("Address line has failed validation"))(addressLineValidation)
+  } yield {
+    AddressLine(addressLineString)
+  }
 
   implicit val writes: Writes[AddressLine] = Writes { value => JsString(value.addressLine) }
-
-  val regex: Regex = "^(?=.{1,35}$)([A-Z0-9][A-Za-z0-9-'.& ]+[A-Za-z0-9])$".r
-
-  def regexCheck(value: String): AddressLine = regex.findFirstIn(value) match {
-    case Some(_) => AddressLine(value)
-    case None =>
-      Logger.warn("[AddressLine][regexCheck] - Invalid address line has been provided")
-      throw new IllegalArgumentException("Invalid AddressLine")
-  }
 }

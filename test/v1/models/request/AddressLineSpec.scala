@@ -35,13 +35,9 @@ class AddressLineSpec extends WordSpec with Matchers {
 
       "an invalid AddressLine is provided" should {
 
-        "throw an exception" in {
+        "throw an JsResultException" in {
 
-          val exception = intercept[IllegalArgumentException] {
-            invalidJson.as[AddressLine]
-          }
-
-          exception.getMessage shouldBe "Invalid AddressLine"
+          invalidJson.validate[AddressLine].isError shouldBe true
         }
       }
     }
@@ -67,64 +63,56 @@ class AddressLineSpec extends WordSpec with Matchers {
     }
   }
 
-  "AddressLine.regexCheck" when {
+  "AddressLine.addressLineValidation" when {
 
     "provided with an AddressLine" which {
 
       "is within the character length limit" should {
-        "return an AddressLine object" in {
+        "return true" in {
 
           val addressLineStartingWithLetter: AddressLine = AddressLine("Test Avenue")
 
-          AddressLine.regexCheck(addressLineStartingWithLetter.addressLine) shouldBe addressLineStartingWithLetter
+          AddressLine.addressLineValidation(addressLineStartingWithLetter.addressLine) shouldBe true
         }
       }
 
       "is on the character length limit" should {
-        "return an AddressLine object" in {
+        "return true" in {
 
           val maxLimitAddressLine = AddressLine("This address line is 35 characterss")
 
-          AddressLine.regexCheck(maxLimitAddressLine.addressLine) shouldBe maxLimitAddressLine
+          AddressLine.addressLineValidation(maxLimitAddressLine.addressLine) shouldBe true
         }
       }
 
       "is on the minimum character length limit" should {
-        "return an AddressLine object" in {
+        "return true" in {
 
           val minLimitAddressLine = AddressLine("Add")
 
-          AddressLine.regexCheck(minLimitAddressLine.addressLine) shouldBe minLimitAddressLine
+          AddressLine.addressLineValidation(minLimitAddressLine.addressLine) shouldBe true
         }
       }
 
       "starts with a number" should {
-        "return an AddressLine object" in {
-          AddressLine.regexCheck(addressLineStartingWithNumber.addressLine) shouldBe addressLineStartingWithNumber
+        "return true" in {
+          AddressLine.addressLineValidation(addressLineStartingWithNumber.addressLine) shouldBe true
         }
       }
 
       "is too long" should {
-        "return an exception" in {
+        "return false" in {
 
           val tooLongAddressLine = "This address is unfortunately over 35 characters"
 
-          val exception = intercept[IllegalArgumentException] {
-            AddressLine.regexCheck(tooLongAddressLine)
-          }
-
-          exception.getMessage shouldBe "Invalid AddressLine"
+          AddressLine.addressLineValidation(tooLongAddressLine) shouldBe false
         }
       }
 
       "starts with an invalid character" should {
-        "return an exception" in {
+        "return false" in {
 
-          val exception = intercept[IllegalArgumentException] {
-            AddressLine.regexCheck(invalidJson.value)
-          }
-
-          exception.getMessage shouldBe "Invalid AddressLine"
+          AddressLine.addressLineValidation(invalidJson.value) shouldBe false
 
         }
       }
