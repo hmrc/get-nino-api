@@ -79,7 +79,7 @@ object NameModel {
       case stringValue: String => checkValidity(stringValue)
       case Some(stringValue: String) => checkValidity(stringValue)
       case None => true
-      case other => throw new IllegalArgumentException(s"Unsupported type attempted validation: ${other.getClass.getCanonicalName}")
+      case other => false
     }
   }
 

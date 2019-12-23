@@ -60,19 +60,24 @@ class NameModelSpec extends UnitSpec {
       "all optional fields are present" in {
         Json.toJson(maxModel) shouldBe maxJson(true)
       }
+
       "no optional fields are present" in {
         Json.toJson(minModel) shouldBe minJson(true)
       }
     }
+
     "correctly parse from Json" when {
       "all optional fields are present" in {
         maxJson(false).as[NameModel] shouldBe maxModel
       }
+
       "no optional fields are present" in {
         minJson(false).as[NameModel] shouldBe minModel
       }
     }
+
     ".validateTitle" should {
+
       "return true" when {
         "a valid title is input" which {
           val validTitle: Seq[String] = Seq(
@@ -85,15 +90,19 @@ class NameModelSpec extends UnitSpec {
             "REV"
           )
 
-          validTitle.foreach(title => s"is $title" in { NameModel.validateTitle(Some(title)) shouldBe true })
+          validTitle.foreach(title => s"is $title" in {
+            NameModel.validateTitle(Some(title)) shouldBe true
+          })
         }
       }
+
       "return false" when {
         "an invalid title is entered" in {
           NameModel.validateTitle(Some("NOT A TITLE")) shouldBe false
         }
       }
     }
+
     ".validateName" should {
       def runValidation[T](input: T, fieldName: String): Boolean = NameModel.validateName(input, fieldName)
 
@@ -102,38 +111,40 @@ class NameModelSpec extends UnitSpec {
           "is less than the maximum length (35)" in {
             runValidation("Immaname", "SomeNameType") shouldBe true
           }
+
           "is equal to the maximum length (35)" in {
             runValidation("Thisnameissolongthatitmightjustcuto", "SomeNameType") shouldBe true
           }
+
           "is equal to the minimum length (3)" in {
             runValidation("Hij", "SomeNameType") shouldBe true
           }
         }
+
         "a valid Optional String is entered" in {
           runValidation(Some("Immaoptionalname"), "SomeNameType") shouldBe true
         }
+
         "a None is entered" in {
           runValidation(None, "SomeNameType") shouldBe true
         }
       }
+
       "return false" when {
         "the name has disallowed special characters" in {
           runValidation("-=[];#'/./", "SomeNameType") shouldBe false
         }
+
         "the name is longer 35 characters" in {
           runValidation("Thisnameisreallyreallylongmorethanth", "SomeNameType") shouldBe false
         }
+
         "the name is less than 3 characters" in {
           runValidation("as", "SomeNameType") shouldBe false
         }
-      }
-      "throw an IllegalArgumentException" when {
-        "a value is entered that is not a String, or an Optional String (including None)" in {
-          val expectedException = intercept[IllegalArgumentException] {
-            runValidation(123, "SomeNameType")
-          }
 
-          expectedException.getMessage shouldBe s"Unsupported type attempted validation: java.lang.Integer"
+        "a value is entered that is not a String, or an Optional String (including None)" in {
+          runValidation(123, "SomeNameType") shouldBe false
         }
       }
     }
