@@ -99,10 +99,11 @@ class RegisterNinoISpec extends IntegrationBaseSpec {
             AuditStub.audit()
           }
 
+          //TODO: This needs to be updated in NINOA-88
           lazy val response: WSResponse = await(request().post(faultyRegisterNinoRequestJson(false)))
           response.body[JsValue] shouldBe Json.obj(
-            "code" -> s"${Status.BAD_REQUEST}",
-            "message" -> "Provided gender invalid"
+            "code" -> "JSON_VALIDATION_ERROR",
+            "message" -> "The provided JSON was unable to be validated as the selected model."
           )
         }
       }
@@ -164,10 +165,11 @@ class RegisterNinoISpec extends IntegrationBaseSpec {
             AuditStub.audit()
           }
 
+          //TODO: This needs to be updated in NINOA-88
           lazy val response: WSResponse = await(request().post(faultyRegisterNinoRequestJson(false)))
           response.body[JsValue] shouldBe Json.obj(
-            "code" -> s"${Status.BAD_REQUEST}",
-            "message" -> "Provided gender invalid"
+            "code" -> "JSON_VALIDATION_ERROR",
+            "message" -> "The provided JSON was unable to be validated as the selected model."
           )
         }
       }
