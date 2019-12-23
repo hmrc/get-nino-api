@@ -42,13 +42,10 @@ class AddressTypeSpec extends WordSpec with Matchers {
 
       "an invalid AddressType is provided" should {
 
-        "throw an exception" in {
+        "throw a JsResultException" in {
 
-          val exception = intercept[IllegalArgumentException] {
-            invalidJson.as[AddressType]
-          }
+          invalidJson.validate[AddressType].isError shouldBe true
 
-          exception.getMessage shouldBe "Invalid AddressType"
         }
       }
     }
@@ -82,12 +79,20 @@ class AddressTypeSpec extends WordSpec with Matchers {
 
     "provided with a valid AddressType" should {
 
-      "return a Residential object" in {
-        AddressType.regexCheck(Residential.value) shouldBe Residential
+      "return a true" in {
+        AddressType.validAddressTypeCheck(Residential.value) shouldBe true
       }
 
-      "return a Correspondence object" in {
-        AddressType.regexCheck(Correspondence.value) shouldBe Correspondence
+      "return a true" in {
+        AddressType.validAddressTypeCheck(Correspondence.value) shouldBe true
+      }
+    }
+
+    "provided with an invalid address AddressTypr" should {
+
+      "return false" in {
+
+        AddressType.validAddressTypeCheck("Invalid value") shouldBe false
       }
     }
   }
