@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 HM Revenue & Customs
+ * Copyright 2020 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,7 +17,8 @@
 package v1.models.request
 
 import play.api.Logger
-import play.api.libs.json.{JsString, Reads, Writes, __}
+import play.api.libs.json.{JsPath, JsString, JsonValidationError, Reads, Writes, __}
+
 
 import scala.util.matching.Regex
 
@@ -25,20 +26,30 @@ case class Postcode(postCode: String)
 
 object Postcode {
 
-  implicit val reads: Reads[Postcode] = __.read[String] map regexCheckValidation
+  val postcodePath: JsPath = __ \ "postcode"
 
   implicit val writes: Writes[Postcode] = Writes {
     value => JsString(value.postCode)
   }
 
-  private val regex: Regex = ("^(([A-Z]{1,2}\\*)|([A-Z]{1,2}[0-9][0-9A-Z]?\\*)|([A-Z]{1,2}[0-9]" +
+ private val regex: Regex = ("^(([A-Z]{1,2}\\*)|([A-Z]{1,2}[0-9][0-9A-Z]?\\*)|([A-Z]{1,2}[0-9]" +
     "[0-9A-Z]?\\s?[0-9]\\*)|([A-Z]{1,2}[0-9][0-9A-Z]?\\s?[0-9][A-Z]{2})|(BFPO\\s?[0-9]{1,4})|(BFPO\\*))$").r
 
-  private[models] def regexCheckValidation(value: String): Postcode = regex.findFirstIn(value) match {
-    case Some(_) => Postcode(value)
+  private[models] def regexCheckValidation(value: Option[String]): Boolean = {
+    if (value.fold(true)(postCode => postCode.matches("GBR"))) {
+      true
+    } else {
       Logger.warn(s"[Postcode][regexCheckValidation] - $value Invalid postcode has been provided")
-
+      false
+    }
   }
+
+  private def commonError(fieldName: String) = {
+    JsonValidationError(s"There has been an error parsing the $fieldName field. Please check against the regex.")
+  }
+
+  implicit val reads: Reads[Postcode] = (
+ postcodePath.readNullable[String].filter(commonError(("Post Code"))(regexCheckValidation(Some(""))))
+  )(Postcode.apply _)
+
 }
-
-
