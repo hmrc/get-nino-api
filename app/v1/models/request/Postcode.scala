@@ -43,8 +43,9 @@ object Postcode {
     JsonValidationError(s"There has been an error parsing the $fieldName field. Please check against the regex.")
   }
 
-  implicit val reads: Reads[Postcode] = postcodePath.read[String].filter(commonError(("Post Code"))(regexCheckValidation(Some("")))
-   )(Postcode.apply _)
+  implicit val reads: Reads[Postcode] = (
+   postcodePath.read[String].filter(commonError(("Post Code"))(regexCheckValidation(Some(""))
+   )))(Postcode.apply _)
 
   implicit val writes: Writes[Postcode] = Writes {
     value => JsString(value.postCode)
