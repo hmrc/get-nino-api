@@ -26,30 +26,39 @@ class BirthDateVerificationSpec extends UnitSpec {
   val coegConfirmedString = JsString("COEG CONFIRMED")
 
   "BirthDateVerification" should {
+
     "correctly parse from Json" when {
+
       "value provided is VERIFIED" in {
         verifiedString.as[BirthDateVerification] shouldBe Verified
       }
+
       "value provided is UNVERIFIED" in {
         unverifiedString.as[BirthDateVerification] shouldBe Unverified
       }
+
       "value provided is NOT KNOWN" in {
         notKnownString.as[BirthDateVerification] shouldBe VerificationNotKnown
       }
+
       "value provided is COEG CONFIRMED" in {
         coegConfirmedString.as[BirthDateVerification] shouldBe CoegConfirmed
       }
     }
+
     "correctly parse to Json" when {
       "value provided is VERIFIED" in {
         Json.toJson(Verified) shouldBe verifiedString
       }
+
       "value provided is UNVERIFIED" in {
         Json.toJson(Unverified) shouldBe unverifiedString
       }
+
       "value provided is NOT KNOWN" in {
         Json.toJson(VerificationNotKnown) shouldBe notKnownString
       }
+
       "value provided is COEG CONFIRMED" in {
         Json.toJson(CoegConfirmed) shouldBe coegConfirmedString
       }
@@ -57,11 +66,45 @@ class BirthDateVerificationSpec extends UnitSpec {
 
     "fail to parse from json" when {
       "the value provided is not one of the valid values" in {
-        val expectedException = intercept[IllegalArgumentException] {
-          JsString("I SAID SO").as[BirthDateVerification]
-        }
+        JsString("Incorrect value").validate[BirthDateVerification].isError shouldBe true
+      }
+    }
+  }
 
-        expectedException.getMessage shouldBe "birthDateVerification field is invalid"
+  "BirthDateVerification .birthDateValidation" when {
+
+    "provided with VERIFIED" should {
+
+      "return true" in {
+        BirthDateVerification.birthDateValidation(Verified.value) shouldBe true
+      }
+    }
+
+    "provided with UNVERIFIED" should {
+
+      "return true" in {
+        BirthDateVerification.birthDateValidation(Unverified.value) shouldBe true
+      }
+    }
+
+    "provided with NOT KNOWN" should {
+
+      "return true" in {
+        BirthDateVerification.birthDateValidation(VerificationNotKnown.value) shouldBe true
+      }
+    }
+
+    "provided with COEG CONFIRMED" should {
+
+      "return true" in {
+        BirthDateVerification.birthDateValidation(CoegConfirmed.value) shouldBe true
+      }
+    }
+
+    "provided with an invalid value" should {
+
+      "return false" in {
+        BirthDateVerification.birthDateValidation("Invalid value") shouldBe false
       }
     }
   }
