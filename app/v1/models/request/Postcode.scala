@@ -17,7 +17,7 @@
 package v1.models.request
 
 import play.api.Logger
-import play.api.libs.json.{JsPath, JsString, JsonValidationError, Reads, Writes, __}
+import play.api.libs.json.{JsString, JsonValidationError, Reads, Writes, __}
 
 case class Postcode(postCode: String)
 
