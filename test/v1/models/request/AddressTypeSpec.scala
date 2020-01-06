@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 HM Revenue & Customs
+ * Copyright 2020 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -77,18 +77,21 @@ class AddressTypeSpec extends WordSpec with Matchers {
 
   "AddressType.regexCheck" when {
 
-    "provided with a valid AddressType" should {
+    "provided with a valid AddressType of Residential" should {
 
       "return a true" in {
         AddressType.validAddressTypeCheck(Residential.value) shouldBe true
       }
+    }
+
+    "provided with a valid AddressType of Correspondence" should {
 
       "return a true" in {
         AddressType.validAddressTypeCheck(Correspondence.value) shouldBe true
       }
     }
 
-    "provided with an invalid address AddressTypr" should {
+    "provided with an invalid address AddressType" should {
 
       "return false" in {
 
