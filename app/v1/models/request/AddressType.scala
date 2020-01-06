@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 HM Revenue & Customs
+ * Copyright 2020 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,8 +16,7 @@
 
 package v1.models.request
 
-import play.api.Logger
-import play.api.libs.json.{JsString, Reads, Writes, __}
+import play.api.libs.json._
 
 sealed trait AddressType {
   val value: String
@@ -25,18 +24,23 @@ sealed trait AddressType {
 
 object AddressType {
 
-  implicit val reads: Reads[AddressType] = __.read[String] map regexCheck
+  implicit val reads: Reads[AddressType] = for {
+    addressValue <- __.read[String].filter(JsonValidationError("Unable to parse Address Type"))(validAddressTypeCheck)
+  } yield {
+    addressValue match {
+      case Residential.value => Residential
+      case Correspondence.value => Correspondence
+    }
+  }
 
   implicit val writes: Writes[AddressType] = Writes {
     addressType => JsString(addressType.value)
   }
 
-  def regexCheck(value: String): AddressType = value match {
-    case Residential.value => Residential
-    case Correspondence.value => Correspondence
-    case _ =>
-      Logger.warn("[AddressType][regexCheck] - Invalid address line has been provided")
-      throw new IllegalArgumentException("Invalid AddressType")
+  def validAddressTypeCheck: String => Boolean = {
+    case Residential.value => true
+    case Correspondence.value => true
+    case _ => false
   }
 }
 

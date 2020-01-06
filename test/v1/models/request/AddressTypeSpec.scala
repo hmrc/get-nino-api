@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 HM Revenue & Customs
+ * Copyright 2020 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -42,13 +42,10 @@ class AddressTypeSpec extends WordSpec with Matchers {
 
       "an invalid AddressType is provided" should {
 
-        "throw an exception" in {
+        "throw a JsResultException" in {
 
-          val exception = intercept[IllegalArgumentException] {
-            invalidJson.as[AddressType]
-          }
+          invalidJson.validate[AddressType].isError shouldBe true
 
-          exception.getMessage shouldBe "Invalid AddressType"
         }
       }
     }
@@ -80,14 +77,25 @@ class AddressTypeSpec extends WordSpec with Matchers {
 
   "AddressType.regexCheck" when {
 
-    "provided with a valid AddressType" should {
+    "provided with a valid AddressType of Residential" should {
 
-      "return a Residential object" in {
-        AddressType.regexCheck(Residential.value) shouldBe Residential
+      "return a true" in {
+        AddressType.validAddressTypeCheck(Residential.value) shouldBe true
       }
+    }
 
-      "return a Correspondence object" in {
-        AddressType.regexCheck(Correspondence.value) shouldBe Correspondence
+    "provided with a valid AddressType of Correspondence" should {
+
+      "return a true" in {
+        AddressType.validAddressTypeCheck(Correspondence.value) shouldBe true
+      }
+    }
+
+    "provided with an invalid address AddressType" should {
+
+      "return false" in {
+
+        AddressType.validAddressTypeCheck("Invalid value") shouldBe false
       }
     }
   }
