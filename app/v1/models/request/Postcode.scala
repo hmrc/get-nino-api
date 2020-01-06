@@ -23,29 +23,22 @@ case class Postcode(postCode: String)
 
 object Postcode {
 
-  val postcodePath: JsPath = __ \ "postcode"
-
-
-
- private val regex = "^(([A-Z]{1,2}\\*)|([A-Z]{1,2}[0-9][0-9A-Z]?\\*)|([A-Z]{1,2}[0-9]" +
+  val regex: String = "^(([A-Z]{1,2}\\*)|([A-Z]{1,2}[0-9][0-9A-Z]?\\*)|([A-Z]{1,2}[0-9]" +
     "[0-9A-Z]?\\s?[0-9]\\*)|([A-Z]{1,2}[0-9][0-9A-Z]?\\s?[0-9][A-Z]{2})|(BFPO\\s?[0-9]{1,4})|(BFPO\\*))$"
 
-  private[models] def regexCheckValidation(value: Option[String]): Boolean = {
-    if (value.fold(true)(postCode => postCode.matches("GBR"))) {
-      true
-    } else {
-      Logger.warn(s"[Postcode][regexCheckValidation] - $value Invalid postcode has been provided")
-      false
+  def regexCheckValidation: String => Boolean = postCodeInput => {
+    val passedValidation = postCodeInput.matches(regex)
+    if(!passedValidation) {
+      Logger.warn("[Postcode][regexCheckValidation] - Invalid postcode has been provided.")
     }
+    passedValidation
   }
 
-  private[models] def commonError(fieldName: String) = {
-    JsonValidationError(s"There has been an error parsing the $fieldName field. Please check against the regex.")
+  implicit val reads: Reads[Postcode] = for {
+    postCodeString <- __.read[String].filter(JsonValidationError("PostCode has failed validation"))(regexCheckValidation)
+  } yield {
+    Postcode(postCodeString)
   }
-
-  implicit val reads: Reads[Postcode] = (
-   postcodePath.read[String].filter(commonError(("Post Code"))(regexCheckValidation(Some(""))
-   )))(Postcode.apply _)
 
   implicit val writes: Writes[Postcode] = Writes {
     value => JsString(value.postCode)

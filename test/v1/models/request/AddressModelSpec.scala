@@ -134,23 +134,19 @@ class AddressModelSpec extends WordSpec with Matchers {
 
         "a postcode is supplied" should {
 
-          "return a postcode object" in {
+          "return true" in {
 
-            val result = AddressModel.checkPostcodeMandated(Some(Postcode("TF3 4NT")), Some("GBR"))
+            val result = AddressModel.postcodeValidation(Some(Postcode("TF3 4NT")), Some("GBR"))
 
-            result shouldBe Some(Postcode("TF3 4NT"))
+            result shouldBe true
           }
         }
 
         "a postcode is not supplied" should {
 
-          "throw an exception" in {
+          "throw false" in {
 
-            val exception = intercept[IllegalArgumentException] {
-              AddressModel.checkPostcodeMandated(None, Some("GBR"))
-            }
-
-            exception.getMessage shouldBe "Postcode required if Country code is GBR"
+            AddressModel.postcodeValidation(None, Some("GBR")) shouldBe false
           }
         }
       }
@@ -159,11 +155,11 @@ class AddressModelSpec extends WordSpec with Matchers {
 
         "a postcode is supplied" should {
 
-          "return a postcode object" in {
+          "return true" in {
 
-            val result = AddressModel.checkPostcodeMandated(Some(Postcode("TF3 4NT")), Some("gbr"))
+            val result = AddressModel.postcodeValidation(Some(Postcode("TF3 4NT")), Some("gbr"))
 
-            result shouldBe Some(Postcode("TF3 4NT"))
+            result shouldBe true
           }
         }
       }
@@ -172,21 +168,21 @@ class AddressModelSpec extends WordSpec with Matchers {
 
         "a postcode is supplied" should {
 
-          "return a postcode object" in {
+          "return true" in {
 
-            val result = AddressModel.checkPostcodeMandated(Some(Postcode("TF3 4NT")), Some("USA"))
+            val result = AddressModel.postcodeValidation(Some(Postcode("TF3 4NT")), Some("USA"))
 
-            result shouldBe Some(Postcode("TF3 4NT"))
+            result shouldBe true
           }
         }
 
         "a postcode is not supplied" should {
 
-          "return a None" in {
+          "return true" in {
 
-            val result = AddressModel.checkPostcodeMandated(None, Some("USA"))
+            val result = AddressModel.postcodeValidation(None, Some("USA"))
 
-            result shouldBe None
+            result shouldBe true
           }
         }
       }
@@ -194,11 +190,11 @@ class AddressModelSpec extends WordSpec with Matchers {
 
     "a country code is not supplied" should {
 
-      "return the Postcode object" in {
+      "return true" in {
 
-        val result = AddressModel.checkPostcodeMandated(Some(Postcode("TF3 4NT")), None)
+        val result = AddressModel.postcodeValidation(Some(Postcode("TF3 4NT")), None)
 
-        result shouldBe Some(Postcode("TF3 4NT"))
+        result shouldBe true
       }
     }
   }

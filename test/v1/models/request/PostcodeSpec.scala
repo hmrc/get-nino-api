@@ -35,13 +35,10 @@ class PostcodeSpec extends WordSpec with Matchers {
 
       "an invalid Postcode be provided" should {
 
-        "throw an exception" in {
+        "throw an JsResultException" in {
 
-          val exception = intercept[IllegalArgumentException] {
-            invalidJson.as[Postcode]
-          }
+          invalidJson.validate[Postcode].isError shouldBe true
 
-          exception.getMessage shouldBe "Invalid Postcode"
         }
       }
     }
@@ -72,61 +69,50 @@ class PostcodeSpec extends WordSpec with Matchers {
     "provided with a postcode" which {
 
       "starts with a valid character" should {
-        "return a postcode object" in {
+        "return true" in {
 
-          val postcodeString = "QW3 8RT"
+          val postcodeString : Postcode = Postcode("QW3 8RT")
 
-          Postcode.regexCheck(postcodeString) shouldBe Postcode(postcodeString)
+          Postcode.regexCheckValidation(postcodeString.postCode) shouldBe true
         }
       }
 
       "starts with an invalid character" should {
-        "return an exception" in {
+        "return false" in {
 
           val postcodeString = "!QW3 8RT"
 
-          val exception = intercept[IllegalArgumentException] {
-            Postcode.regexCheck(postcodeString)
-          }
-
-          exception.getMessage shouldBe "Invalid Postcode"
+          Postcode.regexCheckValidation(postcodeString) shouldBe false
 
         }
       }
 
       "has two groupings of characters" should {
-        "return a postcode object" in {
+        "return true" in {
 
           val postcodeString = "QW3 8RT"
 
-          Postcode.regexCheck(postcodeString) shouldBe Postcode(postcodeString)
+          Postcode.regexCheckValidation(postcodeString) shouldBe true
 
         }
       }
 
       "has one grouping of characters" should {
-        "return an exception" in {
+        "return false" in {
 
           val postcodeString = "SA99"
 
-          val exception = intercept[IllegalArgumentException] {
-            Postcode.regexCheck(postcodeString)
-          }
+          Postcode.regexCheckValidation(postcodeString) shouldBe false
 
-          exception.getMessage shouldBe "Invalid Postcode"
         }
       }
 
       "has an invalid character as the second character within the postcode" should {
-        "return an exception" in {
+        "return false" in {
 
           val postcodeString = "S!99 8TT"
 
-          val exception = intercept[IllegalArgumentException] {
-            Postcode.regexCheck(postcodeString)
-          }
-
-          exception.getMessage shouldBe "Invalid Postcode"
+          Postcode.regexCheckValidation(postcodeString) shouldBe false
 
         }
       }
