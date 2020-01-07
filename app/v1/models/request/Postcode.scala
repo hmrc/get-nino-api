@@ -17,27 +17,31 @@
 package v1.models.request
 
 import play.api.Logger
-import play.api.libs.json.{JsString, Reads, Writes, __}
-
-import scala.util.matching.Regex
+import play.api.libs.json.{JsString, JsonValidationError, Reads, Writes, __}
 
 case class Postcode(postCode: String)
 
 object Postcode {
 
-  implicit val reads: Reads[Postcode] = __.read[String] map regexCheck
+  val regex: String = "^(([A-Z]{1,2}\\*)|([A-Z]{1,2}[0-9][0-9A-Z]?\\*)|([A-Z]{1,2}[0-9]" +
+    "[0-9A-Z]?\\s?[0-9]\\*)|([A-Z]{1,2}[0-9][0-9A-Z]?\\s?[0-9][A-Z]{2})|(BFPO\\s?[0-9]{1,4})|(BFPO\\*))$"
+
+  def regexCheckValidation: String => Boolean = postCodeInput => {
+    val passedValidation = postCodeInput.matches(regex)
+    if(!passedValidation) {
+      Logger.warn("[Postcode][regexCheckValidation] - Invalid postcode has been provided.")
+    }
+    passedValidation
+  }
+
+  implicit val reads: Reads[Postcode] = for {
+    postCodeString <- __.read[String].filter(JsonValidationError("PostCode has failed validation"))(regexCheckValidation)
+  } yield {
+    Postcode(postCodeString)
+  }
 
   implicit val writes: Writes[Postcode] = Writes {
     value => JsString(value.postCode)
   }
 
-  private val regex: Regex = ("^(([A-Z]{1,2}\\*)|([A-Z]{1,2}[0-9][0-9A-Z]?\\*)|([A-Z]{1,2}[0-9]" +
-    "[0-9A-Z]?\\s?[0-9]\\*)|([A-Z]{1,2}[0-9][0-9A-Z]?\\s?[0-9][A-Z]{2})|(BFPO\\s?[0-9]{1,4})|(BFPO\\*))$").r
-
-  def regexCheck(value: String): Postcode = regex.findFirstIn(value) match {
-    case Some(_) => Postcode(value)
-    case None =>
-      Logger.warn("[Postcode][regexCheck] - Invalid postcode has been provided")
-      throw new IllegalArgumentException("Invalid Postcode")
-  }
 }
