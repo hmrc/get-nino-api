@@ -20,38 +20,69 @@ import play.api.libs.json.{JsString, Json}
 import support.UnitSpec
 
 class GenderSpec extends UnitSpec {
-  val invalidGender = "NOTAGENDER"
 
   "Gender" should {
+
     "correctly parse from a JSON String" when {
       "passed in MALE" in {
         JsString("MALE").as[Gender] shouldBe Male
       }
+
       "passed in FEMALE" in {
         JsString("FEMALE").as[Gender] shouldBe Female
       }
+
       "passed in NOT-KNOWN" in {
         JsString("NOT-KNOWN").as[Gender] shouldBe GenderNotKnown
       }
     }
+
     "correctly parse to json" when {
       "passed in MALE" in {
         Json.toJson(Male) shouldBe JsString("MALE")
       }
+
       "passed in FEMALE" in {
         Json.toJson(Female) shouldBe JsString("FEMALE")
       }
+
       "passed in NOT-KNOWN" in {
         Json.toJson(GenderNotKnown) shouldBe JsString("NOT-KNOWN")
       }
     }
+
     "fail to parse from Json" when {
       "the value is not one of the available values" in {
-        val expectedException = intercept[IllegalArgumentException] {
-          JsString(invalidGender).as[Gender]
-        }
+        val json = Json.obj("bad" -> "json")
 
-        expectedException.getMessage should include (s"Provided gender invalid")
+        json .validate[Gender].isError shouldBe true
+      }
+    }
+  }
+
+  "Gender .validGenderCheck" when {
+
+    "provided with a value of MALE" should {
+      "return true" in {
+        Gender.validGenderCheck(Male.value) shouldBe true
+      }
+    }
+
+    "provided with a value of FEMALE" should {
+      "return true" in {
+        Gender.validGenderCheck(Female.value) shouldBe true
+      }
+    }
+
+    "provided with a value of NOT-KNOWN" should {
+      "return true" in {
+        Gender.validGenderCheck(GenderNotKnown.value) shouldBe true
+      }
+    }
+
+    "provided with an invalid value" should {
+      "return false" in {
+        Gender.validGenderCheck("Invalid value") shouldBe false
       }
     }
   }

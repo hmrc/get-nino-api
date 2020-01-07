@@ -24,19 +24,25 @@ sealed trait Gender {
 }
 
 object Gender {
-  def valueCheck(input: String): Gender = {
-    input match {
+  private[models] def validGenderCheck: String => Boolean = {
+    case Male.value => true
+    case Female.value => true
+    case GenderNotKnown.value => true
+    case _ =>
+      Logger.warn("[Gender][valueCheck] Provided gender failed check")
+      false
+
+  }
+
+  implicit val reads: Reads[Gender] = for {
+    genderValue <- __.read[String].filter(JsonValidationError("Error parsing gender"))(validGenderCheck)
+  } yield {
+    genderValue match {
       case Male.value => Male
       case Female.value => Female
       case GenderNotKnown.value => GenderNotKnown
-      case _ =>
-        Logger.debug(s"[Gender][valueCheck] Provided gender failed check: $input")
-        Logger.warn("[Gender][valueCheck] Provided gender failed check")
-        throw new IllegalArgumentException(s"Provided gender invalid")
     }
   }
-
-  implicit val reads: Reads[Gender] = __.read[String] map valueCheck
 
   implicit val writes: Writes[Gender] = Writes[Gender] { gender => JsString(gender.value) }
 }
@@ -44,9 +50,11 @@ object Gender {
 case object Male extends Gender {
   val value: String = "MALE"
 }
+
 case object Female extends Gender {
   val value: String = "FEMALE"
 }
+
 case object GenderNotKnown extends Gender {
   val value: String = "NOT-KNOWN"
 }
