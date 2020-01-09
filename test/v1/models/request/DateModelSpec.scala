@@ -25,7 +25,11 @@ class DateModelSpec extends UnitSpec {
     "06-01-1993"
   )
 
-  val jsonForReadInvalidStart: JsString = JsString (
+  val jsonForReadInvalidNpsConversion: JsString = JsString (
+    "29-02-1993"
+  )
+
+  val jsonForReadInvalidDate: JsString = JsString (
     "1993-01-06"
   )
 
@@ -36,35 +40,39 @@ class DateModelSpec extends UnitSpec {
   val validModel = DateModel("06-01-1993")
 
   "Date model" should {
+
     "correctly parse from Json" when {
+
       "all fields are present" in {
         jsonForRead.as[DateModel] shouldBe validModel
       }
     }
+
     "correctly parse to Json" when {
+
       "all fields are present" in {
         Json.toJson(validModel) shouldBe validJsonWrite
       }
     }
-    "fail to parse to json and throw an error" when {
-      "the date in the model does not match the NPS regex" in {
-        val errorModel = DateModel("2222222-111-222")
 
-        val thrownException = intercept[IllegalArgumentException] {
-          Json.toJson(errorModel)
-        }
-
-        thrownException.getMessage should include("Date failed validation")
-      }
-    }
     "fail to parse from json and throw an error" when {
-      "the startDate field is not a valid date" in {
+
+      "the date field is not a valid date" in {
         val thrownException = intercept[JsResultException] {
-          jsonForReadInvalidStart.as[DateModel]
+          jsonForReadInvalidDate.as[DateModel]
         }
 
         thrownException.getMessage should include("Date has failed validation. Needs to be in format: dd-MM-yyyy")
       }
+
+      "the date field is a valid date, but outside of NPS validation" in {
+        val thrownException = intercept[JsResultException] {
+          jsonForReadInvalidNpsConversion.as[DateModel]
+        }
+
+        thrownException.getMessage should include("Transformed date fails NPS validation.")
+      }
+
     }
   }
 }
