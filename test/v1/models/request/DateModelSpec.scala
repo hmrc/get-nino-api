@@ -65,7 +65,7 @@ class DateModelSpec extends UnitSpec {
         thrownException.getMessage should include("Date has failed validation. Needs to be in format: dd-MM-yyyy")
       }
 
-      "the date field is a valid date, but outside of NPS validation" in {
+      "the date field passes DWP validation, but fails NPS validation" in {
         val thrownException = intercept[JsResultException] {
           jsonForReadInvalidNpsConversion.as[DateModel]
         }
