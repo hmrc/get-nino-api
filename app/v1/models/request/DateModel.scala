@@ -30,33 +30,33 @@ object DateModel {
     """^(((19|20)([2468][048]|[13579][26]|0[48])|2000)[-]02[-]29|((19|20)[0-9]{2}[-]
       |(0[469]|11)[-](0[1-9]|1[0-9]|2[0-9]|30)|(19|20)[0-9]{2}[-](0[13578]|1[02])[-](0[1-9]|[12][0-9]|3[01])|(19|20)[0-9]{2}[-]02[-](0[1-9]|1[0-9]|2[0-8])))$""".stripMargin
 
-  private def changeDateFormatAndValidateNps(dateInput: String): String = {
-    val transformedDateString = dateInput.split("-").reverse.mkString("-")
-    if (transformedDateString.matches(npsDateRegex)) {
-      transformedDateString
-    } else {
-      throw new IllegalArgumentException(
-        "[StartDateEndDate][changeDateFormatAndValidateNps] Date failed validation"
-      )
-    }
+  private def changeDateToNpsFormat(dateInput: String): String = {
+    dateInput.split("-").reverse.mkString("-")
   }
 
-  implicit val writes: Writes[DateModel] = Writes[DateModel] { dateModel =>
-    JsString(changeDateFormatAndValidateNps(dateModel.dateString))
+  implicit val writes: Writes[DateModel] = Writes[DateModel] { model =>
+    JsString(changeDateToNpsFormat(model.dateString))
   }
 
   private def validateDwpDate(dateInput: Reads[String]): Reads[String] = {
     val isValidDwpDate: String => Boolean = dateInput => {
       val passedValidation = dateInput.matches(dwpDateRegex)
-      if(!passedValidation) {
+      if (!passedValidation) {
         Logger.debug(s"[StartDateEndDate][validateDwpDate] Unable to parse the following date: $dateInput")
         Logger.warn(s"[StartDateEndDate][validateDwpDate] Unable to parse the provided date.")
       }
       passedValidation
     }
-    dateInput.filter(
-      JsonValidationError("Date has failed validation. Needs to be in format: dd-MM-yyyy")
-    )(dateString => isValidDwpDate(dateString))
+
+    val canConvertIntoNps: String => Boolean = dateInput => changeDateToNpsFormat(dateInput).matches(npsDateRegex)
+
+    dateInput
+      .filter(
+        JsonValidationError("Date has failed validation. Needs to be in format: dd-MM-yyyy")
+      )(dateString => isValidDwpDate(dateString))
+      .filter(
+        JsonValidationError("Transformed date fails NPS validation.")
+      )(dateString => canConvertIntoNps(dateString))
   }
 
   implicit val reads: Reads[DateModel] = for {
