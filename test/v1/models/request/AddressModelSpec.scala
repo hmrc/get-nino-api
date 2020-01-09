@@ -105,6 +105,26 @@ class AddressModelSpec extends WordSpec with Matchers {
         maximumAddressJson(true).as[AddressModel] shouldBe maximumAddressModel
       }
     }
+
+    "missing a postcode field" should {
+
+      "return an error" in {
+
+        val missingPostcodeAddressJson: JsValue = Json.obj(
+          "addressType" -> "RESIDENTIAL",
+          "line1" -> "1234 Test Avenue",
+          "line2" -> "Test Line 2",
+          "line3" -> "Test Line 3",
+          "line4" -> "Test Line 4",
+          "line5" -> "Test Line 5",
+          "countryCode" -> "GBR",
+          "startDate" -> "01-01-2019",
+          "endDate" -> "31-12-2019"
+        )
+
+        missingPostcodeAddressJson.validate[AddressModel].isError shouldBe true
+      }
+    }
   }
 
   "Writing an AddressModel" when {
@@ -138,7 +158,7 @@ class AddressModelSpec extends WordSpec with Matchers {
 
             val result = AddressModel.checkPostcodeMandated(Some(Postcode("TF3 4NT")), Some("GBR"))
 
-            result shouldBe Some(Postcode("TF3 4NT"))
+            result shouldBe true
           }
         }
 
@@ -146,11 +166,9 @@ class AddressModelSpec extends WordSpec with Matchers {
 
           "throw an exception" in {
 
-            val exception = intercept[IllegalArgumentException] {
-              AddressModel.checkPostcodeMandated(None, Some("GBR"))
-            }
+            val result = AddressModel.checkPostcodeMandated(None, Some("GBR"))
 
-            exception.getMessage shouldBe "Postcode required if Country code is GBR"
+            result shouldBe false
           }
         }
       }
@@ -163,7 +181,7 @@ class AddressModelSpec extends WordSpec with Matchers {
 
             val result = AddressModel.checkPostcodeMandated(Some(Postcode("TF3 4NT")), Some("gbr"))
 
-            result shouldBe Some(Postcode("TF3 4NT"))
+            result shouldBe true
           }
         }
       }
@@ -176,7 +194,7 @@ class AddressModelSpec extends WordSpec with Matchers {
 
             val result = AddressModel.checkPostcodeMandated(Some(Postcode("TF3 4NT")), Some("USA"))
 
-            result shouldBe Some(Postcode("TF3 4NT"))
+            result shouldBe true
           }
         }
 
@@ -186,7 +204,7 @@ class AddressModelSpec extends WordSpec with Matchers {
 
             val result = AddressModel.checkPostcodeMandated(None, Some("USA"))
 
-            result shouldBe None
+            result shouldBe true
           }
         }
       }
@@ -198,7 +216,7 @@ class AddressModelSpec extends WordSpec with Matchers {
 
         val result = AddressModel.checkPostcodeMandated(Some(Postcode("TF3 4NT")), None)
 
-        result shouldBe Some(Postcode("TF3 4NT"))
+        result shouldBe true
       }
     }
   }
