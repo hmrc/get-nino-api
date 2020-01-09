@@ -40,10 +40,6 @@ class RegisterNinoController @Inject()(
         case Right(responseModel) => Ok(Json.toJson(responseModel))
         case Left(error) => BadRequest(Json.toJson(error))
       }
-    }.recover {
-      case t: Throwable => BadRequest(Json.toJson(Error(
-        s"$BAD_REQUEST", t.getMessage
-      )))
     }
   }
 
