@@ -99,7 +99,6 @@ class RegisterNinoISpec extends IntegrationBaseSpec {
             AuditStub.audit()
           }
 
-          //TODO: This needs to be updated in NINOA-88
           lazy val response: WSResponse = await(request().post(faultyRegisterNinoRequestJson(false)))
           response.body[JsValue] shouldBe Json.obj(
             "code" -> "JSON_VALIDATION_ERROR",
@@ -165,7 +164,6 @@ class RegisterNinoISpec extends IntegrationBaseSpec {
             AuditStub.audit()
           }
 
-          //TODO: This needs to be updated in NINOA-88
           lazy val response: WSResponse = await(request().post(faultyRegisterNinoRequestJson(false)))
           response.body[JsValue] shouldBe Json.obj(
             "code" -> "JSON_VALIDATION_ERROR",
