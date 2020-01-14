@@ -20,7 +20,6 @@ import javax.inject.{Inject, Singleton}
 import play.api.libs.json.Json
 import play.api.mvc.{Action, AnyContent, ControllerComponents}
 import uk.gov.hmrc.play.bootstrap.controller.BackendController
-import v1.models.errors.Error
 import v1.models.request.NinoApplication
 import v1.services.DesService
 import v1.utils.JsonBodyUtil
