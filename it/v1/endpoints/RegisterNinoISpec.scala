@@ -20,11 +20,12 @@ import com.github.tomakehurst.wiremock.stubbing.StubMapping
 import config.AppConfig
 import play.api.http.HeaderNames.ACCEPT
 import play.api.http.Status
-import play.api.libs.json.{JsValue, Json}
+import play.api.libs.json.{JsError, JsValue, Json, JsonValidationError}
 import play.api.libs.ws.{WSRequest, WSResponse}
 import support.IntegrationBaseSpec
 import utils.ItNinoApplicationTestData.{faultyRegisterNinoRequestJson, maxRegisterNinoRequestJson}
 import v1.stubs.{AuditStub, DesStub}
+import v1.models.errors.{JsonValidationError => NinoJsonValidationError}
 
 class RegisterNinoISpec extends IntegrationBaseSpec {
 
@@ -102,7 +103,7 @@ class RegisterNinoISpec extends IntegrationBaseSpec {
           lazy val response: WSResponse = await(request().post(faultyRegisterNinoRequestJson(false)))
           response.body[JsValue] shouldBe Json.obj(
             "code" -> "JSON_VALIDATION_ERROR",
-            "message" -> "The provided JSON was unable to be validated as the selected model."
+            "message" -> Json.arr(Json.obj("gender" -> Json.arr("Error parsing gender")))
           )
         }
       }
@@ -167,7 +168,7 @@ class RegisterNinoISpec extends IntegrationBaseSpec {
           lazy val response: WSResponse = await(request().post(faultyRegisterNinoRequestJson(false)))
           response.body[JsValue] shouldBe Json.obj(
             "code" -> "JSON_VALIDATION_ERROR",
-            "message" -> "The provided JSON was unable to be validated as the selected model."
+            "message" -> Json.arr(Json.obj("gender" -> Json.arr("Error parsing gender")))
           )
         }
       }

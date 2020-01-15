@@ -16,7 +16,7 @@
 
 package v1.utils
 
-import play.api.libs.json.Json
+import play.api.libs.json.{JsError, Json}
 import play.api.mvc.AnyContentAsJson
 import play.api.test.FakeRequest
 import support.UnitSpec
@@ -54,7 +54,9 @@ class JsonBodyUtilSpec extends UnitSpec {
             "putNotThe" -> "correctJson"
           ))
 
-        testUtil.parsedJsonBody[NinoApplication] shouldBe Left(JsonValidationError)
+        testUtil.parsedJsonBody[NinoApplication] shouldBe Left(new JsonValidationError(
+          JsError("")
+        ))
       }
     }
   }
