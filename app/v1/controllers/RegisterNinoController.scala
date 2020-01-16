@@ -17,8 +17,10 @@
 package v1.controllers
 
 import javax.inject.{Inject, Singleton}
+import org.slf4j.MDC
 import play.api.libs.json.Json
 import play.api.mvc.{Action, AnyContent, ControllerComponents}
+import uk.gov.hmrc.http.HeaderNames.{xRequestId, xSessionId}
 import uk.gov.hmrc.play.bootstrap.controller.BackendController
 import v1.models.request.NinoApplication
 import v1.services.DesService
@@ -33,12 +35,15 @@ class RegisterNinoController @Inject()(
                                       )(implicit ec: ExecutionContext) extends BackendController(cc) with JsonBodyUtil {
 
   def register(): Action[AnyContent] = Action.async { implicit request =>
+    if(hc.requestId.nonEmpty && Option(MDC.get(xRequestId)).isEmpty) MDC.put(xRequestId, hc.requestId.get.value)
+    if(hc.sessionId.nonEmpty && Option(MDC.get(xSessionId)).isEmpty) MDC.put(xSessionId, hc.sessionId.get.value)
+
     Future(parsedJsonBody[NinoApplication]).flatMap {
-      case Left(errors) => Future.successful(BadRequest(Json.toJson(errors)))
       case Right(ninoModel) => desService.registerNino(ninoModel).map{
         case Right(responseModel) => Ok(Json.toJson(responseModel))
         case Left(error) => BadRequest(Json.toJson(error))
       }
+      case Left(errors) => Future.successful(BadRequest(Json.toJson(errors)))
     }
   }
 

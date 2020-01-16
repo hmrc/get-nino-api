@@ -18,7 +18,7 @@ package v1.testOnly.controllers
 
 import config.AppConfig
 import javax.inject.Inject
-import v1.utils.NinoLogger.Logger
+import play.api.Logger
 import play.api.libs.json.Json
 import play.api.mvc.{Action, AnyContent, ControllerComponents, Result}
 import uk.gov.hmrc.play.bootstrap.controller.BackendController
