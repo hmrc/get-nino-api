@@ -20,6 +20,7 @@ import javax.inject.{Inject, Singleton}
 import org.slf4j.MDC
 import play.api.libs.json.Json
 import play.api.mvc.{Action, AnyContent, ControllerComponents}
+import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.http.HeaderNames.{xRequestId, xSessionId}
 import uk.gov.hmrc.play.bootstrap.controller.BackendController
 import v1.models.request.NinoApplication
