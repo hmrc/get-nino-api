@@ -129,9 +129,9 @@ class RegisterNinoControllerSpec extends ControllerBaseSpec {
 
         controller.convertJsErrorsToReadableFormat(jsErrorModel) shouldBe Json.obj(
           "code" -> "JSON_VALIDATION_ERROR",
-          "message" -> Json.arr(
-            Json.obj("aThing" -> Json.arr("Some issue", "Some other issue")),
-            Json.obj("anotherThing" -> Json.arr("Some issue", "Some other issue"))
+          "message" -> Json.obj(
+            "aThing" -> Json.arr("Some issue", "Some other issue"),
+            "anotherThing" -> Json.arr("Some issue", "Some other issue")
           )
         )
 

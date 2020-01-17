@@ -50,7 +50,7 @@ object InvalidJsonResponseError extends Error("INVALID_JSON", "The Json returned
 
 class JsonValidationError(jsErrors: JsError)
   extends Error("JSON_VALIDATION_ERROR", "The provided JSON was unable to be validated as the selected model.") {
-  val getErrors: JsValue = Json.toJson(jsErrors.errors.map { case(path, pathErrors) =>
-    Json.obj(path.toJsonString.split('.').last -> pathErrors.map(_.message))
+  val getErrors: JsValue = Json.toJson(jsErrors.errors.foldLeft(Json.obj()){ case(jsonObject, values) =>
+    jsonObject ++ Json.obj(values._1.toJsonString.split('.').last -> values._2.map(_.message))
   })
 }
