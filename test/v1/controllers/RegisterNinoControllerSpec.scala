@@ -16,11 +16,12 @@
 
 package v1.controllers
 
+import org.slf4j.MDC
 import play.api.http.Status
 import play.api.libs.json.Json
 import play.api.test.Helpers._
 import support.ControllerBaseSpec
-import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.http.{HeaderCarrier, HeaderNames}
 import utils.NinoApplicationTestData.{maxRegisterNinoRequestJson, maxRegisterNinoRequestModel}
 import v1.models.errors.{InvalidBodyTypeError, JsonValidationError}
 import v1.models.request.NinoApplication
@@ -45,10 +46,13 @@ class RegisterNinoControllerSpec extends ControllerBaseSpec {
 
         val result = controller.register()(
           fakeRequest
-            .withHeaders("Accept" -> "application/vnd.hmrc.1.0+json")
+            .withHeaders("Accept" -> "application/vnd.hmrc.1.0+json", HeaderNames.xRequestId -> "1234567890", HeaderNames.xSessionId -> "0987654321")
             .withMethod("POST")
             .withJsonBody(maxRegisterNinoRequestJson(false))
         )
+
+        MDC.get(HeaderNames.xRequestId) shouldBe "1234567890"
+        MDC.get(HeaderNames.xSessionId) shouldBe "0987654321"
 
         status(result) shouldBe Status.OK
         contentAsJson(result) shouldBe Json.obj("message"->"A response")
