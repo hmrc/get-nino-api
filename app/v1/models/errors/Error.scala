@@ -25,7 +25,8 @@ object Error {
   implicit val validationWrites: Writes[JsonValidationError] = Writes { model =>
     Json.obj(
       "code" -> model.code,
-      "message" -> model.getErrors
+      "message" -> model.message,
+      "errors" -> model.getErrors
     )
   }
 
@@ -37,20 +38,30 @@ object Error {
 }
 
 object ServiceUnavailableError extends Error("SERVER_ERROR", "Service unavailable.")
+
 object NotFoundError extends Error("MATCHING_RESOURCE_NOT_FOUND", "Matching resource not found")
+
 object DownstreamError extends Error("INTERNAL_SERVER_ERROR", "An internal server error occurred")
+
 object BadRequestError extends Error("INVALID_REQUEST", "Invalid request")
+
 object UnauthorisedError extends Error("CLIENT_OR_AGENT_NOT_AUTHORISED", "The client and/or agent is not authorised")
+
 object InvalidBodyTypeError extends Error("INVALID_BODY_TYPE", "Expecting text/json or application/json body")
 
 object InvalidAcceptHeaderError extends Error("ACCEPT_HEADER_INVALID", "The accept header is missing or invalid")
+
 object UnsupportedVersionError extends Error("NOT_FOUND", "The requested resource could not be found")
 
 object InvalidJsonResponseError extends Error("INVALID_JSON", "The Json returned from DES is invalid")
 
 class JsonValidationError(jsErrors: JsError)
   extends Error("JSON_VALIDATION_ERROR", "The provided JSON was unable to be validated as the selected model.") {
-  val getErrors: JsValue = Json.toJson(jsErrors.errors.foldLeft(Json.obj()){ case(jsonObject, values) =>
-    jsonObject ++ Json.obj(values._1.toJsonString.split('.').last -> values._2.map(_.message))
-  })
+    val getErrors: JsValue = Json.toJson(jsErrors.errors.flatMap {
+    case (path, pathErrors) =>
+      pathErrors.map(
+        validationError => Json.obj("code" -> "BAD_REQUEST", "message" -> validationError.message, "path" -> path.toJsonString.substring(4))
+      )
+    }
+  )
 }

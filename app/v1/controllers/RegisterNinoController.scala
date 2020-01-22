@@ -42,12 +42,11 @@ class RegisterNinoController @Inject()(
     if (hc.sessionId.nonEmpty && Option(MDC.get(xSessionId)).isEmpty) MDC.put(xSessionId, hc.sessionId.get.value)
 
     Future(parsedJsonBody[NinoApplication]).flatMap {
-      case Left(errors) => Future.successful(badRequestWithLog(convertJsErrorsToReadableFormat(errors)))
       case Right(ninoModel) => desService.registerNino(ninoModel).map {
         case Right(responseModel) => Ok(Json.toJson(responseModel))
-        case Left(error) => badRequestWithLog(Json.toJson(error))
+        case Left(errors) => badRequestWithLog(Json.toJson(errors))
       }
-      case Left(errors) => Future.successful(BadRequest(Json.toJson(errors)))
+      case Left(errors) => Future.successful(badRequestWithLog(convertJsErrorsToReadableFormat(errors)))
     }
   }
 

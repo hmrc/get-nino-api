@@ -23,7 +23,7 @@ import play.api.test.Helpers._
 import support.ControllerBaseSpec
 import uk.gov.hmrc.http.{HeaderCarrier, HeaderNames}
 import utils.NinoApplicationTestData.{maxRegisterNinoRequestJson, maxRegisterNinoRequestModel}
-import v1.models.errors.{BadRequestError, InvalidBodyTypeError, JsonValidationError => NinoJsonValidationError, Error => NinoError}
+import v1.models.errors.{BadRequestError, InvalidBodyTypeError, Error => NinoError, JsonValidationError => NinoJsonValidationError}
 import v1.models.request.NinoApplication
 import v1.models.response.DesResponseModel
 import v1.services.DesService
@@ -129,14 +129,31 @@ class RegisterNinoControllerSpec extends ControllerBaseSpec {
 
         controller.convertJsErrorsToReadableFormat(jsErrorModel) shouldBe Json.obj(
           "code" -> "JSON_VALIDATION_ERROR",
-          "message" -> Json.obj(
-            "aThing" -> Json.arr("Some issue", "Some other issue"),
-            "anotherThing" -> Json.arr("Some issue", "Some other issue")
+          "message" -> "The provided JSON was unable to be validated as the selected model.",
+          "errors" -> Json.arr(
+            Json.obj(
+              "code" -> "BAD_REQUEST",
+              "message" -> "Some issue",
+              "path" -> "aThing"
+            ),
+            Json.obj(
+              "code" -> "BAD_REQUEST",
+              "message" -> "Some other issue",
+              "path" -> "aThing"
+            ),
+            Json.obj(
+              "code" -> "BAD_REQUEST",
+              "message" -> "Some issue",
+              "path" -> "anotherThing"
+            ),
+            Json.obj(
+              "code" -> "BAD_REQUEST",
+              "message" -> "Some other issue",
+              "path" -> "anotherThing"
+            )
           )
         )
-
       }
     }
   }
-
 }
