@@ -16,13 +16,14 @@
 
 package v1.controllers
 
+import org.slf4j.MDC
 import play.api.http.Status
-import play.api.libs.json.Json
+import play.api.libs.json.{JsError, JsPath, Json, JsonValidationError => JavaJsonValidationError}
 import play.api.test.Helpers._
 import support.ControllerBaseSpec
-import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.http.{HeaderCarrier, HeaderNames}
 import utils.NinoApplicationTestData.{maxRegisterNinoRequestJson, maxRegisterNinoRequestModel}
-import v1.models.errors.{InvalidBodyTypeError, JsonValidationError}
+import v1.models.errors.{BadRequestError, InvalidBodyTypeError, Error => NinoError, JsonValidationError => NinoJsonValidationError}
 import v1.models.request.NinoApplication
 import v1.models.response.DesResponseModel
 import v1.services.DesService
@@ -45,13 +46,16 @@ class RegisterNinoControllerSpec extends ControllerBaseSpec {
 
         val result = controller.register()(
           fakeRequest
-            .withHeaders("Accept" -> "application/vnd.hmrc.1.0+json")
+            .withHeaders("Accept" -> "application/vnd.hmrc.1.0+json", HeaderNames.xRequestId -> "1234567890", HeaderNames.xSessionId -> "0987654321")
             .withMethod("POST")
             .withJsonBody(maxRegisterNinoRequestJson(false))
         )
 
+        MDC.get(HeaderNames.xRequestId) shouldBe "1234567890"
+        MDC.get(HeaderNames.xSessionId) shouldBe "0987654321"
+
         status(result) shouldBe Status.OK
-        contentAsJson(result) shouldBe Json.obj("message"->"A response")
+        contentAsJson(result) shouldBe Json.obj("message" -> "A response")
       }
     }
 
@@ -80,9 +84,76 @@ class RegisterNinoControllerSpec extends ControllerBaseSpec {
         )
 
         status(result) shouldBe Status.BAD_REQUEST
-        contentAsJson(result) shouldBe Json.toJson(JsonValidationError)
+        contentAsJson(result) shouldBe Json.toJson(new NinoJsonValidationError(JsError(
+          Seq("country", "birthDateVerification", "address", "entryDate", "name", "gender", "officeNumber", "nino", "birthDate").map { field =>
+            (JsPath \ field, Seq(JavaJsonValidationError("error.path.missing")))
+          }
+        )))(NinoError.validationWrites)
       }
     }
 
+  }
+
+  "Calling convertJsErrorsToReadableFormat" should {
+
+    "return the error passed in" when {
+
+      "it is not a JsError" in {
+        val nonJsError: NinoError = BadRequestError
+
+        controller.convertJsErrorsToReadableFormat(nonJsError) shouldBe Json.toJson(nonJsError)
+      }
+    }
+
+    "return a readable list of JsErrors" when {
+
+      val jsError1 = new JavaJsonValidationError(Seq("Some issue"))
+      val jsError2 = new JavaJsonValidationError(Seq("Some other issue"))
+
+      val jsPath1 = JsPath \ "aThing"
+      val jsPath2 = JsPath \ "anotherThing"
+
+      val seqOfErrors: Seq[JavaJsonValidationError] = Seq(
+        jsError1, jsError2
+      )
+
+      val fullJsErrorList: Seq[(JsPath, Seq[JavaJsonValidationError])] = Seq(
+        jsPath1 -> seqOfErrors,
+        jsPath2 -> seqOfErrors
+      )
+
+      val jsErrors = JsError(fullJsErrorList)
+
+      "the error passed in contains a JsError type" in {
+        val jsErrorModel = new NinoJsonValidationError(jsErrors)
+
+        controller.convertJsErrorsToReadableFormat(jsErrorModel) shouldBe Json.obj(
+          "code" -> "JSON_VALIDATION_ERROR",
+          "message" -> "The provided JSON was unable to be validated as the selected model.",
+          "errors" -> Json.arr(
+            Json.obj(
+              "code" -> "BAD_REQUEST",
+              "message" -> "Some issue",
+              "path" -> "aThing"
+            ),
+            Json.obj(
+              "code" -> "BAD_REQUEST",
+              "message" -> "Some other issue",
+              "path" -> "aThing"
+            ),
+            Json.obj(
+              "code" -> "BAD_REQUEST",
+              "message" -> "Some issue",
+              "path" -> "anotherThing"
+            ),
+            Json.obj(
+              "code" -> "BAD_REQUEST",
+              "message" -> "Some other issue",
+              "path" -> "anotherThing"
+            )
+          )
+        )
+      }
+    }
   }
 }

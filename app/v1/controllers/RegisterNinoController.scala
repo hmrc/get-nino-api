@@ -17,10 +17,14 @@
 package v1.controllers
 
 import javax.inject.{Inject, Singleton}
-import play.api.libs.json.Json
-import play.api.mvc.{Action, AnyContent, ControllerComponents}
+import org.slf4j.MDC
+import play.api.Logger
+import play.api.libs.json.{JsValue, Json}
+import play.api.mvc.{Action, AnyContent, ControllerComponents, Result}
+import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.http.HeaderNames.{xRequestId, xSessionId}
 import uk.gov.hmrc.play.bootstrap.controller.BackendController
-import v1.models.errors.Error
+import v1.models.errors.{JsonValidationError, Error => NinoError}
 import v1.models.request.NinoApplication
 import v1.services.DesService
 import v1.utils.JsonBodyUtil
@@ -34,12 +38,27 @@ class RegisterNinoController @Inject()(
                                       )(implicit ec: ExecutionContext) extends BackendController(cc) with JsonBodyUtil {
 
   def register(): Action[AnyContent] = Action.async { implicit request =>
+    if (hc.requestId.nonEmpty && Option(MDC.get(xRequestId)).isEmpty) MDC.put(xRequestId, hc.requestId.get.value)
+    if (hc.sessionId.nonEmpty && Option(MDC.get(xSessionId)).isEmpty) MDC.put(xSessionId, hc.sessionId.get.value)
+
     Future(parsedJsonBody[NinoApplication]).flatMap {
-      case Left(errors) => Future.successful(BadRequest(Json.toJson(errors)))
-      case Right(ninoModel) => desService.registerNino(ninoModel).map{
+      case Right(ninoModel) => desService.registerNino(ninoModel).map {
         case Right(responseModel) => Ok(Json.toJson(responseModel))
-        case Left(error) => BadRequest(Json.toJson(error))
+        case Left(errors) => badRequestWithLog(Json.toJson(errors))
       }
+      case Left(errors) => Future.successful(badRequestWithLog(convertJsErrorsToReadableFormat(errors)))
+    }
+  }
+
+  private def badRequestWithLog[T <: JsValue](input: T)(implicit hc: HeaderCarrier): Result = {
+    Logger.warn(Json.prettyPrint(input))
+    BadRequest(input)
+  }
+
+  private[controllers] def convertJsErrorsToReadableFormat(error: NinoError): JsValue = {
+    error match {
+      case validationError: JsonValidationError => Json.toJson(validationError)(NinoError.validationWrites)
+      case _ => Json.toJson(error)
     }
   }
 

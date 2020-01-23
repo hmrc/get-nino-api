@@ -102,7 +102,14 @@ class RegisterNinoISpec extends IntegrationBaseSpec {
           lazy val response: WSResponse = await(request().post(faultyRegisterNinoRequestJson(false)))
           response.body[JsValue] shouldBe Json.obj(
             "code" -> "JSON_VALIDATION_ERROR",
-            "message" -> "The provided JSON was unable to be validated as the selected model."
+            "message" -> "The provided JSON was unable to be validated as the selected model.",
+            "errors" -> Json.arr(
+              Json.obj(
+                "code" -> "BAD_REQUEST",
+                "message" -> "Error parsing gender",
+                "path" -> "gender"
+              )
+            )
           )
         }
       }
@@ -167,7 +174,14 @@ class RegisterNinoISpec extends IntegrationBaseSpec {
           lazy val response: WSResponse = await(request().post(faultyRegisterNinoRequestJson(false)))
           response.body[JsValue] shouldBe Json.obj(
             "code" -> "JSON_VALIDATION_ERROR",
-            "message" -> "The provided JSON was unable to be validated as the selected model."
+            "message" -> "The provided JSON was unable to be validated as the selected model.",
+            "errors" -> Json.arr(
+              Json.obj(
+                "code" -> "BAD_REQUEST",
+                "message" -> "Error parsing gender",
+                "path" -> "gender"
+              )
+            )
           )
         }
       }

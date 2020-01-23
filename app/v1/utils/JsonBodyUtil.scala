@@ -28,7 +28,7 @@ trait JsonBodyUtil {
       case jsErrors: JsError =>
         Logger.debug(s"[MicroserviceBaseController][parsedJsonBody] Json received, but could not validate. Errors: $jsErrors")
         Logger.warn("[MicroserviceBaseController][parsedJsonBody] Json received, but could not validate.")
-        Left(JsonValidationError)
+        Left(new JsonValidationError(jsErrors))
       case validatedModel: JsSuccess[T] => Right(validatedModel.value)
     }
     case _ =>

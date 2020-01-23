@@ -21,7 +21,7 @@ import play.api.mvc.AnyContentAsJson
 import play.api.test.FakeRequest
 import support.UnitSpec
 import utils.NinoApplicationTestData.{maxRegisterNinoRequestJson, maxRegisterNinoRequestModel}
-import v1.models.errors.{InvalidBodyTypeError, JsonValidationError}
+import v1.models.errors.{Error, InvalidBodyTypeError}
 import v1.models.request.NinoApplication
 
 class JsonBodyUtilSpec extends UnitSpec {
@@ -54,9 +54,8 @@ class JsonBodyUtilSpec extends UnitSpec {
             "putNotThe" -> "correctJson"
           ))
 
-        testUtil.parsedJsonBody[NinoApplication] shouldBe Left(JsonValidationError)
+        testUtil.parsedJsonBody[NinoApplication] shouldBe Left(Error("JSON_VALIDATION_ERROR", "The provided JSON was unable to be validated as the selected model."))
       }
     }
   }
-
 }
