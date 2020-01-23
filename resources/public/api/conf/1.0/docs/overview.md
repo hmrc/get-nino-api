@@ -1,3 +1,1 @@
-The API in its current state is a simple hello world app.
-Currently, the user can:
-- Call the service and receive some hello world JSON
+This service allows the Department of Work and Pensions (DWP) to register a NINO on the HMRC estate. It has been developed for DWP **only** and access is restricted to this government department. 
