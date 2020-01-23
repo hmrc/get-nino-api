@@ -3,15 +3,26 @@
 uses:
   types: https://developer.service.hmrc.gov.uk/api-documentation/assets/common/modules/types.raml
 
-# Example for when we start using errors
-#traits:
-#  apiServiceError:
-#    responses:
-#      500:
-#        body:
-#          application/json:
-#            type: types.errorResponse
-#            example:
-#              description: When there is an internal error within the service
-#              value:
-#                code: INTERNAL_SERVER_ERROR
+traits:
+  jsonValidationError:
+    responses:
+      400:
+        body:
+          application/json:
+            type: types.errorResponse
+            example:
+              description: Date has failed validation. Needs to be in format: dd-MM-yyyy
+              value:
+                code: BAD_REQUEST
+                path: historicAddress[0].startDate
+
+  apiServiceError:
+    responses:
+      500:
+        body:
+          application/json:
+            type: types.errorResponse
+            example:
+              description: When there is an internal error within the service
+              value:
+                code: INTERNAL_SERVER_ERROR
