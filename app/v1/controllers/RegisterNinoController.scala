@@ -40,16 +40,6 @@ class RegisterNinoController @Inject()(
                                       (implicit val ec: ExecutionContext) extends BackendController(cc) with JsonBodyUtil {
 
   def register(): Action[AnyContent] = privilegedApplicationPredicate.async { implicit request =>
-    println(Console.YELLOW + "Header Carrier in Controller: " + hc + Console.RESET)
-
-    println(Console.YELLOW + "Is inserting RequestID: " + (hc.requestId.nonEmpty && Option(MDC.get(xRequestId)).isEmpty) + Console.RESET)
-    println(Console.YELLOW + "Is inserting SessionID: " + (hc.sessionId.nonEmpty && Option(MDC.get(xSessionId)).isEmpty) + Console.RESET)
-
-    if (hc.requestId.nonEmpty && Option(MDC.get(xRequestId)).isEmpty) MDC.put(xRequestId, hc.requestId.get.value)
-    if (hc.sessionId.nonEmpty && Option(MDC.get(xSessionId)).isEmpty) MDC.put(xSessionId, hc.sessionId.get.value)
-
-    println(Console.YELLOW + "MDC in Controller: " + MDC.getCopyOfContextMap + Console.RESET)
-
     Future(parsedJsonBody[NinoApplication]).flatMap {
       case Right(ninoModel) => desService.registerNino(ninoModel).map {
         case Right(responseModel) => Ok(Json.toJson(responseModel))

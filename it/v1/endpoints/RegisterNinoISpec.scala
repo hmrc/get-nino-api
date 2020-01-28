@@ -117,6 +117,60 @@ class RegisterNinoISpec extends IntegrationBaseSpec {
           )
         }
       }
+
+      "the user is not authorised" should {
+
+        "return an Unauthorized error with the reason provided by the AuthClient" in new Test {
+          appConfig.features.useDesStub(true)
+
+          override def setupStubs(): StubMapping = {
+            AuditStub.audit()
+            AuthStub.notAuthorised()
+          }
+
+          lazy val response: WSResponse = await(request().post(maxRegisterNinoRequestJson(true)))
+          response.body[JsValue] shouldBe Json.obj(
+            "code" -> "UNAUTHORISED",
+            "message" -> "someReason"
+          )
+        }
+      }
+
+      "auth is down" should {
+
+        "return a BadGateway(AuthDownError)" in new Test {
+          appConfig.features.useDesStub(true)
+
+          override def setupStubs(): StubMapping = {
+            AuditStub.audit()
+            AuthStub.authDown()
+          }
+
+          lazy val response: WSResponse = await(request().post(maxRegisterNinoRequestJson(true)))
+          response.body[JsValue] shouldBe Json.obj(
+            "code" -> "BAD_GATEWAY",
+            "message" -> "Auth is currently down."
+          )
+        }
+      }
+
+      "any other error code is returned" should {
+
+        "return a InternalServerError(DownstreamError)" in new Test {
+          appConfig.features.useDesStub(true)
+
+          override def setupStubs(): StubMapping = {
+            AuditStub.audit()
+            AuthStub.otherStatus()
+          }
+
+          lazy val response: WSResponse = await(request().post(maxRegisterNinoRequestJson(true)))
+          response.body[JsValue] shouldBe Json.obj(
+            "code" -> "INTERNAL_SERVER_ERROR",
+            "message" -> "An internal server error occurred"
+          )
+        }
+      }
     }
 
     "the feature switch is off" when {

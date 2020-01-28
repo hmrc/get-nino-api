@@ -17,13 +17,15 @@
 package v1.controllers.predicates
 
 import javax.inject.{Inject, Singleton}
+import org.slf4j.MDC
 import play.api.libs.json.Json
 import play.api.mvc.{Result, _}
 import uk.gov.hmrc.auth.core.AuthProvider.PrivilegedApplication
-import uk.gov.hmrc.auth.core.{AuthConnector, AuthProviders, AuthorisedFunctions, UnsupportedAuthProvider}
-import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.auth.core._
+import uk.gov.hmrc.http.{BadGatewayException, HeaderCarrier, Upstream5xxResponse}
+import uk.gov.hmrc.http.HeaderNames.{xRequestId, xSessionId}
 import uk.gov.hmrc.play.HeaderCarrierConverter
-import v1.models.errors.{UnsupportedAuthProvider => ApiUnsupportedAuthProvider}
+import v1.models.errors.{AuthDownError, DownstreamError, Error => APIError}
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -36,14 +38,19 @@ class PrivilegedApplicationPredicate @Inject()(
   extends ActionBuilder[Request, AnyContent] with AuthorisedFunctions with BaseController {
 
   override def invokeBlock[A](request: Request[A], block: Request[A] => Future[Result]): Future[Result] = {
-    println(Console.YELLOW + "Headers in Action: " + request.headers + Console.RESET)
     implicit val hc: HeaderCarrier = HeaderCarrierConverter.fromHeadersAndSession(request.headers, Some(request.session))
-    println(Console.YELLOW + "Header Carrier in Action: " + hc + Console.RESET)
+
+    if (hc.requestId.nonEmpty && Option(MDC.get(xRequestId)).isEmpty) MDC.put(xRequestId, hc.requestId.get.value)
+    if (hc.sessionId.nonEmpty && Option(MDC.get(xSessionId)).isEmpty) MDC.put(xSessionId, hc.sessionId.get.value)
 
     authorised(AuthProviders(PrivilegedApplication)) {
       block(request)
     } recover {
-      case _: UnsupportedAuthProvider => Unauthorized(Json.toJson(ApiUnsupportedAuthProvider))
+      case error: AuthorisationException => Unauthorized(Json.toJson(APIError("UNAUTHORISED", error.reason)))
+      case other: Upstream5xxResponse => other.upstreamResponseCode match {
+        case BAD_GATEWAY => BadGateway(Json.toJson(AuthDownError))
+        case _ => InternalServerError(Json.toJson(DownstreamError))
+      }
     }
   }
 

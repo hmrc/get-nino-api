@@ -72,12 +72,8 @@ class RegisterNinoControllerSpec extends ControllerBaseSpec {
 
         val result = controller.register()(request)
 
-        println(Console.YELLOW + "MDC in test 1: " + MDC.getCopyOfContextMap + Console.RESET)
-
         status(result) shouldBe Status.OK
         contentAsJson(result) shouldBe Json.obj("message" -> "A response")
-
-        println(Console.YELLOW + "MDC in test 2: " + MDC.getCopyOfContextMap + Console.RESET)
 
         MDC.get(HeaderNames.xRequestId) shouldBe "1234567890"
         MDC.get(HeaderNames.xSessionId) shouldBe "0987654321"
