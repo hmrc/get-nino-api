@@ -46,14 +46,11 @@ class RegisterNinoControllerSpec extends ControllerBaseSpec {
   val mockPredicate = new PrivilegedApplicationPredicate(
     mockAuth,
     stubControllerComponents(),
+    mockAppConfig,
     ec
   )
 
   val controller: RegisterNinoController = new RegisterNinoController(stubControllerComponents(), mockService, mockPredicate)
-
-  private def mockAuthCall(request: Request[AnyContent]) = (mockAuth.authorise(_: Predicate, _: Retrieval[_])(_: HeaderCarrier, _: ExecutionContext))
-    .expects(*, *, *, *)
-    .returns(Future.successful()) anyNumberOfTimes() atLeastOnce()
 
   "Calling the register action" when {
 
@@ -67,8 +64,6 @@ class RegisterNinoControllerSpec extends ControllerBaseSpec {
           .withHeaders("Accept" -> "application/vnd.hmrc.1.0+json", HeaderNames.xRequestId -> "1234567890", HeaderNames.xSessionId -> "0987654321")
           .withMethod("POST")
           .withJsonBody(maxRegisterNinoRequestJson(false))
-
-        mockAuthCall(request)
 
         val result = controller.register()(request)
 
@@ -86,8 +81,6 @@ class RegisterNinoControllerSpec extends ControllerBaseSpec {
           .withHeaders("Accept" -> "application/vnd.hmrc.1.0+json")
           .withMethod("POST")
 
-        mockAuthCall(request)
-
         val result = controller.register()(request)
 
         status(result) shouldBe Status.BAD_REQUEST
@@ -103,8 +96,6 @@ class RegisterNinoControllerSpec extends ControllerBaseSpec {
           .withJsonBody(Json.obj(
             "aField" -> "aValue"
           ))
-
-        mockAuthCall(request)
 
         val result = controller.register()(request)
 

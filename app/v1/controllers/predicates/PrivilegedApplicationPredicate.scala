@@ -16,14 +16,15 @@
 
 package v1.controllers.predicates
 
+import config.AppConfig
 import javax.inject.{Inject, Singleton}
 import org.slf4j.MDC
 import play.api.libs.json.Json
 import play.api.mvc.{Result, _}
 import uk.gov.hmrc.auth.core.AuthProvider.PrivilegedApplication
 import uk.gov.hmrc.auth.core._
-import uk.gov.hmrc.http.{BadGatewayException, HeaderCarrier, Upstream5xxResponse}
 import uk.gov.hmrc.http.HeaderNames.{xRequestId, xSessionId}
+import uk.gov.hmrc.http.{HeaderCarrier, Upstream5xxResponse}
 import uk.gov.hmrc.play.HeaderCarrierConverter
 import v1.models.errors.{AuthDownError, DownstreamError, Error => APIError}
 
@@ -33,6 +34,7 @@ import scala.concurrent.{ExecutionContext, Future}
 class PrivilegedApplicationPredicate @Inject()(
                                                 val authConnector: AuthConnector,
                                                 val controllerComponents: ControllerComponents,
+                                                appConfig: AppConfig,
                                                 override implicit val executionContext: ExecutionContext
                                               )
   extends ActionBuilder[Request, AnyContent] with AuthorisedFunctions with BaseController {
@@ -43,6 +45,14 @@ class PrivilegedApplicationPredicate @Inject()(
     if (hc.requestId.nonEmpty && Option(MDC.get(xRequestId)).isEmpty) MDC.put(xRequestId, hc.requestId.get.value)
     if (hc.sessionId.nonEmpty && Option(MDC.get(xSessionId)).isEmpty) MDC.put(xSessionId, hc.sessionId.get.value)
 
+    if(appConfig.features.useAuth()) {
+      withAuth(request, block)
+    } else {
+      block(request)
+    }
+  }
+
+  private def withAuth[A](request: Request[A], block: Request[A] => Future[Result])(implicit hc: HeaderCarrier): Future[Result] = {
     authorised(AuthProviders(PrivilegedApplication)) {
       block(request)
     } recover {

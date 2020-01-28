@@ -34,6 +34,7 @@ class FeatureSwitchController @Inject()(
       case Some(jsonBody) => jsonBody.asOpt[FeatureSwitchModel] match {
         case Some(model) =>
           appConfig.features.useDesStub(model.useDesStub)
+          appConfig.features.useAuth(model.useAuth)
           result
         case None =>
           Logger.warn("[FeatureSwitchController][update] Unable to parse json as FeatureSwitchModel")
@@ -47,7 +48,8 @@ class FeatureSwitchController @Inject()(
 
   def result: Result = {
     Ok(Json.toJson(FeatureSwitchModel(
-      appConfig.features.useDesStub()
+      appConfig.features.useDesStub(),
+      appConfig.features.useAuth()
     )))
   }
 
