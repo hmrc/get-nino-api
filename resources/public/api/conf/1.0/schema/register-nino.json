@@ -49,9 +49,16 @@
       "description": "Individuals country",
       "$ref": "#/definitions/countryCode"
     },
-    "name": {
-      "description": "Individuals current valid name details",
-      "$ref": "#/definitions/name"
+    "names": {
+      "description": "Details of the individuals current valid names",
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 2,
+      "uniqueItems": true,
+      "items": {
+        "description": "One of an individuals currently valid names.",
+        "$ref": "#/definitions/name"
+      }
     },
     "historicNames": {
       "type": "array",
@@ -64,9 +71,16 @@
         "$ref": "#/definitions/name"
       }
     },
-    "address": {
-      "description": "Individuals current valid address details",
-      "$ref": "#/definitions/address"
+    "addresses": {
+      "description": "Details of the individuals currently valid addresses",
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 2,
+      "uniqueItems": true,
+      "items": {
+        "description": "One of an individuals current valid address details",
+        "$ref": "#/definitions/address"
+      }
     },
     "historicAddresses": {
       "type": "array",
@@ -137,11 +151,9 @@
     "gender",
     "entryDate",
     "birthDate",
-    "birthDateVerification",
     "officeNumber",
-    "country",
-    "name",
-    "address"
+    "names",
+    "addresses"
   ],
   "definitions": {
     "name": {
@@ -149,6 +161,14 @@
       "type": "object",
       "additionalProperties": false,
       "properties": {
+        "nameType": {
+          "description": "Type of name provided",
+          "type": "string",
+          "enum": [
+            "REGISTERED",
+            "ALIAS"
+          ]
+        },
         "title": {
           "description": "Name Title String",
           "type": "string",
@@ -184,8 +204,8 @@
         }
       },
       "required": [
-        "surname",
-        "startDate"
+        "nameType",
+        "surname"
       ]
     },
     "address": {
@@ -239,8 +259,9 @@
         }
       },
       "required": [
+        "addressType",
         "line1",
-        "startDate"
+        "countryCode"
       ]
     },
     "marriage": {
@@ -250,9 +271,21 @@
       "properties": {
         "maritalStatus": {
           "description": "Marital status enumeration",
-          "type": "integer",
-          "minimum": 0,
-          "maximum": 12
+          "type": "string",
+          "enum": [
+            "MARRIAGE-TERMINATED",
+            "MARRIAGE-ANNULLED",
+            "VOID",
+            "DIVORCED",
+            "WIDOWED",
+            "MARRIED",
+            "SINGLE",
+            "CIVIL-PARTNERSHIP",
+            "CIVIL-PARTNERSHIP-DISSOLVED",
+            "SURVIVING-CIVIL-PARTNERSHIP",
+            "CIVIL-PARTNERSHIP-TERMINATED",
+            "CIVIL-PARTNERSHIP-ANNULLED"
+          ]
         },
         "startDate": {
           "description": "Marriage record start date",
@@ -272,10 +305,6 @@
         },
         "forename": {
           "description": "Spouses primary forename string",
-          "$ref": "#/definitions/nameElement"
-        },
-        "secondForename": {
-          "description": "Spouses secondary forename string",
           "$ref": "#/definitions/nameElement"
         },
         "surname": {
@@ -308,10 +337,6 @@
         },
         "birthCountryCode": {
           "description": "Individuals birth country code",
-          "$ref": "#/definitions/countryCode"
-        },
-        "nationality": {
-          "description": "Individuals nationality country code",
           "$ref": "#/definitions/countryCode"
         },
         "birthSurname": {
