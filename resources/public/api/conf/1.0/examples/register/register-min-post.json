@@ -3,15 +3,25 @@
   "gender": "MALE",
   "entryDate": "10-10-2020",
   "birthDate": "10-10-2020",
-  "birthDateVerification": "VERIFIED",
   "officeNumber": "1234",
-  "country": 1,
-  "name": {
-    "surname": "ASurname",
-    "startDate": "10-10-2020"
-  },
-  "address": {
+  "applicantNames": [
+    {
+    "nameType":"REGISTERED",
+    "surname": "ASurname"
+    }
+  ],
+
+  "applicantHistoricNames": [
+    {
+      "nameType":"REGISTERED",
+      "surname": "JOHN"
+    }
+],
+  "applicantAddresses": {
+    "addressType":"RESIDENTIAL",
     "line1": "4 AStreetName",
-    "startDate": "10-10-2020"
+    "countryCode": "NGA"
   }
 }
+
+

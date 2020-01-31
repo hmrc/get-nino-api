@@ -6,8 +6,7 @@
   "birthDateVerification": "VERIFIED",
   "officeNumber": "1234",
   "contactNumber": "1234567890",
-  "country": 1,
-  "name": {
+  "applicantNames": {
     "title": "MR",
     "forename": "AForename",
     "secondForename": "NotSure",
@@ -15,25 +14,27 @@
     "startDate": "10-10-2020",
     "endDate": "10-10-2020"
   },
-  "historicNames": [
+  "applicantHistoricNames": [
     {
+      "nameType":"REGISTERED",
       "title": "MRS",
       "forename": "AForename",
-      "secondForename": "NotSure",
+      "middleName": "NotSure",
       "surname": "ASurname",
       "startDate": "10-10-2020",
       "endDate": "10-10-2020"
     },
     {
+      "nameType":"REGISTERED",
       "title": "MISS",
       "forename": "AForename",
-      "secondForename": "NotSure",
+      "middleName": "NotSure",
       "surname": "ASurname",
       "startDate": "10-10-2020",
       "endDate": "10-10-2020"
     }
   ],
-  "address": {
+  "applicantAddresses": {
     "addressType": "RESIDENTIAL",
     "line1": "4 AStreetName",
     "line2": "Some",
@@ -45,7 +46,7 @@
     "startDate": "10-10-2020",
     "endDate": "10-10-2020"
   },
-  "historicAddresses": [
+  "applicantHistoricAddresses": [
     {
       "addressType": "RESIDENTIAL",
       "line1": "1 AStreetName",
@@ -71,11 +72,10 @@
       "endDate": "10-10-2020"
     }
   ],
-  "originData": {
+  "applicantOriginDetails": {
     "birthTown": "ATown",
     "birthProvince": "SomeProvince",
     "birthCountryCode": 200,
-    "nationality": 2,
     "birthSurname": "ASurname",
     "maternalForename": "MotherForename",
     "maternalSurname": "AnotherSurname",
@@ -90,14 +90,14 @@
       "line5": "ItsTheFinalLine"
     }
   },
-  "priorResidency": [
+  "applicantPriorResidency": [
     {
-      "priorStartDate": "10-10-2020",
-      "priorEndDate": "10-10-2020"
+      "startDate": "10-10-2020",
+      "endDate": "10-10-2020"
     },
     {
-      "priorStartDate": "10-11-2020",
-      "priorEndDate": "10-11-2020"
+      "startDate": "10-11-2020",
+      "endDate": "10-11-2020"
     }
   ],
   "abroadLiability": {
