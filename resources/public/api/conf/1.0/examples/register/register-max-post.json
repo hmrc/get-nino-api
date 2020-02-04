@@ -1,11 +1,12 @@
 {
-  "nino": "AA111111A",
+  "nino": "GW629902A",
   "gender": "MALE",
   "entryDate": "10-10-2020",
   "birthDate": "10-10-2020",
   "birthDateVerification": "VERIFIED",
   "officeNumber": "1234",
   "contactNumber": "1234567890",
+  "country": "GBR",
   "names": {
     "nameType":"REGISTERED",
     "title": "MR",
@@ -76,7 +77,7 @@
   "applicantOriginDetails": {
     "birthTown": "ATown",
     "birthProvince": "SomeProvince",
-    "birthCountryCode": 200,
+    "birthCountryCode": "GBR",
     "birthSurname": "ASurname",
     "maternalForename": "MotherForename",
     "maternalSurname": "AnotherSurname",
