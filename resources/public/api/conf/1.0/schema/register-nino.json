@@ -129,21 +129,6 @@
           }
         }
       }
-    },
-    "abroadLiability": {
-      "description": "Liability Object",
-      "type": "object",
-      "additionalProperties": false,
-      "properties": {
-        "liabilityStartDate": {
-          "description": "Abroad Liability period start date",
-          "$ref": "#/definitions/date"
-        },
-        "liabilityEndDate": {
-          "description": "Abroad Liability period end date",
-          "$ref": "#/definitions/date"
-        }
-      }
     }
   },
   "required": [
@@ -247,7 +232,7 @@
         },
         "countryCode": {
           "description": "Address Country Code",
-          "$ref": "#/definitions/addressCountry"
+          "$ref": "#/definitions/countryCode"
         },
         "startDate": {
           "description": "Individuals address record start date",
@@ -329,11 +314,6 @@
         "birthProvince": {
           "description": "Individuals birth province",
           "$ref": "#/definitions/originsElement"
-        },
-        "birthCountry": {
-          "description": "Individuals country of birth",
-          "type": "string",
-          "pattern": "^([A-Z][A-Za-z]{1,34})$"
         },
         "birthCountryCode": {
           "description": "Individuals birth country code",
@@ -432,10 +412,6 @@
       "description": "ISO 3166-1 alpha-3 Country Codes",
       "type": "string",
       "pattern": "^{A-Z}{3}$"
-    },
-    "addressCountry": {
-      "description": "Country",
-      "type": "string"
     }
   }
 }
