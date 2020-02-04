@@ -18,3 +18,17 @@ traits:
         type: string
         required: true
         example: 'application/vnd.hmrc.1.0+json'
+  correlationID:
+    headers:
+      CorrelationId:
+        description: A UUID identifier of the transaction.
+        type: string
+        required: true
+        example: 'a1e8057e-fbbc-47a8-a8b4-78d9f015c253'
+   originatorID:
+    headers:
+      OriginatorId:
+        description: Mandatory. Consumer ID
+        type: string
+        required: true
+        example: 'DA2_DWP_REG'

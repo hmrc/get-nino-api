@@ -1,13 +1,14 @@
 {
-  "nino": "AA111111A",
+  "nino": "GW629902A",
   "gender": "MALE",
   "entryDate": "10-10-2020",
   "birthDate": "10-10-2020",
   "birthDateVerification": "VERIFIED",
   "officeNumber": "1234",
   "contactNumber": "1234567890",
-  "country": 1,
-  "name": {
+  "country": "GBR",
+  "names": {
+    "nameType":"REGISTERED",
     "title": "MR",
     "forename": "AForename",
     "secondForename": "NotSure",
@@ -17,6 +18,7 @@
   },
   "historicNames": [
     {
+      "nameType":"REGISTERED",
       "title": "MRS",
       "forename": "AForename",
       "secondForename": "NotSure",
@@ -25,6 +27,7 @@
       "endDate": "10-10-2020"
     },
     {
+      "nameType":"REGISTERED",
       "title": "MISS",
       "forename": "AForename",
       "secondForename": "NotSure",
@@ -45,7 +48,7 @@
     "startDate": "10-10-2020",
     "endDate": "10-10-2020"
   },
-  "historicAddresses": [
+  "applicantHistoricAddresses": [
     {
       "addressType": "RESIDENTIAL",
       "line1": "1 AStreetName",
@@ -71,11 +74,10 @@
       "endDate": "10-10-2020"
     }
   ],
-  "originData": {
+  "applicantOriginDetails": {
     "birthTown": "ATown",
     "birthProvince": "SomeProvince",
-    "birthCountryCode": 200,
-    "nationality": 2,
+    "birthCountryCode": "GBR",
     "birthSurname": "ASurname",
     "maternalForename": "MotherForename",
     "maternalSurname": "AnotherSurname",
@@ -90,7 +92,7 @@
       "line5": "ItsTheFinalLine"
     }
   },
-  "priorResidency": [
+  "applicantPriorResidency": [
     {
       "priorStartDate": "10-10-2020",
       "priorEndDate": "10-10-2020"
