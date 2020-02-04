@@ -404,10 +404,9 @@
       "pattern": "^(?=.{1,35}$)([A-Z]([-'.&\\/ ]{0,1}[A-Za-z]+)*[A-Za-z]?)$"
     },
     "countryCode": {
-      "description": "Country Code Range",
-      "type": "integer",
-      "minimum": 0,
-      "maximum": 286
+      "description": "ISO 3166-1 alpha-3 Country Codes",
+      "type": "string",
+      "pattern": "^{A-Z}{3}$"
     },
     "addressCountry": {
       "description": "Country",
