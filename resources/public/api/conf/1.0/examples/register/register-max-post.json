@@ -6,7 +6,7 @@
   "birthDateVerification": "VERIFIED",
   "officeNumber": "1234",
   "contactNumber": "1234567890",
-  "applicantNames": {
+  "names": {
     "nameType":"REGISTERED",
     "title": "MR",
     "forename": "AForename",
@@ -15,12 +15,12 @@
     "startDate": "10-10-2020",
     "endDate": "10-10-2020"
   },
-  "applicantHistoricNames": [
+  "historicNames": [
     {
       "nameType":"REGISTERED",
       "title": "MRS",
       "forename": "AForename",
-      "middleName": "NotSure",
+      "secondForename": "NotSure",
       "surname": "ASurname",
       "startDate": "10-10-2020",
       "endDate": "10-10-2020"
@@ -29,13 +29,13 @@
       "nameType":"REGISTERED",
       "title": "MISS",
       "forename": "AForename",
-      "middleName": "NotSure",
+      "secondForename": "NotSure",
       "surname": "ASurname",
       "startDate": "10-10-2020",
       "endDate": "10-10-2020"
     }
   ],
-  "applicantAddresses": {
+  "address": {
     "addressType": "RESIDENTIAL",
     "line1": "4 AStreetName",
     "line2": "Some",
@@ -93,12 +93,12 @@
   },
   "applicantPriorResidency": [
     {
-      "startDate": "10-10-2020",
-      "endDate": "10-10-2020"
+      "priorStartDate": "10-10-2020",
+      "priorEndDate": "10-10-2020"
     },
     {
-      "startDate": "10-11-2020",
-      "endDate": "10-11-2020"
+      "priorStartDate": "10-11-2020",
+      "priorEndDate": "10-11-2020"
     }
   ],
   "abroadLiability": {

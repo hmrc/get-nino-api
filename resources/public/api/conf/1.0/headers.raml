@@ -20,20 +20,6 @@ traits:
         example: 'application/vnd.hmrc.1.0+json'
   acceptJson:
     headers:
-      Authorization:
-        description: Authorization header based on OAuth2 token
-        type: string
-        required: true
-        example: 'Bearer QWA8BdXvGvQjqf2c4Cmql81yuW4a'
-  acceptJson:
-    headers:
-      Environment:
-        description: Mandatory. Environment to be used
-        type: string
-        required: true
-        example: 'ist0'
-  acceptJson:
-    headers:
       CorrelationId:
         description: A UUID identifier of the transaction.
         type: string

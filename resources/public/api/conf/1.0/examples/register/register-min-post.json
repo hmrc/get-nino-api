@@ -4,20 +4,20 @@
   "entryDate": "10-10-2020",
   "birthDate": "10-10-2020",
   "officeNumber": "1234",
-  "applicantNames": [
+  "names": [
     {
     "nameType":"REGISTERED",
     "surname": "ASurname"
     }
   ],
 
-  "applicantHistoricNames": [
+  "historicNames": [
     {
       "nameType":"REGISTERED",
       "surname": "JOHN"
     }
 ],
-  "applicantAddresses": {
+  "addresses": {
     "addressType":"RESIDENTIAL",
     "line1": "4 AStreetName",
     "countryCode": "NGA"
