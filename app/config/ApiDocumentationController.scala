@@ -44,15 +44,15 @@ class ApiDocumentationController @Inject()(cc: ControllerComponents,
          |{
          |  "scopes": [
          |    {
-         |      "key": "read:get-nino",
-         |      "name": "Get NINO",
-         |      "description": "Get NINO"
+         |      "key": "read:register-nino",
+         |      "name": "Register NINO",
+         |      "description": "Register NINO"
          |    }
          |  ],
          |  "api": {
-         |    "name": "Get NINO",
-         |    "description": "Get NINO information for downstream service",
-         |    "context": "get-nino-api",
+         |    "name": "Register NINO",
+         |    "description": "Register NINO information for downstream service",
+         |    "context": "misc/register-nino",
          |    "categories": ["PRIVATE_GOVERNMENT"],
          |    "versions": [
          |      {
