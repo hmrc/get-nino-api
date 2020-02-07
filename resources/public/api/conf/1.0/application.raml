@@ -1,7 +1,7 @@
 #%RAML 1.0
 
-title: Get NINO API
-description: Get NINO API Specifications
+title: Register NINO API
+description: Register NINO API Specifications
 version: 1.0
 protocols: [ HTTPS ]
 baseUri: https://api.service.hmrc.gov.uk/
@@ -22,6 +22,6 @@ documentation:
   - title: Errors
     content: !include https://developer.service.hmrc.gov.uk/api-documentation/assets/common/docs/errors.md
 
-'/get-nino-api':
-  '/register':
+'/misc/register-nino':
+  '/process-nino':
      post: !include register-post.raml
