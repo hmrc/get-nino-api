@@ -52,7 +52,7 @@ object DateModel {
 
     dateInput
       .filter(
-        JsonValidationError("Date has failed validation. Needs to be in format: dd-MM-yyyy")
+        JsonValidationError("Date has failed validation. Needs to be in format of dd-MM-yyyy")
       )(dateString => isValidDwpDate(dateString))
       .filter(
         JsonValidationError("Transformed date fails NPS validation.")

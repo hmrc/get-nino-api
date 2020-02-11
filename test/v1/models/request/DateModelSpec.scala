@@ -62,7 +62,7 @@ class DateModelSpec extends UnitSpec {
           jsonForReadInvalidDate.as[DateModel]
         }
 
-        thrownException.getMessage should include("Date has failed validation. Needs to be in format: dd-MM-yyyy")
+        thrownException.getMessage should include("Date has failed validation. Needs to be in format of dd-MM-yyyy")
       }
 
       "the date field passes DWP validation, but fails NPS validation" in {
