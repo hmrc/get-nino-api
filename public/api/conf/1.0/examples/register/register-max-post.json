@@ -7,18 +7,20 @@
   "officeNumber": "1234",
   "contactNumber": "1234567890",
   "country": "GBR",
-  "names": {
-    "nameType":"REGISTERED",
-    "title": "MR",
-    "forename": "AForename",
-    "secondForename": "NotSure",
-    "surname": "ASurname",
-    "startDate": "10-10-2020",
-    "endDate": "10-10-2020"
-  },
+  "names": [
+    {
+      "nameType": "REGISTERED",
+      "title": "MR",
+      "forename": "AForename",
+      "secondForename": "NotSure",
+      "surname": "ASurname",
+      "startDate": "10-10-2020",
+      "endDate": "10-10-2020"
+    }
+  ],
   "historicNames": [
     {
-      "nameType":"REGISTERED",
+      "nameType": "REGISTERED",
       "title": "MRS",
       "forename": "AForename",
       "secondForename": "NotSure",
@@ -27,7 +29,7 @@
       "endDate": "10-10-2020"
     },
     {
-      "nameType":"REGISTERED",
+      "nameType": "REGISTERED",
       "title": "MISS",
       "forename": "AForename",
       "secondForename": "NotSure",
@@ -36,19 +38,21 @@
       "endDate": "10-10-2020"
     }
   ],
-  "address": {
-    "addressType": "RESIDENTIAL",
-    "line1": "4 AStreetName",
-    "line2": "Some",
-    "line3": "Old",
-    "line4": "Place",
-    "line5": "ItsTheFinalLine",
-    "postcode": "AA11AA",
-    "countryCode": "GBR",
-    "startDate": "10-10-2020",
-    "endDate": "10-10-2020"
-  },
-  "applicantHistoricAddresses": [
+  "addresses": [
+    {
+      "addressType": "RESIDENTIAL",
+      "line1": "4 AStreetName",
+      "line2": "Some",
+      "line3": "Old",
+      "line4": "Place",
+      "line5": "ItsTheFinalLine",
+      "postcode": "AA11AA",
+      "countryCode": "GBR",
+      "startDate": "10-10-2020",
+      "endDate": "10-10-2020"
+    }
+  ],
+  "historicAddresses": [
     {
       "addressType": "RESIDENTIAL",
       "line1": "1 AStreetName",
@@ -74,7 +78,7 @@
       "endDate": "10-10-2020"
     }
   ],
-  "applicantOriginDetails": {
+  "originData": {
     "birthTown": "ATown",
     "birthProvince": "SomeProvince",
     "birthCountryCode": "GBR",
@@ -92,7 +96,7 @@
       "line5": "ItsTheFinalLine"
     }
   },
-  "applicantPriorResidency": [
+  "priorResidency": [
     {
       "priorStartDate": "10-10-2020",
       "priorEndDate": "10-10-2020"
@@ -101,9 +105,5 @@
       "priorStartDate": "10-11-2020",
       "priorEndDate": "10-11-2020"
     }
-  ],
-  "abroadLiability": {
-    "liabilityStartDate": "10-10-2020",
-    "liabilityEndDate": "10-10-2020"
-  }
+  ]
 }

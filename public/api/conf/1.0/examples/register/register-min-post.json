@@ -6,22 +6,23 @@
   "officeNumber": "1234",
   "names": [
     {
-    "nameType":"REGISTERED",
-    "surname": "ASurname"
+      "nameType": "REGISTERED",
+      "surname": "ASurname"
     }
   ],
-
   "historicNames": [
     {
-      "nameType":"REGISTERED",
+      "nameType": "REGISTERED",
       "surname": "JOHN"
     }
-],
-  "addresses": {
-    "addressType":"RESIDENTIAL",
-    "line1": "4 AStreetName",
-    "countryCode": "NGA"
-  }
+  ],
+  "addresses": [
+    {
+      "addressType": "RESIDENTIAL",
+      "line1": "4 AStreetName",
+      "countryCode": "NGA"
+    }
+  ]
 }
 
 

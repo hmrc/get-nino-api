@@ -411,7 +411,7 @@
     "countryCode": {
       "description": "ISO 3166-1 alpha-3 Country Codes",
       "type": "string",
-      "pattern": "^{A-Z}{3}$"
+      "pattern": "^[A-Z]{3}$"
     }
   }
 }
