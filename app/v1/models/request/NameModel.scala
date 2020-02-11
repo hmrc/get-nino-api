@@ -63,7 +63,7 @@ object NameModel {
     case None => true
   }
 
-  private val nameRegex = "^(?=.{1,35}$)([A-Z]([-'.&\\\\/ ]{0,1}[A-Za-z]+)*[A-Za-z]?)$"
+  private val nameRegex = "^(?=.{1,99}$)([A-Z]([-'. ]{0,1}[A-Za-z ]+)*[A-Za-z]?)$"
 
   private[models] def validateName[T](input: T, fieldName: String): Boolean = {
     val checkValidity: String => Boolean = { fieldValue =>

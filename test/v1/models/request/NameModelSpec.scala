@@ -135,8 +135,8 @@ class NameModelSpec extends UnitSpec {
           runValidation("-=[];#'/./", "SomeNameType") shouldBe false
         }
 
-        "the name is longer 35 characters" in {
-          runValidation("Thisnameisreallyreallylongmorethanth", "SomeNameType") shouldBe false
+        "the name is longer than 99 characters" in {
+          runValidation("Thisnameisreallyreallylongmorethanthanninentyninecharacterskindoflongnobodyshouldhaveanamethatisthis", "SomeNameType") shouldBe false
         }
 
         "the name is less than 3 characters" in {
