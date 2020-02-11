@@ -27,12 +27,12 @@ case class NinoApplication(
                             birthDateVerification: BirthDateVerification,
                             officeNumber: String,
                             contactNumber: Option[String],
-                            country: Int,
+                            nationalityCode: Int,
                             name: NameModel,
                             historicNames: Option[Seq[NameModel]],
                             address: AddressModel,
                             historicAddresses: Option[Seq[AddressModel]],
-                            marriages: Option[Seq[Marriage]],
+                            applicantMarriages: Option[Seq[Marriage]],
                             originData: Option[OriginData],
                             priorResidency: Option[Seq[PriorResidencyModel]],
                             abroadLiability: Option[AbroadLiabilityModel]
@@ -61,12 +61,12 @@ object NinoApplication {
   private val birthDateVerificationPath = __ \ "birthDateVerification"
   private val officeNumberPath = __ \ "officeNumber"
   private val contactNumberPath = __ \ "contactNumber"
-  private val countryPath = __ \ "country"
+  private val nationalityPath = __ \ "country"
   private val namePath = __ \ "name"
   private val historicalNamesPath = __ \ "historicNames"
   private val addressPath = __ \ "address"
   private val historicalAddressesPath = __ \ "historicAddresses"
-  private val marriagesPath = __ \ "marriages"
+  private val applicantMarriagesPath = __ \ "marriages"
   private val originDataPath = __ \ "originData"
   private val priorResidencyPath = __ \ "priorResidency"
   private val abroadLiabilityPath = __ \ "abroadLiability"
@@ -83,12 +83,12 @@ object NinoApplication {
       birthDateVerificationPath.read[BirthDateVerification] and
       officeNumberPath.read[String].filter(commonError("office number"))(validateAgainstRegex(_, officeNumberRegex)) and
       contactNumberPath.readNullable[String].filter(commonError("contact number"))(_.fold(true)(validateAgainstRegex(_, contactNumberRegex))) and
-      countryPath.read[Int] and
+      nationalityPath.read[Int] and
       namePath.read[NameModel] and
       historicalNamesPath.readNullable[Seq[NameModel]] and
       addressPath.read[AddressModel] and
       historicalAddressesPath.readNullable[Seq[AddressModel]] and
-      marriagesPath.readNullable[Seq[Marriage]] and
+      applicantMarriagesPath.readNullable[Seq[Marriage]] and
       originDataPath.readNullable[OriginData] and
       priorResidencyPath.readNullable[Seq[PriorResidencyModel]] and
       abroadLiabilityPath.readNullable[AbroadLiabilityModel]

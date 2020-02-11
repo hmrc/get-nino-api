@@ -21,36 +21,58 @@ import play.api.libs.json.{JsObject, Json}
 
 class MarriageSpec extends WordSpec with Matchers {
 
-  private lazy val maxMarriageJson: Boolean => JsObject = isReads => Json.obj(
-    "maritalStatus" -> 1,
-    "startDate" -> (if (isReads) "01-01-1990" else "1990-01-01"),
-    "endDate" -> (if (isReads) "01-01-2000" else "2000-01-01"),
-    "partnerNino" -> "AA000000B",
-    "birthDate" -> (if (isReads) "01-01-1970" else "1970-01-01"),
-    "forename" -> "Testforename",
-    "secondForename" -> "Testsecondforename",
-    "surname" -> "Testsurname"
-  )
+  private lazy val maxMarriageJson: Boolean => JsObject = isReads =>
+    if (isReads) {
+      Json.obj(
+        "maritalStatus" -> 1,
+        "startDate" -> "01-01-1990",
+        "endDate" -> "01-01-2000",
+        "partnerNino" -> "AA000000B",
+        "birthDate" -> "01-01-1970",
+        "forename" -> "Testforename",
+        "secondForename" -> "Testsecondforename",
+        "surname" -> "Testsurname"
+      )
+    } else {
+      Json.obj(
+        "maritalStatus" -> 1,
+        "startDate" -> "1990-01-01",
+        "endDate" -> "2000-01-01",
+        "partnerNino" -> "AA000000B",
+        "spouseDateOfBirth" -> "1970-01-01",
+        "spouseFirstName" -> "Testforename",
+        "secondForename" -> "Testsecondforename",
+        "spouseSurname" -> "Testsurname"
+      )
+    }
 
-  private lazy val minMarriageJson: Boolean => JsObject = isReads => Json.obj(
-    "partnerNino" -> "AA000000B",
-    "birthDate" -> (if (isReads) "01-01-1970" else "1970-01-01")
-  )
+  private lazy val minMarriageJson: Boolean => JsObject = isReads =>
+    if (isReads) {
+      Json.obj(
+        "partnerNino" -> "AA000000B",
+        "birthDate" -> "01-01-1970"
+      )
+    } else {
+      Json.obj(
+        "partnerNino" -> "AA000000B",
+        "spouseDateOfBirth" -> "1970-01-01"
+      )
+    }
 
   private lazy val maxMarriageModel: Marriage = Marriage(
     maritalStatus = Some(1),
     startDate = Some(DateModel("01-01-1990")),
     endDate = Some(DateModel("01-01-2000")),
     partnerNino = "AA000000B",
-    birthDate = DateModel("01-01-1970"),
-    forename = Some("Testforename"),
+    spouseDateOfBirth = DateModel("01-01-1970"),
+    spouseFirstName = Some("Testforename"),
     secondForename = Some("Testsecondforename"),
-    surname = Some("Testsurname")
+    spouseSurname = Some("Testsurname")
   )
 
   private lazy val minMarriageModel: Marriage = Marriage(
     partnerNino = "AA000000B",
-    birthDate = DateModel("01-01-1970")
+    spouseDateOfBirth = DateModel("01-01-1970")
   )
 
 

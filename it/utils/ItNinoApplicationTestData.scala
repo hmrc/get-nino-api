@@ -190,7 +190,7 @@ object ItNinoApplicationTestData {
       birthDateVerification = Verified,
       officeNumber = "1234",
       contactNumber = None,
-      country = 1,
+      nationalityCode = 1,
       name = NameModel(
         surname = "ASurname",
         startDate = DateModel(writeOrReadDate)
@@ -203,7 +203,7 @@ object ItNinoApplicationTestData {
         DateModel(writeOrReadDate), None
       ),
       historicAddresses = None,
-      marriages = None,
+      applicantMarriages = None,
       originData = None,
       priorResidency = None,
       abroadLiability = None
@@ -220,7 +220,7 @@ object ItNinoApplicationTestData {
       birthDateVerification = Verified,
       officeNumber = "1234",
       contactNumber = None,
-      country = 1,
+      nationalityCode = 1,
       name = NameModel(
         surname = "ASurname",
         startDate = DateModel(writeOrReadDate)
@@ -233,7 +233,7 @@ object ItNinoApplicationTestData {
         DateModel(writeOrReadDate), None
       ),
       historicAddresses = None,
-      marriages = None,
+      applicantMarriages = None,
       originData = None,
       priorResidency = None,
       abroadLiability = None
@@ -251,7 +251,7 @@ object ItNinoApplicationTestData {
       birthDateVerification = Verified,
       officeNumber = "1234",
       contactNumber = Some("1234567890"),
-      country = 1,
+      nationalityCode = 1,
       name = NameModel(
         title = Some("MR"),
         forename = Some("AForename"),
@@ -316,26 +316,26 @@ object ItNinoApplicationTestData {
           Some(DateModel(writeOrReadDate))
         )
       )),
-      marriages = Some(Seq(
+      applicantMarriages = Some(Seq(
         Marriage(
           maritalStatus = Some(1),
           startDate = Some(DateModel(writeOrReadDate)),
           endDate = Some(DateModel(writeOrReadDate)),
           partnerNino = "AA000000B",
-          birthDate = DateModel(writeOrReadDate),
-          forename = Some("Testforename"),
+          spouseDateOfBirth = DateModel(writeOrReadDate),
+          spouseFirstName = Some("Testforename"),
           secondForename = Some("Testsecondforename"),
-          surname = Some("Testsurname")
+          spouseSurname = Some("Testsurname")
         ),
         Marriage(
           maritalStatus = Some(1),
           startDate = Some(DateModel(writeOrReadDate)),
           endDate = Some(DateModel(writeOrReadDate)),
           partnerNino = "AA000000C",
-          birthDate = DateModel(writeOrReadDate),
-          forename = Some("Othertestforename"),
+          spouseDateOfBirth = DateModel(writeOrReadDate),
+          spouseFirstName = Some("Othertestforename"),
           secondForename = Some("Testsecondforename"),
-          surname = Some("Testsurname")
+          spouseSurname = Some("Testsurname")
         )
       )),
       originData = Some(OriginData(
