@@ -21,10 +21,20 @@ import support.UnitSpec
 
 class PriorResidencyModelSpec extends UnitSpec {
   val minJson: JsObject = Json.obj()
-  val maxJson: Boolean => JsObject = isWrite => Json.obj(
-    "priorStartDate" -> (if(isWrite) "2020-10-10" else "10-10-2020"),
-    "priorEndDate" -> (if(isWrite) "2020-10-10" else "10-10-2020")
-  )
+
+  val maxJson: Boolean => JsObject = isWrite => {
+    if(isWrite){
+      Json.obj(
+       "startDate" -> "2020-10-10",
+        "endDate" -> "2020-10-10"
+      )
+    } else{
+      Json.obj(
+        "priorStartDate" -> "10-10-2020",
+        "priorEndDate" -> "10-10-2020"
+      )
+    }
+  }
 
   val modelMin = PriorResidencyModel()
   val modelMax = PriorResidencyModel(Some(DateModel("10-10-2020")), Some(DateModel("10-10-2020")))

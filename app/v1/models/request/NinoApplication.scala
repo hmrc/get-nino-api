@@ -33,8 +33,8 @@ case class NinoApplication(
                             address: AddressModel,
                             historicAddresses: Option[Seq[AddressModel]],
                             marriages: Option[Seq[Marriage]],
-                            originData: Option[OriginData],
-                            priorResidency: Option[Seq[PriorResidencyModel]],
+                            applicantOrigin: Option[OriginData],
+                            applicantPriorResidency: Option[Seq[PriorResidencyModel]],
                             abroadLiability: Option[AbroadLiabilityModel]
                           )
 
