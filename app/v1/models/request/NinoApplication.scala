@@ -30,8 +30,8 @@ case class NinoApplication(
                             country: Int,
                             name: NameModel,
                             historicNames: Option[Seq[NameModel]],
-                            address: AddressModel,
-                            historicAddresses: Option[Seq[AddressModel]],
+                            applicantAddresses: Seq[AddressModel],
+                            applicantHistoricAddresses: Option[Seq[AddressModel]],
                             marriages: Option[Seq[Marriage]],
                             originData: Option[OriginData],
                             priorResidency: Option[Seq[PriorResidencyModel]],
@@ -64,7 +64,7 @@ object NinoApplication {
   private val countryPath = __ \ "country"
   private val namePath = __ \ "name"
   private val historicalNamesPath = __ \ "historicNames"
-  private val addressPath = __ \ "address"
+  private val addressesPath = __ \ "address"
   private val historicalAddressesPath = __ \ "historicAddresses"
   private val marriagesPath = __ \ "marriages"
   private val originDataPath = __ \ "originData"
@@ -86,7 +86,7 @@ object NinoApplication {
       countryPath.read[Int] and
       namePath.read[NameModel] and
       historicalNamesPath.readNullable[Seq[NameModel]] and
-      addressPath.read[AddressModel] and
+      addressesPath.read[AddressModel].map(Seq(_)) and
       historicalAddressesPath.readNullable[Seq[AddressModel]] and
       marriagesPath.readNullable[Seq[Marriage]] and
       originDataPath.readNullable[OriginData] and

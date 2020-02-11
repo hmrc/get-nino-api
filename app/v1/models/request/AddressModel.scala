@@ -21,11 +21,11 @@ import play.api.libs.functional.syntax._
 import play.api.libs.json._
 
 case class AddressModel(addressType: Option[AddressType],
-                        line1: AddressLine,
-                        line2: Option[AddressLine],
-                        line3: Option[AddressLine],
-                        line4: Option[AddressLine],
-                        line5: Option[AddressLine],
+                        addressLine1: AddressLine,
+                        addressLine2: Option[AddressLine],
+                        addressLine3: Option[AddressLine],
+                        addressLine4: Option[AddressLine],
+                        addressLine5: Option[AddressLine],
                         postcode: Option[Postcode],
                         countryCode: Option[String],
                         startDate: DateModel,

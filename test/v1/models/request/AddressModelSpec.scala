@@ -21,27 +21,30 @@ import play.api.libs.json.{JsValue, Json}
 
 class AddressModelSpec extends WordSpec with Matchers {
 
-  val minimumAddressJson: Boolean => JsValue = isReads =>
+  val minimumAddressJson: Boolean => JsValue = isReads => {
+
+    val line1Path = if (isReads) "line1" else "addressLine1"
 
     Json.obj(
-      "line1" -> "1234 Test Avenue",
+      line1Path -> "1234 Test Avenue",
       if (isReads) {
         "startDate" -> "01-01-2019"
       } else {
         "startDate" -> "2019-01-01"
       }
     )
+  }
 
 
   def maximumAddressJson: Boolean => JsValue = isReads => {
-
+    val addressLinePrefix = (lineNo: Int) => if (isReads) s"line$lineNo" else s"addressLine$lineNo"
     Json.obj(
       "addressType" -> "RESIDENTIAL",
-      "line1" -> "1234 Test Avenue",
-      "line2" -> "Test Line 2",
-      "line3" -> "Test Line 3",
-      "line4" -> "Test Line 4",
-      "line5" -> "Test Line 5",
+      addressLinePrefix(1) -> "1234 Test Avenue",
+      addressLinePrefix(2) -> "Test Line 2",
+      addressLinePrefix(3) -> "Test Line 3",
+      addressLinePrefix(4) -> "Test Line 4",
+      addressLinePrefix(5) -> "Test Line 5",
       "postcode" -> "TE5 5LN",
       "countryCode" -> "GBR"
     ) ++ (if (isReads) {
@@ -62,11 +65,11 @@ class AddressModelSpec extends WordSpec with Matchers {
   val minimumAddressModel =
     AddressModel(
       addressType = None,
-      line1 = AddressLine("1234 Test Avenue"),
-      line2 = None,
-      line3 = None,
-      line4 = None,
-      line5 = None,
+      addressLine1 = AddressLine("1234 Test Avenue"),
+      addressLine2 = None,
+      addressLine3 = None,
+      addressLine4 = None,
+      addressLine5 = None,
       postcode = None,
       countryCode = None,
       startDate = DateModel("01-01-2019"),
@@ -76,11 +79,11 @@ class AddressModelSpec extends WordSpec with Matchers {
   val maximumAddressModel =
     AddressModel(
       addressType = Some(Residential),
-      line1 = AddressLine("1234 Test Avenue"),
-      line2 = Some(AddressLine("Test Line 2")),
-      line3 = Some(AddressLine("Test Line 3")),
-      line4 = Some(AddressLine("Test Line 4")),
-      line5 = Some(AddressLine("Test Line 5")),
+      addressLine1 = AddressLine("1234 Test Avenue"),
+      addressLine2 = Some(AddressLine("Test Line 2")),
+      addressLine3 = Some(AddressLine("Test Line 3")),
+      addressLine4 = Some(AddressLine("Test Line 4")),
+      addressLine5 = Some(AddressLine("Test Line 5")),
       postcode = Some(Postcode("TE5 5LN")),
       countryCode = Some("GBR"),
       startDate = DateModel("01-01-2019"),
