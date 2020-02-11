@@ -191,11 +191,11 @@ object ItNinoApplicationTestData {
       officeNumber = "1234",
       contactNumber = None,
       country = 1,
-      name = NameModel(
+      applicantNames = Seq(NameModel(
         surname = "ASurname",
         startDate = DateModel(writeOrReadDate)
-      ),
-      historicNames = None,
+      )),
+      applicantHistoricNames = None,
       address = AddressModel(
         None,
         AddressLine("4 AStreetName"),
@@ -221,11 +221,11 @@ object ItNinoApplicationTestData {
       officeNumber = "1234",
       contactNumber = None,
       country = 1,
-      name = NameModel(
+      applicantNames = Seq(NameModel(
         surname = "ASurname",
         startDate = DateModel(writeOrReadDate)
-      ),
-      historicNames = None,
+      )),
+      applicantHistoricNames = None,
       address = AddressModel(
         None,
         AddressLine("4 AStreetName"),
@@ -252,15 +252,15 @@ object ItNinoApplicationTestData {
       officeNumber = "1234",
       contactNumber = Some("1234567890"),
       country = 1,
-      name = NameModel(
+      applicantNames = Seq(NameModel(
         title = Some("MR"),
-        forename = Some("AForename"),
-        secondForename = Some("NotSure"),
+        firstName = Some("AForename"),
+        middleName = Some("NotSure"),
         surname = "ASurname",
         startDate = DateModel(writeOrReadDate),
         endDate = Some(DateModel(writeOrReadDate))
-      ),
-      historicNames = Some(Seq(
+      )),
+      applicantHistoricNames = Some(Seq(
         NameModel(
           Some("MRS"),
           Some("AForename"),

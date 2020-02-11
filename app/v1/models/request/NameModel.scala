@@ -22,8 +22,8 @@ import play.api.libs.json._
 
 case class NameModel(
                       title: Option[String] = None,
-                      forename: Option[String] = None,
-                      secondForename: Option[String] = None,
+                      firstName: Option[String] = None,
+                      middleName: Option[String] = None,
                       surname: String,
                       startDate: DateModel,
                       endDate: Option[DateModel] = None
