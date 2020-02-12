@@ -21,7 +21,6 @@ import uk.gov.hmrc.http.HeaderCarrier
 import v1.connectors.DesConnector
 import v1.connectors.httpParsers.HttpResponseTypes.HttpPostResponse
 import v1.models.request.NinoApplication
-import v1.models.response.DesResponseModel
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -31,7 +30,7 @@ class DesService @Inject()(
                           ) {
 
   def registerNino(ninoApplication: NinoApplication)
-                  (implicit hc: HeaderCarrier, ec: ExecutionContext): Future[HttpPostResponse[DesResponseModel]] = {
+                  (implicit hc: HeaderCarrier, ec: ExecutionContext): Future[HttpPostResponse[Boolean]] = {
     desConnector.sendRegisterRequest(ninoApplication)
   }
 

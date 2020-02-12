@@ -47,28 +47,16 @@ class RegisterNinoISpec extends IntegrationBaseSpec {
 
       "any valid request is made" should {
 
-        "return a 200 status code" in new Test {
+        "return a 202 status code" in new Test {
           appConfig.features.useDesStub(true)
 
           override def setupStubs(): StubMapping = {
             AuditStub.audit()
-            DesStub.stubCall(Status.OK, Json.obj("message" -> "A response"), stubbed = true)
+            DesStub.stubCall(Status.ACCEPTED, None, stubbed = true)
           }
 
           lazy val response: WSResponse = await(request().post(maxRegisterNinoRequestJson(false)))
-          response.status shouldBe Status.OK
-        }
-
-        "return 'A response'" in new Test {
-          appConfig.features.useDesStub(true)
-
-          override def setupStubs(): StubMapping = {
-            AuditStub.audit()
-            DesStub.stubCall(Status.OK, Json.obj("message" -> "A response"), stubbed = true)
-          }
-
-          lazy val response: WSResponse = await(request().post(maxRegisterNinoRequestJson(false)))
-          response.body[JsValue] shouldBe Json.obj("message" -> "A response")
+          response.status shouldBe Status.ACCEPTED
         }
 
         "return an error status" when {
@@ -78,7 +66,7 @@ class RegisterNinoISpec extends IntegrationBaseSpec {
 
             override def setupStubs(): StubMapping = {
               AuditStub.audit()
-              DesStub.stubCall(Status.BAD_REQUEST, Json.obj("message" -> "A response"), stubbed = true)
+              DesStub.stubCall(Status.BAD_REQUEST, Some(Json.obj("message" -> "A response")), stubbed = true)
             }
 
             lazy val response: WSResponse = await(request().post(maxRegisterNinoRequestJson(false)))
@@ -124,23 +112,11 @@ class RegisterNinoISpec extends IntegrationBaseSpec {
 
           override def setupStubs(): StubMapping = {
             AuditStub.audit()
-            DesStub.stubCall(Status.OK, Json.obj("message" -> "A response"))
+            DesStub.stubCall(Status.ACCEPTED, None)
           }
 
           lazy val response: WSResponse = await(request().post(maxRegisterNinoRequestJson(false)))
-          response.status shouldBe Status.OK
-        }
-
-        "return 'A response'" in new Test {
-          appConfig.features.useDesStub(false)
-
-          override def setupStubs(): StubMapping = {
-            AuditStub.audit()
-            DesStub.stubCall(Status.OK, Json.obj("message" -> "A response"))
-          }
-
-          lazy val response: WSResponse = await(request().post(maxRegisterNinoRequestJson(false)))
-          response.body[JsValue] shouldBe Json.obj("message" -> "A response")
+          response.status shouldBe Status.ACCEPTED
         }
 
         "return an error status" when {
@@ -150,7 +126,7 @@ class RegisterNinoISpec extends IntegrationBaseSpec {
 
             override def setupStubs(): StubMapping = {
               AuditStub.audit()
-              DesStub.stubCall(Status.BAD_REQUEST, Json.obj("message" -> "A response"))
+              DesStub.stubCall(Status.BAD_REQUEST, Some(Json.obj("message" -> "A response")))
             }
 
             lazy val response: WSResponse = await(request().post(maxRegisterNinoRequestJson(false)))

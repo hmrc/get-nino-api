@@ -13,11 +13,4 @@ body:
         description: The minimum possible payload in a request
         value: !include examples/register/register-min-post.json
 responses:
-  200:
-    body:
-      application/json:
-        type: !include schema/register/register-post-response.json
-        examples:
-          example-1:
-            description: Typical response received
-            value: !include examples/register/register-post-response.json
+  202:

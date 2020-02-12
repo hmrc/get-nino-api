@@ -16,36 +16,33 @@
 
 package v1.connectors.httpParsers
 
-import support.UnitSpec
-import RegisterNinoResponseHttpParser._
 import play.api.http.Status
 import play.api.libs.json.Json
+import support.UnitSpec
 import uk.gov.hmrc.http.HttpResponse
-import v1.models.response.DesResponseModel
+import v1.connectors.httpParsers.RegisterNinoResponseHttpParser._
 import v1.models.errors.{Error, InvalidJsonResponseError}
 
 class RegisterNinoResponseHttpParserSpec extends UnitSpec {
 
-  val successfulResponse = HttpResponse(Status.OK, Some(
-    Json.obj("message" -> "this is a valid response"))
-  )
+  val successfulResponse = HttpResponse(Status.ACCEPTED, None)
 
   val invalidModelJson = HttpResponse(Status.OK, Some(
     Json.obj("notMessage" -> 5))
   )
 
-  val unsuccessfulResponse = HttpResponse(Status.INTERNAL_SERVER_ERROR)
+  val unsuccessfulResponse = HttpResponse(
+    Status.INTERNAL_SERVER_ERROR,
+    Some(Json.obj("code" -> "INVALID_DATE_OF_BIRTH", "reason"-> "The remote endpoint has indicated that the name Type needs to be different."))
+  )
 
   "The RegisterNinoResponseHttpParser" should {
     "return a NpsResponseModel" when {
-      "NPS returns an OK" in {
-        RegisterNinoResponseReads.read("", "", successfulResponse) shouldBe Right(DesResponseModel("this is a valid response"))
+      "NPS returns an Accepted" in {
+        RegisterNinoResponseReads.read("", "", successfulResponse) shouldBe Right(true)
       }
     }
     "return an error model" when {
-      "valid json is passed in that fails validation as model" in {
-        RegisterNinoResponseReads.read("", "", invalidModelJson) shouldBe Left(InvalidJsonResponseError)
-      }
       "an unknown status is returned" in {
         RegisterNinoResponseReads.read("", "", unsuccessfulResponse)
           .shouldBe(

@@ -24,7 +24,6 @@ import uk.gov.hmrc.play.bootstrap.http.HttpClient
 import v1.connectors.httpParsers.HttpResponseTypes.HttpPostResponse
 import v1.connectors.httpParsers.RegisterNinoResponseHttpParser.RegisterNinoResponseReads
 import v1.models.request.NinoApplication
-import v1.models.response.DesResponseModel
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -35,7 +34,7 @@ class DesConnector @Inject()(
                             ) {
 
   def sendRegisterRequest(request: NinoApplication)
-                         (implicit hc: HeaderCarrier, ec: ExecutionContext): Future[HttpPostResponse[DesResponseModel]] = {
+                         (implicit hc: HeaderCarrier, ec: ExecutionContext): Future[HttpPostResponse[Boolean]] = {
 
     val url = if(appConfig.features.useDesStub()) {
       s"${appConfig.desStubUrl}/${appConfig.desStubContext}"

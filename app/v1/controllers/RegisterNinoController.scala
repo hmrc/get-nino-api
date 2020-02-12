@@ -43,7 +43,7 @@ class RegisterNinoController @Inject()(
 
     Future(parsedJsonBody[NinoApplication]).flatMap {
       case Right(ninoModel) => desService.registerNino(ninoModel).map {
-        case Right(responseModel) => Ok(Json.toJson(responseModel))
+        case Right(_) => Accepted
         case Left(errors) => badRequestWithLog(Json.toJson(errors))
       }
       case Left(errors) => Future.successful(badRequestWithLog(convertJsErrorsToReadableFormat(errors)))
