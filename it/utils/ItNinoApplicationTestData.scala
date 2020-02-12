@@ -53,10 +53,11 @@ object ItNinoApplicationTestData {
     "country" -> 1,
     "name" -> Json.obj(
       "surname" -> "ASurname",
-      "startDate" -> writeOrReadDate
+      "nameType" -> "REGISTERED"
     ),
     "address" -> Json.obj(
       "line1" -> "4 AStreetName",
+      "countryCode" ->  "USA",
       "startDate" -> writeOrReadDate
     )
   )
@@ -76,7 +77,8 @@ object ItNinoApplicationTestData {
       "secondForename" -> "NotSure",
       "surname" -> "ASurname",
       "startDate" -> writeOrReadDate,
-      "endDate" -> writeOrReadDate
+      "endDate" -> writeOrReadDate,
+      "nameType" -> "REGISTERED"
     ),
     "historicNames" -> Json.arr(
       Json.obj(
@@ -85,7 +87,8 @@ object ItNinoApplicationTestData {
         "secondForename" -> "NotSure",
         "surname" -> "ASurname",
         "startDate" -> writeOrReadDate,
-        "endDate" -> writeOrReadDate
+        "endDate" -> writeOrReadDate,
+        "nameType" -> "REGISTERED"
       ),
       Json.obj(
         "title" -> "MISS",
@@ -93,7 +96,8 @@ object ItNinoApplicationTestData {
         "secondForename" -> "NotSure",
         "surname" -> "ASurname",
         "startDate" -> writeOrReadDate,
-        "endDate" -> writeOrReadDate
+        "endDate" -> writeOrReadDate,
+        "nameType" -> "REGISTERED"
       )
     ),
     "address" -> Json.obj(
@@ -158,7 +162,6 @@ object ItNinoApplicationTestData {
       "birthTown" -> "ATown",
       "birthProvince" -> "SomeProvince",
       "birthCountryCode" -> 200,
-      "nationality" -> 2,
       "birthSurname" -> "ASurname",
       "maternalForename" -> "MotherForename",
       "maternalSurname" -> "AnotherSurname",
@@ -187,26 +190,23 @@ object ItNinoApplicationTestData {
       gender = Male,
       entryDate = DateModel(writeOrReadDate),
       birthDate = DateModel(writeOrReadDate),
-      birthDateVerification = Verified,
+      birthDateVerification = Some(Verified),
       officeNumber = "1234",
       contactNumber = None,
-      country = 1,
-      name = NameModel(
-        surname = "ASurname",
-        startDate = DateModel(writeOrReadDate)
-      ),
+      name = NameModel(surname = "ASurname", nameType = "REGISTERED"),
       historicNames = None,
       address = AddressModel(
         None,
         AddressLine("4 AStreetName"),
-        None, None, None, None, None, None,
+        None, None, None, None, None, "NGA",
         DateModel(writeOrReadDate), None
       ),
       historicAddresses = None,
       marriages = None,
       originData = None,
       priorResidency = None,
-      abroadLiability = None
+      abroadLiability = None,
+      nationalityCode = None
     )
   }
 
@@ -217,26 +217,26 @@ object ItNinoApplicationTestData {
       gender = Male,
       entryDate = DateModel(writeOrReadDate),
       birthDate = DateModel(writeOrReadDate),
-      birthDateVerification = Verified,
+      birthDateVerification = Some(Verified),
       officeNumber = "1234",
       contactNumber = None,
-      country = 1,
       name = NameModel(
         surname = "ASurname",
-        startDate = DateModel(writeOrReadDate)
+        nameType = "REGISTERED"
       ),
       historicNames = None,
       address = AddressModel(
         None,
         AddressLine("4 AStreetName"),
-        None, None, None, None, None, None,
+        None, None, None, None, None, "NGA",
         DateModel(writeOrReadDate), None
       ),
       historicAddresses = None,
       marriages = None,
       originData = None,
       priorResidency = None,
-      abroadLiability = None
+      abroadLiability = None,
+      nationalityCode = None
     )
   }
 
@@ -248,17 +248,17 @@ object ItNinoApplicationTestData {
       gender = Male,
       entryDate = DateModel(writeOrReadDate),
       birthDate = DateModel(writeOrReadDate),
-      birthDateVerification = Verified,
+      birthDateVerification = Some(Verified),
       officeNumber = "1234",
       contactNumber = Some("1234567890"),
-      country = 1,
       name = NameModel(
         title = Some("MR"),
         forename = Some("AForename"),
         secondForename = Some("NotSure"),
         surname = "ASurname",
-        startDate = DateModel(writeOrReadDate),
-        endDate = Some(DateModel(writeOrReadDate))
+        startDate = Some(DateModel(writeOrReadDate)),
+        endDate = Some(DateModel(writeOrReadDate)),
+        nameType = "REGISTERED"
       ),
       historicNames = Some(Seq(
         NameModel(
@@ -266,16 +266,18 @@ object ItNinoApplicationTestData {
           Some("AForename"),
           Some("NotSure"),
           "ASurname",
-          DateModel(writeOrReadDate),
-          Some(DateModel(writeOrReadDate))
+          Some(DateModel(writeOrReadDate)),
+          Some(DateModel(writeOrReadDate)),
+          "REGISTERED"
         ),
         NameModel(
           Some("MISS"),
           Some("AForename"),
           Some("NotSure"),
           "ASurname",
-          DateModel(writeOrReadDate),
-          Some(DateModel(writeOrReadDate))
+          Some(DateModel(writeOrReadDate)),
+          Some(DateModel(writeOrReadDate)),
+          "REGISTERED"
         )
       )),
       address = AddressModel(
@@ -286,7 +288,7 @@ object ItNinoApplicationTestData {
         line4 = Some(AddressLine("Place")),
         line5 = Some(AddressLine("ItsTheFinalLine")),
         postcode = Some(Postcode("AA11AA")),
-        countryCode = Some("GBR"),
+        countryCode = "GBR",
         startDate = DateModel(writeOrReadDate),
         endDate = Some(DateModel(writeOrReadDate))
       ),
@@ -299,7 +301,7 @@ object ItNinoApplicationTestData {
           Some(AddressLine("Place")),
           Some(AddressLine("ItsTheFinalLine")),
           Some(Postcode("AA11AA")),
-          Some("GBR"),
+          "GBR",
           DateModel(writeOrReadDate),
           Some(DateModel(writeOrReadDate))
         ),
@@ -311,7 +313,7 @@ object ItNinoApplicationTestData {
           Some(AddressLine("Place")),
           Some(AddressLine("ItsTheFinalLine")),
           Some(Postcode("AA11AA")),
-          Some("GBR"),
+          "GBR",
           DateModel(writeOrReadDate),
           Some(DateModel(writeOrReadDate))
         )
@@ -338,32 +340,26 @@ object ItNinoApplicationTestData {
           surname = Some("Testsurname")
         )
       )),
-      originData = Some(OriginData(
-        birthTown = Some("ATown"),
-        birthProvince = Some("SomeProvince"),
-        birthCountryCode = Some(200),
-        nationality = Some(2),
-        birthSurname = Some("ASurname"),
-        maternalForename = Some("MotherForename"),
-        maternalSurname = Some("AnotherSurname"),
-        paternalForename = Some("AForename"),
-        paternalSurname = Some("ASurname"),
-        foreignSocialSecurity = Some("SomeSocialSecurityNumber"),
-        lastEUAddress = Some(LastEUAddress(
-          Some(AddressLine("4 AStreetName")),
-          Some(AddressLine("Some")),
-          Some(AddressLine("Old")),
-          Some(AddressLine("Place")),
-          Some(AddressLine("ItsTheFinalLine"))
-        ))
-      )),
+      originData = Some(
+        OriginData(
+          birthTown = Some("ATown"), birthProvince = Some("SomeProvince"), birthCountryCode = Some(200),
+          birthSurname = Some("ASurname"), maternalForename = Some("MotherForename"), maternalSurname = Some("AnotherSurname"),
+          paternalForename = Some("AForename"), paternalSurname = Some("ASurname"), foreignSocialSecurity = Some("SomeSocialSecurityNumber"),
+          lastEUAddress = Some(LastEUAddress(
+                Some(AddressLine("4 AStreetName")),
+                Some(AddressLine("Some")),
+                Some(AddressLine("Old")),
+                Some(AddressLine("Place")),
+                Some(AddressLine("ItsTheFinalLine"))
+              )))),
       priorResidency = Some(Seq(
         PriorResidencyModel(Some(DateModel(writeOrReadDate)), Some(DateModel(writeOrReadDate))),
         PriorResidencyModel(Some(DateModel(writeOrReadDate)), Some(DateModel(writeOrReadDate)))
       )),
       abroadLiability = Some(
         AbroadLiabilityModel(Some(DateModel(writeOrReadDate)), Some(DateModel(writeOrReadDate)))
-      )
+      ),
+      nationalityCode = Some("GBR")
     )
   }
 }

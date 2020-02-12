@@ -201,6 +201,10 @@ class NinoApplicationSpec extends UnitSpec {
           expectedException.getMessage should include("There has been an error parsing the nino field. Please check against the regex.")
         }
 
+        "generates an exception for the country code field" in {
+          expectedException.getMessage should include("There has been an error parsing the nationality code field. Please check against the regex.")
+        }
+
         "generates an exception for the office number field" in {
           expectedException.getMessage should include("There has been an error parsing the office number field. Please check against the regex.")
         }

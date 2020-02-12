@@ -25,8 +25,9 @@ case class NameModel(
                       forename: Option[String] = None,
                       secondForename: Option[String] = None,
                       surname: String,
-                      startDate: DateModel,
-                      endDate: Option[DateModel] = None
+                      startDate: Option[DateModel] =  None,
+                      endDate: Option[DateModel] = None,
+                      nameType: String
                     )
 
 object NameModel {
@@ -36,11 +37,15 @@ object NameModel {
   private lazy val surname = __ \ "surname"
   private lazy val startDate = __ \ "startDate"
   private lazy val endDate = __ \ "endDate"
+  private lazy val typePath = __ \ "nameType"
 
   private val titleValidationError: JsonValidationError = JsonValidationError("Title failed validation. Must be one of: \'NOT KNOWN, MR, " +
     "MRS, MISS, MS, DR, REV\'")
+
   private def nameValidationError: String => JsonValidationError = fieldName => JsonValidationError(s"Unable to validate $fieldName. " +
     s"Ensure it matches the regex.")
+
+  private def typeValidationError: JsonValidationError = JsonValidationError("Name Type failed validation. Must be one of: \'REGISTERED, ALIAS\'")
 
   private val validTitles = Seq(
     "NOT KNOWN",
@@ -61,6 +66,19 @@ object NameModel {
       }
       passedValidation
     case None => true
+  }
+
+  private val validTypes = Seq(
+    "REGISTERED",
+    "ALIAS"
+  )
+  private[models] def validateType: String => Boolean = { inputString =>
+    val passedValidation = validTypes.contains(inputString)
+    if (!passedValidation) {
+      Logger.debug(s"[NameModel][validateType] The following name type failed validation: $inputString")
+      Logger.warn(s"[NameModel][validateType] Unable to parse entered name type.")
+    }
+    passedValidation
   }
 
   private val nameRegex = "^(?=.{1,35}$)([A-Z]([-'.&\\\\/ ]{0,1}[A-Za-z]+)*[A-Za-z]?)$"
@@ -88,8 +106,9 @@ object NameModel {
       forename.readNullable[String].filter(nameValidationError("forename"))(validateName(_, "forename")) and
       secondForename.readNullable[String].filter(nameValidationError("second forename"))(validateName(_, "secondForename")) and
       surname.read[String].filter(nameValidationError("surname"))(validateName(_, "surname")) and
-      startDate.read[DateModel] and
-      endDate.readNullable[DateModel]
+      startDate.readNullable[DateModel] and
+      endDate.readNullable[DateModel] and
+      typePath.read[String].filter(typeValidationError)(validateType)
     ) (NameModel.apply _)
 
   implicit val writes: Writes[NameModel] = Json.writes[NameModel]

@@ -19,23 +19,22 @@ package v1.models.request
 import play.api.libs.functional.syntax._
 import play.api.libs.json._
 
-case class NinoApplication(
-                            nino: String,
-                            gender: Gender,
-                            entryDate: DateModel,
-                            birthDate: DateModel,
-                            birthDateVerification: BirthDateVerification,
-                            officeNumber: String,
-                            contactNumber: Option[String],
-                            country: Int,
-                            name: NameModel,
-                            historicNames: Option[Seq[NameModel]],
-                            address: AddressModel,
-                            historicAddresses: Option[Seq[AddressModel]],
-                            marriages: Option[Seq[Marriage]],
-                            originData: Option[OriginData],
-                            priorResidency: Option[Seq[PriorResidencyModel]],
-                            abroadLiability: Option[AbroadLiabilityModel]
+case class NinoApplication(nino: String,
+                           gender: Gender,
+                           entryDate: DateModel,
+                           birthDate: DateModel,
+                           birthDateVerification: Option[BirthDateVerification],
+                           officeNumber: String,
+                           contactNumber: Option[String],
+                           name: NameModel,
+                           historicNames: Option[Seq[NameModel]],
+                           address: AddressModel,
+                           historicAddresses: Option[Seq[AddressModel]],
+                           marriages: Option[Seq[Marriage]],
+                           originData: Option[OriginData],
+                           priorResidency: Option[Seq[PriorResidencyModel]],
+                           abroadLiability: Option[AbroadLiabilityModel],
+                           nationalityCode: Option[String]
                           )
 
 object NinoApplication {
@@ -43,6 +42,8 @@ object NinoApplication {
     "G[ACEGHJ-NPR-TW-Z]|[KT][A-CEGHJ-MPR-TW-Z]|N[A-CEGHJL-NPR-SW-Z]|Z[A-CEGHJ-NPR-TW-Y])[0-9]{6}[A-D]$"
   private val officeNumberRegex = "^([0-9]{1,10})$"
   private val contactNumberRegex = "^([0-9]{1,72})$"
+  private val nationalityCodeRegex = "^[A-Z]{3}$"
+
 
   private[models] def validateAgainstRegex(value: String, regex: String): Boolean = {
     value.matches(regex)
@@ -61,7 +62,6 @@ object NinoApplication {
   private val birthDateVerificationPath = __ \ "birthDateVerification"
   private val officeNumberPath = __ \ "officeNumber"
   private val contactNumberPath = __ \ "contactNumber"
-  private val countryPath = __ \ "country"
   private val namePath = __ \ "name"
   private val historicalNamesPath = __ \ "historicNames"
   private val addressPath = __ \ "address"
@@ -70,6 +70,7 @@ object NinoApplication {
   private val originDataPath = __ \ "originData"
   private val priorResidencyPath = __ \ "priorResidency"
   private val abroadLiabilityPath = __ \ "abroadLiability"
+  private val nationalityCodePath = __ \ "nationalityCode"
 
   private def commonError(fieldName: String) = {
     JsonValidationError(s"There has been an error parsing the $fieldName field. Please check against the regex.")
@@ -80,10 +81,9 @@ object NinoApplication {
       genderPath.read[Gender] and
       entryDatePath.read[DateModel] and
       birthDatePath.read[DateModel] and
-      birthDateVerificationPath.read[BirthDateVerification] and
+      birthDateVerificationPath.readNullable[BirthDateVerification] and
       officeNumberPath.read[String].filter(commonError("office number"))(validateAgainstRegex(_, officeNumberRegex)) and
       contactNumberPath.readNullable[String].filter(commonError("contact number"))(_.fold(true)(validateAgainstRegex(_, contactNumberRegex))) and
-      countryPath.read[Int] and
       namePath.read[NameModel] and
       historicalNamesPath.readNullable[Seq[NameModel]] and
       addressPath.read[AddressModel] and
@@ -91,6 +91,8 @@ object NinoApplication {
       marriagesPath.readNullable[Seq[Marriage]] and
       originDataPath.readNullable[OriginData] and
       priorResidencyPath.readNullable[Seq[PriorResidencyModel]] and
-      abroadLiabilityPath.readNullable[AbroadLiabilityModel]
-    ) (NinoApplication.apply _)
+      abroadLiabilityPath.readNullable[AbroadLiabilityModel] and
+      nationalityCodePath.readNullable[String].filter(
+        commonError("nationality code"))(nationalityCode => nationalityCode.fold(true)(validateAgainstRegex(_, nationalityCodeRegex)))
+  ) (NinoApplication.apply _)
 }

@@ -28,7 +28,7 @@ class NameModelSpec extends UnitSpec {
   val minJson: Boolean => JsObject = isWrite =>
     Json.obj(
       "surname" -> "MinimumMan",
-      "startDate" -> readWriteDate(isWrite)
+      "nameType" -> "REGISTERED"
     )
 
   val maxJson: Boolean => JsObject = isWrite =>
@@ -38,7 +38,8 @@ class NameModelSpec extends UnitSpec {
       "secondForename" -> "Middle",
       "surname" -> "Last",
       "startDate" -> readWriteDate(isWrite),
-      "endDate" -> readWriteDate(isWrite)
+      "endDate" -> readWriteDate(isWrite),
+      "nameType" -> "REGISTERED"
     )
 
   val maxModel = NameModel(
@@ -46,13 +47,14 @@ class NameModelSpec extends UnitSpec {
     Some("First"),
     Some("Middle"),
     "Last",
-    DateModel("10-10-2020"),
-    Some(DateModel("10-10-2020"))
+    Some(DateModel("10-10-2020")),
+    Some(DateModel("10-10-2020")),
+    nameType = "REGISTERED"
   )
 
   val minModel = NameModel(
     surname = "MinimumMan",
-    startDate = DateModel("10-10-2020")
+    nameType = "REGISTERED"
   )
 
   "NameModelSpec" should {
@@ -99,6 +101,27 @@ class NameModelSpec extends UnitSpec {
       "return false" when {
         "an invalid title is entered" in {
           NameModel.validateTitle(Some("NOT A TITLE")) shouldBe false
+        }
+      }
+    }
+
+    ".validateType" should {
+      "return true" when {
+        "a valid type is input" which {
+          val validTitle: Seq[String] = Seq(
+            "REGISTERED",
+            "ALIAS"
+          )
+
+          validTitle.foreach(nameType => s"is $nameType" in {
+            NameModel.validateType(nameType) shouldBe true
+          })
+        }
+      }
+
+      "return false" when {
+        "an invalid type is entered" in {
+          NameModel.validateTitle(Some("NOT A TYPE")) shouldBe false
         }
       }
     }
