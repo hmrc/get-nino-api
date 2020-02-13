@@ -19,12 +19,11 @@ package v1.controllers
 import org.slf4j.MDC
 import play.api.http.Status
 import play.api.libs.json.{JsError, JsPath, Json, JsonValidationError => JavaJsonValidationError}
-import play.api.mvc.{AnyContent, Request}
 import play.api.test.Helpers._
 import support.ControllerBaseSpec
-import uk.gov.hmrc.auth.core.AuthConnector
 import uk.gov.hmrc.auth.core.authorise.Predicate
 import uk.gov.hmrc.auth.core.retrieve.Retrieval
+import uk.gov.hmrc.auth.core.{AuthConnector, InvalidBearerToken}
 import uk.gov.hmrc.http.{HeaderCarrier, HeaderNames}
 import utils.NinoApplicationTestData.{maxRegisterNinoRequestJson, maxRegisterNinoRequestModel}
 import v1.controllers.predicates.PrivilegedApplicationPredicate
@@ -54,11 +53,88 @@ class RegisterNinoControllerSpec extends ControllerBaseSpec {
 
   "Calling the register action" when {
 
-    "the request is valid" should {
-      "return 200" in {
-        (mockService.registerNino(_: NinoApplication)(_: HeaderCarrier, _: ExecutionContext))
-          .expects(maxRegisterNinoRequestModel, *, *)
-          .returning(Future.successful(Right(DesResponseModel("A response"))))
+    "the request is authorised" should {
+
+      "the request is valid" should {
+
+        "return 200" in {
+
+          (mockAuth.authorise(_: Predicate, _: Retrieval[_])(_: HeaderCarrier, _: ExecutionContext))
+            .expects(*, *, *, *)
+            .returns(Future.successful((): Unit))
+
+          (mockService.registerNino(_: NinoApplication)(_: HeaderCarrier, _: ExecutionContext))
+            .expects(maxRegisterNinoRequestModel, *, *)
+            .returns(Future.successful(Right(DesResponseModel("A response"))))
+
+          val request = fakeRequest
+            .withHeaders("Accept" -> "application/vnd.hmrc.1.0+json", HeaderNames.xRequestId -> "1234567890", HeaderNames.xSessionId -> "0987654321")
+            .withMethod("POST")
+            .withJsonBody(maxRegisterNinoRequestJson(false))
+
+          val result = controller.register()(request)
+
+          status(result) shouldBe Status.OK
+          contentAsJson(result) shouldBe Json.obj("message" -> "A response")
+
+          MDC.get(HeaderNames.xRequestId) shouldBe "1234567890"
+          MDC.get(HeaderNames.xSessionId) shouldBe "0987654321"
+        }
+      }
+
+      "the request body is not json" should {
+
+        "return 400" in {
+
+          (mockAuth.authorise(_: Predicate, _: Retrieval[_])(_: HeaderCarrier, _: ExecutionContext))
+            .expects(*, *, *, *)
+            .returning(Future.successful((): Unit))
+
+          val request = fakeRequest
+            .withHeaders("Accept" -> "application/vnd.hmrc.1.0+json")
+            .withMethod("POST")
+
+          val result = controller.register()(request)
+
+          status(result) shouldBe Status.BAD_REQUEST
+          contentAsJson(result) shouldBe Json.toJson(InvalidBodyTypeError)
+        }
+      }
+
+      "the request body is valid json, but cannot be validated as a NinoApplication" should {
+        "return a 400" in {
+
+          (mockAuth.authorise(_: Predicate, _: Retrieval[_])(_: HeaderCarrier, _: ExecutionContext))
+            .expects(*, *, *, *)
+            .returning(Future.successful((): Unit))
+
+          val request = fakeRequest
+            .withHeaders("Accept" -> "application/vnd.hmrc.1.0+json")
+            .withMethod("POST")
+            .withJsonBody(Json.obj(
+              "aField" -> "aValue"
+            ))
+
+          val result = controller.register()(request)
+
+          status(result) shouldBe Status.BAD_REQUEST
+          contentAsJson(result) shouldBe Json.toJson(new NinoJsonValidationError(JsError(
+            Seq("address", "entryDate", "name", "gender", "officeNumber", "nino", "birthDate").map { field =>
+              (JsPath \ field, Seq(JavaJsonValidationError("error.path.missing")))
+            }
+          )))(NinoError.validationWrites)
+        }
+      }
+
+    }
+
+    "the request is not authorised" should {
+
+      "return an unauthorised response" in {
+
+        (mockAuth.authorise(_: Predicate, _: Retrieval[_])(_: HeaderCarrier, _: ExecutionContext))
+          .expects(*, *, *, *)
+          .returns(Future.failed(InvalidBearerToken()))
 
         val request = fakeRequest
           .withHeaders("Accept" -> "application/vnd.hmrc.1.0+json", HeaderNames.xRequestId -> "1234567890", HeaderNames.xSessionId -> "0987654321")
@@ -67,47 +143,9 @@ class RegisterNinoControllerSpec extends ControllerBaseSpec {
 
         val result = controller.register()(request)
 
-        status(result) shouldBe Status.OK
-        contentAsJson(result) shouldBe Json.obj("message" -> "A response")
-
-        MDC.get(HeaderNames.xRequestId) shouldBe "1234567890"
-        MDC.get(HeaderNames.xSessionId) shouldBe "0987654321"
+        status(result) shouldBe Status.UNAUTHORIZED
       }
     }
-
-    "the request body is not json" should {
-      "return 400" in {
-        val request = fakeRequest
-          .withHeaders("Accept" -> "application/vnd.hmrc.1.0+json")
-          .withMethod("POST")
-
-        val result = controller.register()(request)
-
-        status(result) shouldBe Status.BAD_REQUEST
-        contentAsJson(result) shouldBe Json.toJson(InvalidBodyTypeError)
-      }
-    }
-
-    "the request body is valid json, but cannot be validated as a NinoApplication" should {
-      "return a 400" in {
-        val request = fakeRequest
-          .withHeaders("Accept" -> "application/vnd.hmrc.1.0+json")
-          .withMethod("POST")
-          .withJsonBody(Json.obj(
-            "aField" -> "aValue"
-          ))
-
-        val result = controller.register()(request)
-
-        status(result) shouldBe Status.BAD_REQUEST
-        contentAsJson(result) shouldBe Json.toJson(new NinoJsonValidationError(JsError(
-          Seq("address", "entryDate", "name", "gender", "officeNumber", "nino", "birthDate").map { field =>
-            (JsPath \ field, Seq(JavaJsonValidationError("error.path.missing")))
-          }
-        )))(NinoError.validationWrites)
-      }
-    }
-
   }
 
   "Calling convertJsErrorsToReadableFormat" should {

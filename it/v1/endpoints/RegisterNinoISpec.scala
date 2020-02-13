@@ -43,29 +43,12 @@ class RegisterNinoISpec extends IntegrationBaseSpec {
 
   "Calling the /api/register endpoint" when {
 
-    "the useAuth feature switch is off" should {
-      "not call the auth service" in new Test {
-        appConfig.features.useDesStub(true)
-        appConfig.features.useAuth(false)
-
-        override def setupStubs(): StubMapping = {
-          AuditStub.audit()
-          DesStub.stubCall(Status.OK, Json.obj("message" -> "A response"), stubbed = true)
-        }
-
-        lazy val response: WSResponse = await(request().post(maxRegisterNinoRequestJson(false)))
-        response.status shouldBe Status.OK
-
-      }
-    }
-
     "the desStub feature switch is on" when {
 
       "any valid request is made" should {
 
         "return a 200 status code" in new Test {
           appConfig.features.useDesStub(true)
-          appConfig.features.useAuth(true)
 
           override def setupStubs(): StubMapping = {
             AuditStub.audit()
@@ -79,7 +62,6 @@ class RegisterNinoISpec extends IntegrationBaseSpec {
 
         "return 'A response'" in new Test {
           appConfig.features.useDesStub(true)
-          appConfig.features.useAuth(true)
 
           override def setupStubs(): StubMapping = {
             AuditStub.audit()
@@ -95,7 +77,6 @@ class RegisterNinoISpec extends IntegrationBaseSpec {
 
           "DES returns an error" in new Test {
             appConfig.features.useDesStub(true)
-            appConfig.features.useAuth(true)
 
             override def setupStubs(): StubMapping = {
               AuditStub.audit()
@@ -116,7 +97,6 @@ class RegisterNinoISpec extends IntegrationBaseSpec {
 
         "return an error code" in new Test {
           appConfig.features.useDesStub(true)
-          appConfig.features.useAuth(true)
 
           override def setupStubs(): StubMapping = {
             AuditStub.audit()
@@ -140,9 +120,8 @@ class RegisterNinoISpec extends IntegrationBaseSpec {
 
       "the user is not authorised" should {
 
-        "return an Unauthorized error with the reason provided by the AuthClient" in new Test {
+        "return an Unauthorised error with the reason provided by the AuthClient" in new Test {
           appConfig.features.useDesStub(true)
-          appConfig.features.useAuth(true)
 
           override def setupStubs(): StubMapping = {
             AuditStub.audit()
@@ -161,7 +140,6 @@ class RegisterNinoISpec extends IntegrationBaseSpec {
 
         "return a BadGateway(AuthDownError)" in new Test {
           appConfig.features.useDesStub(true)
-          appConfig.features.useAuth(true)
 
           override def setupStubs(): StubMapping = {
             AuditStub.audit()
@@ -180,7 +158,6 @@ class RegisterNinoISpec extends IntegrationBaseSpec {
 
         "return a InternalServerError(DownstreamError)" in new Test {
           appConfig.features.useDesStub(true)
-          appConfig.features.useAuth(true)
 
           override def setupStubs(): StubMapping = {
             AuditStub.audit()
@@ -202,7 +179,6 @@ class RegisterNinoISpec extends IntegrationBaseSpec {
 
         "return a 200 status code" in new Test {
           appConfig.features.useDesStub(false)
-          appConfig.features.useAuth(true)
 
           override def setupStubs(): StubMapping = {
             AuditStub.audit()
@@ -216,7 +192,6 @@ class RegisterNinoISpec extends IntegrationBaseSpec {
 
         "return 'A response'" in new Test {
           appConfig.features.useDesStub(false)
-          appConfig.features.useAuth(true)
 
           override def setupStubs(): StubMapping = {
             AuditStub.audit()
@@ -232,7 +207,6 @@ class RegisterNinoISpec extends IntegrationBaseSpec {
 
           "DES returns an error" in new Test {
             appConfig.features.useDesStub(false)
-            appConfig.features.useAuth(true)
 
             override def setupStubs(): StubMapping = {
               AuditStub.audit()
@@ -253,7 +227,6 @@ class RegisterNinoISpec extends IntegrationBaseSpec {
 
         "return an error code" in new Test {
           appConfig.features.useDesStub(false)
-          appConfig.features.useAuth(true)
 
           override def setupStubs(): StubMapping = {
             AuditStub.audit()

@@ -47,28 +47,23 @@ class FeatureSwitchISpec extends IntegrationBaseSpec {
 
       "they do not get updated" in new Test {
         appConfig.features.useDesStub(false)
-        appConfig.features.useAuth(false)
 
         val result: WSResponse = await(request().post(""))
 
         result.body[JsValue] shouldBe Json.obj(
-          "useDesStub" -> false,
-          "useAuth" -> false
+          "useDesStub" -> false
         )
       }
 
       "they get updated" in new Test {
         appConfig.features.useDesStub(false)
-        appConfig.features.useAuth(false)
 
         val result: WSResponse = await(request().post(Json.obj(
-          "useDesStub" -> true,
-          "useAuth" -> true
+          "useDesStub" -> true
         )))
 
         result.body[JsValue] shouldBe Json.obj(
-          "useDesStub" -> true,
-          "useAuth" -> true
+          "useDesStub" -> true
         )
       }
     }

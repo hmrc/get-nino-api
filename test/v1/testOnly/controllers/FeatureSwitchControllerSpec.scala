@@ -17,7 +17,7 @@
 package v1.testOnly.controllers
 
 import play.api.http.Status
-import play.api.libs.json.{JsString, JsValue, Json}
+import play.api.libs.json.{JsValue, Json}
 import play.api.mvc.AnyContentAsJson
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
@@ -33,11 +33,9 @@ class FeatureSwitchControllerSpec extends ControllerBaseSpec {
 
       "a successful call is made" which {
         mockAppConfig.features.useDesStub(false)
-        mockAppConfig.features.useAuth(false)
 
         val requestBody: JsValue = Json.obj(
-          "useDesStub" -> true,
-          "useAuth" -> true
+          "useDesStub" -> true
         )
 
         val request: FakeRequest[AnyContentAsJson] = FakeRequest()
@@ -59,7 +57,6 @@ class FeatureSwitchControllerSpec extends ControllerBaseSpec {
 
       "a body that is not valid json is passed in" which {
         mockAppConfig.features.useDesStub(false)
-        mockAppConfig.features.useAuth(false)
 
         val requestBody = "not valid json body"
 
@@ -75,15 +72,13 @@ class FeatureSwitchControllerSpec extends ControllerBaseSpec {
 
         "returns an unedited set of switches" in {
           contentAsJson(result) shouldBe Json.obj(
-            "useDesStub" -> false,
-            "useAuth" -> false
+            "useDesStub" -> false
           )
         }
       }
 
       "a valid json body is passed in, but is not the correct model" which {
         mockAppConfig.features.useDesStub(false)
-        mockAppConfig.features.useAuth(false)
 
         val requestBody = Json.obj(
           "someField" -> "someValue"
@@ -101,14 +96,10 @@ class FeatureSwitchControllerSpec extends ControllerBaseSpec {
 
         "returns an unedited set of switches" in {
           contentAsJson(result) shouldBe Json.obj(
-            "useDesStub" -> false,
-            "useAuth" -> false
+            "useDesStub" -> false
           )
         }
-
       }
-
     }
   }
-
 }

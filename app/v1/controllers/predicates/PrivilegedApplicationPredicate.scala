@@ -40,27 +40,17 @@ class PrivilegedApplicationPredicate @Inject()(
   extends ActionBuilder[Request, AnyContent] with AuthorisedFunctions with BaseController {
 
   override def invokeBlock[A](request: Request[A], block: Request[A] => Future[Result]): Future[Result] = {
-    implicit val hc: HeaderCarrier = HeaderCarrierConverter.fromHeadersAndSession(request.headers, Some(request.session))
+    implicit val hc: HeaderCarrier = HeaderCarrierConverter.fromHeadersAndSession(request.headers, None)
 
     if (hc.requestId.nonEmpty && Option(MDC.get(xRequestId)).isEmpty) MDC.put(xRequestId, hc.requestId.get.value)
     if (hc.sessionId.nonEmpty && Option(MDC.get(xSessionId)).isEmpty) MDC.put(xSessionId, hc.sessionId.get.value)
 
-    if(appConfig.features.useAuth()) {
-      withAuth(request, block)
-    } else {
-      block(request)
-    }
-  }
-
-  private def withAuth[A](request: Request[A], block: Request[A] => Future[Result])(implicit hc: HeaderCarrier): Future[Result] = {
     authorised(AuthProviders(PrivilegedApplication)) {
       block(request)
     } recover {
       case error: AuthorisationException => Unauthorized(Json.toJson(APIError("UNAUTHORISED", error.reason)))
-      case other: Upstream5xxResponse => other.upstreamResponseCode match {
-        case BAD_GATEWAY => BadGateway(Json.toJson(AuthDownError))
-        case _ => InternalServerError(Json.toJson(DownstreamError))
-      }
+      case Upstream5xxResponse(_, BAD_GATEWAY, _) => BadGateway(Json.toJson(AuthDownError))
+      case _ => InternalServerError(Json.toJson(DownstreamError))
     }
   }
 

@@ -19,8 +19,7 @@ package v1.config.featureSwitch
 import play.api.libs.json.{Format, Json}
 
 case class FeatureSwitchModel(
-                               useDesStub: Boolean,
-                               useAuth: Boolean
+                               useDesStub: Boolean
                              )
 
 object FeatureSwitchModel {

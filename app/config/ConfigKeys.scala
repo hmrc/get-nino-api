@@ -22,6 +22,4 @@ object ConfigKeys {
 
   val useDesStubKey = s"$featureSwitchKey.useDesStub"
   val desStubContextKey = s"$servicesKey.desStub.context"
-
-  val useAuthKey = s"$featureSwitchKey.useAuth"
 }
