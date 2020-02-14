@@ -39,10 +39,9 @@ case class NinoApplication(
                           )
 
 object NinoApplication {
-  private val ninoRegex = "^([ACEHJLMOPRSWXY][A-CEGHJ-NPR-TW-Z]|B[A-CEHJ-NPR-TW-Z]|" +
-    "G[ACEGHJ-NPR-TW-Z]|[KT][A-CEGHJ-MPR-TW-Z]|N[A-CEGHJL-NPR-SW-Z]|Z[A-CEGHJ-NPR-TW-Y])[0-9]{6}[A-D]$"
-  private val officeNumberRegex = "^([0-9]{1,10})$"
-  private val contactNumberRegex = "^([0-9]{1,72})$"
+  private val ninoRegex = "^((?!(BG|GB|KN|NK|NT|TN|ZZ)|(D|F|I|Q|U|V)[A-Z]|[A-Z](D|F|I|O|Q|U|V))[A-Z]{2})[0-9]{6}[A-D]$"
+  private val officeNumberRegex = "^([0-9]{1,4})$"
+  private val contactNumberRegex = "^([+]{0,1}[0-9 ]{1,70}[0-9])$"
 
   private[models] def validateAgainstRegex(value: String, regex: String): Boolean = {
     value.matches(regex)
