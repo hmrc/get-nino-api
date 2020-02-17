@@ -24,10 +24,9 @@ case class NinoApplication(
                             gender: Gender,
                             entryDate: DateModel,
                             birthDate: DateModel,
-                            birthDateVerification: BirthDateVerification,
+                            birthDateVerification: Option[BirthDateVerification],
                             officeNumber: String,
                             contactNumber: Option[String],
-                            country: Int,
                             applicantNames: Seq[NameModel],
                             applicantHistoricNames: Option[Seq[NameModel]],
                             applicantAddresses: Seq[AddressModel],
@@ -35,13 +34,15 @@ case class NinoApplication(
                             marriages: Option[Seq[Marriage]],
                             originData: Option[OriginData],
                             priorResidency: Option[Seq[PriorResidencyModel]],
-                            abroadLiability: Option[AbroadLiabilityModel]
+                            abroadLiability: Option[AbroadLiabilityModel],
+                            nationalityCode: Option[String]
                           )
 
 object NinoApplication {
   private val ninoRegex = "^((?!(BG|GB|KN|NK|NT|TN|ZZ)|(D|F|I|Q|U|V)[A-Z]|[A-Z](D|F|I|O|Q|U|V))[A-Z]{2})[0-9]{6}[A-D]$"
   private val officeNumberRegex = "^([0-9]{1,4})$"
   private val contactNumberRegex = "^([+]{0,1}[0-9 ]{1,70}[0-9])$"
+  private val nationalityCodeRegex = "^[A-Z]{3}$"
 
   private[models] def validateAgainstRegex(value: String, regex: String): Boolean = {
     value.matches(regex)
@@ -60,7 +61,6 @@ object NinoApplication {
   private val birthDateVerificationPath = __ \ "birthDateVerification"
   private val officeNumberPath = __ \ "officeNumber"
   private val contactNumberPath = __ \ "contactNumber"
-  private val countryPath = __ \ "country"
   private val namesPath = __ \ "name"
   private val historicalNamesPath = __ \ "historicNames"
   private val addressesPath = __ \ "address"
@@ -69,6 +69,7 @@ object NinoApplication {
   private val originDataPath = __ \ "originData"
   private val priorResidencyPath = __ \ "priorResidency"
   private val abroadLiabilityPath = __ \ "abroadLiability"
+  private val nationalityCodePath = __ \ "nationalityCode"
 
   private def commonError(fieldName: String) = {
     JsonValidationError(s"There has been an error parsing the $fieldName field. Please check against the regex.")
@@ -79,10 +80,9 @@ object NinoApplication {
       genderPath.read[Gender] and
       entryDatePath.read[DateModel] and
       birthDatePath.read[DateModel] and
-      birthDateVerificationPath.read[BirthDateVerification] and
+      birthDateVerificationPath.readNullable[BirthDateVerification] and
       officeNumberPath.read[String].filter(commonError("office number"))(validateAgainstRegex(_, officeNumberRegex)) and
       contactNumberPath.readNullable[String].filter(commonError("contact number"))(_.fold(true)(validateAgainstRegex(_, contactNumberRegex))) and
-      countryPath.read[Int] and
       namesPath.read[NameModel].map(Seq(_)) and
       historicalNamesPath.readNullable[Seq[NameModel]] and
       addressesPath.read[AddressModel].map(Seq(_)) and
@@ -90,6 +90,8 @@ object NinoApplication {
       marriagesPath.readNullable[Seq[Marriage]] and
       originDataPath.readNullable[OriginData] and
       priorResidencyPath.readNullable[Seq[PriorResidencyModel]] and
-      abroadLiabilityPath.readNullable[AbroadLiabilityModel]
-    ) (NinoApplication.apply _)
+      abroadLiabilityPath.readNullable[AbroadLiabilityModel] and
+      nationalityCodePath.readNullable[String].filter(
+        commonError("nationality code"))(nationalityCode => nationalityCode.fold(true)(validateAgainstRegex(_, nationalityCodeRegex)))
+  ) (NinoApplication.apply _)
 }

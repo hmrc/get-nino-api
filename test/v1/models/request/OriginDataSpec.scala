@@ -27,7 +27,6 @@ class OriginDataSpec extends WordSpec with Matchers {
     "birthTown" -> "Birth town value",
     "birthProvince" -> "Birth province value",
     "birthCountryCode" -> 129,
-    "nationality" -> 111,
     "birthSurname" -> "Birth surname value",
     "maternalForename" -> "Maternal forename value",
     "maternalSurname" -> "Maternal surname value",
@@ -43,26 +42,13 @@ class OriginDataSpec extends WordSpec with Matchers {
     )
   )
 
-  val maxOriginDataModel = OriginData(
-    birthTown = Some("Birth town value"),
-    birthProvince = Some("Birth province value"),
-    birthCountryCode = Some(129),
-    nationality = Some(111),
-    birthSurname = Some("Birth surname value"),
-    maternalForename = Some("Maternal forename value"),
-    maternalSurname = Some("Maternal surname value"),
-    paternalForename = Some("Paternal forename value"),
-    paternalSurname = Some("Paternal surname value"),
-    foreignSocialSecurity = Some("Foreign social security value"),
-    lastEUAddress = Some(LastEUAddress(
-      line1 = Some(AddressLine("1 line value")),
-      line2 = Some(AddressLine("2 line value")),
-      line3 = Some(AddressLine("3 line value")),
-      line4 = Some(AddressLine("4 line value")),
-      line5 = Some(AddressLine("5 line value"))
-    ))
-
-  )
+  val maxOriginDataModel = OriginData(birthTown = Some("Birth town value"), birthProvince = Some("Birth province value"), birthCountryCode = Some(129), birthSurname = Some("Birth surname value"), maternalForename = Some("Maternal forename value"), maternalSurname = Some("Maternal surname value"), paternalForename = Some("Paternal forename value"), paternalSurname = Some("Paternal surname value"), foreignSocialSecurity = Some("Foreign social security value"), lastEUAddress = Some(LastEUAddress(
+        line1 = Some(AddressLine("1 line value")),
+        line2 = Some(AddressLine("2 line value")),
+        line3 = Some(AddressLine("3 line value")),
+        line4 = Some(AddressLine("4 line value")),
+        line5 = Some(AddressLine("5 line value"))
+      )))
 
   "OriginData.reads" when {
 

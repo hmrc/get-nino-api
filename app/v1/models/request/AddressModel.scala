@@ -27,7 +27,7 @@ case class AddressModel(addressType: Option[AddressType],
                         addressLine4: Option[AddressLine],
                         addressLine5: Option[AddressLine],
                         postcode: Option[Postcode],
-                        countryCode: Option[String],
+                        countryCode: String,
                         startDate: DateModel,
                         endDate: Option[DateModel])
 
@@ -44,12 +44,11 @@ object AddressModel {
   val startDatePath: JsPath = __ \ "startDate"
   val endDatePath: JsPath = __ \ "endDate"
 
-  private[models] def checkPostcodeMandated(postcode: Option[Postcode], countryCode: Option[String]): Boolean = {
-    countryCode.fold(true) {
+  private[models] def checkPostcodeMandated(postcode: Option[Postcode], countryCode: String): Boolean = {
+    countryCode match {
       case "GBR" => postcode.fold({
         Logger.warn(s"[AddressModel][postcodeValidation] - $postcode is required if country code is GBR")
         false
-
       })(
         _ => true
       )
@@ -69,9 +68,9 @@ object AddressModel {
       line3Path.readNullable[AddressLine] and
       line4Path.readNullable[AddressLine] and
       line5Path.readNullable[AddressLine] and
-      countryCodePath.readNullable[String].flatMap(optCountryCode =>
-        postcodePath.readNullable[Postcode].filter(commonError("Post code"))(checkPostcodeMandated(_, optCountryCode))) and
-      countryCodePath.readNullable[String] and
+      countryCodePath.read[String].flatMap(countryCode =>
+        postcodePath.readNullable[Postcode].filter(commonError("Post code"))(checkPostcodeMandated(_, countryCode))) and
+      countryCodePath.read[String] and
       startDatePath.read[DateModel] and
       endDatePath.readNullable[DateModel]
     ) (AddressModel.apply _)

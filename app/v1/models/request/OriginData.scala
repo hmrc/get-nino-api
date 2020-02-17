@@ -24,7 +24,6 @@ case class OriginData(
                        birthTown: Option[String] = None,
                        birthProvince: Option[String] = None,
                        birthCountryCode: Option[Int] = None,
-                       nationality: Option[Int] = None,
                        birthSurname: Option[String] = None,
                        maternalForename: Option[String] = None,
                        maternalSurname: Option[String] = None,
@@ -39,7 +38,6 @@ object OriginData {
   private lazy val birthTownPath = __ \ "birthTown"
   private lazy val birthProvincePath = __ \ "birthProvince"
   private lazy val birthCountryCodePath = __ \ "birthCountryCode"
-  private lazy val nationalityPath = __ \ "nationality"
   private lazy val birthSurnamePath = __ \ "birthSurname"
   private lazy val maternalForenamePath = __ \ "maternalForename"
   private lazy val maternalSurnamePath = __ \ "maternalSurname"
@@ -75,8 +73,6 @@ object OriginData {
         .filter(JsonValidationError("Birth province does not match regex"))(stringValidation(_, "birth town")) and
       birthCountryCodePath.readNullable[Int]
         .filter(JsonValidationError("Country code is not valid"))(countryCodeValidation) and
-      nationalityPath.readNullable[Int]
-        .filter(JsonValidationError("Nationality code is not valid"))(countryCodeValidation) and
       birthSurnamePath.readNullable[String]
         .filter(JsonValidationError("Birth surname does not match regex"))(stringValidation(_, "birth surname")) and
       maternalForenamePath.readNullable[String]
@@ -90,7 +86,7 @@ object OriginData {
       foreignSocialSecurityPath.readNullable[String]
         .filter(JsonValidationError("Foreign social security does not match regex"))(stringValidation(_, "social security")) and
       lastEUAddressPath.readNullable[LastEUAddress]
-    ) (OriginData.apply _)
+    )(OriginData.apply _)
 
   implicit val writes: Writes[OriginData] = Json.writes[OriginData]
 
