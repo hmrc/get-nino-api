@@ -23,7 +23,9 @@ class OriginDataSpec extends WordSpec with Matchers {
 
   val minOriginDataJson: JsObject = Json.obj()
 
-  val maxOriginDataJson: JsObject = Json.obj(
+  val maxOriginDataJson: Boolean =>JsObject = isWrite => {
+    val addressLinePrefix = (lineNo: Int) => if (isWrite) s"addressLine$lineNo" else s"line$lineNo"
+    Json.obj(
     "birthTown" -> "Birth town value",
     "birthProvince" -> "Birth province value",
     "birthCountryCode" -> 129,
@@ -34,21 +36,34 @@ class OriginDataSpec extends WordSpec with Matchers {
     "paternalSurname" -> "Paternal surname value",
     "foreignSocialSecurity" -> "Foreign social security value",
     "lastEUAddress" -> Json.obj(
-      "line1" -> "1 line value",
-      "line2" -> "2 line value",
-      "line3" -> "3 line value",
-      "line4" -> "4 line value",
-      "line5" -> "5 line value"
+      addressLinePrefix(1) -> "1 line value",
+      addressLinePrefix(2) -> "2 line value",
+      addressLinePrefix(3) -> "3 line value",
+      addressLinePrefix(4) -> "4 line value",
+      addressLinePrefix(5) -> "5 line value"
     )
-  )
+  )}
 
-  val maxOriginDataModel = OriginData(birthTown = Some("Birth town value"), birthProvince = Some("Birth province value"), birthCountryCode = Some(129), birthSurname = Some("Birth surname value"), maternalForename = Some("Maternal forename value"), maternalSurname = Some("Maternal surname value"), paternalForename = Some("Paternal forename value"), paternalSurname = Some("Paternal surname value"), foreignSocialSecurity = Some("Foreign social security value"), lastEUAddress = Some(LastEUAddress(
-        line1 = Some(AddressLine("1 line value")),
-        line2 = Some(AddressLine("2 line value")),
-        line3 = Some(AddressLine("3 line value")),
-        line4 = Some(AddressLine("4 line value")),
-        line5 = Some(AddressLine("5 line value"))
-      )))
+  val maxOriginDataModel = OriginData(
+    birthTown = Some("Birth town value"),
+    birthProvince = Some("Birth province value"),
+    birthCountryCode = Some(129),
+
+    birthSurname = Some("Birth surname value"),
+    maternalForename = Some("Maternal forename value"),
+    maternalSurname = Some("Maternal surname value"),
+    paternalForename = Some("Paternal forename value"),
+    paternalSurname = Some("Paternal surname value"),
+    foreignSocialSecurity = Some("Foreign social security value"),
+    lastEUAddress = Some(LastEUAddress(
+      addressLine1 = Some(AddressLine("1 line value")),
+      addressLine2 = Some(AddressLine("2 line value")),
+      addressLine3 = Some(AddressLine("3 line value")),
+      addressLine4 = Some(AddressLine("4 line value")),
+      addressLine5 = Some(AddressLine("5 line value"))
+    ))
+
+  )
 
   "OriginData.reads" when {
 
@@ -56,7 +71,7 @@ class OriginDataSpec extends WordSpec with Matchers {
 
       "return an OriginData model" in {
 
-        maxOriginDataJson.as[OriginData] shouldBe maxOriginDataModel
+        maxOriginDataJson(false).as[OriginData] shouldBe maxOriginDataModel
       }
     }
 
@@ -75,8 +90,7 @@ class OriginDataSpec extends WordSpec with Matchers {
     "provided with the maximum number of data items" should {
 
       "correctly parse to json" in {
-
-        Json.toJson(maxOriginDataModel) shouldBe maxOriginDataJson
+        Json.toJson(maxOriginDataModel) shouldBe maxOriginDataJson(true)
       }
     }
 

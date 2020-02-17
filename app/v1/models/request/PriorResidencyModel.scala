@@ -16,13 +16,20 @@
 
 package v1.models.request
 
-import play.api.libs.json.{Json, OFormat}
+import play.api.libs.functional.syntax._
+import play.api.libs.json.{Json, Reads, _}
 
 case class PriorResidencyModel(
-                                priorStartDate: Option[DateModel] = None,
-                                priorEndDate: Option[DateModel] = None
+                                startDate: Option[DateModel] = None,
+                                endDate: Option[DateModel] = None
                               )
 
 object PriorResidencyModel {
-  implicit val formats: OFormat[PriorResidencyModel] = Json.format[PriorResidencyModel]
+
+  implicit val reads: Reads[PriorResidencyModel] = (
+    (__ \ "priorStartDate").readNullable[DateModel] and
+    (__ \ "priorEndDate").readNullable[DateModel]
+  )(PriorResidencyModel.apply _)
+
+  implicit val writes: Writes[PriorResidencyModel] = Json.writes[PriorResidencyModel]
 }

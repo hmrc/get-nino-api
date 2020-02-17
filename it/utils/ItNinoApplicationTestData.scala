@@ -203,8 +203,8 @@ object ItNinoApplicationTestData {
       )),
       applicantHistoricAddresses = None,
       marriages = None,
-      originData = None,
-      priorResidency = None,
+      applicantOrigin = None,
+      applicantPriorResidency = None,
       abroadLiability = None,
       nationalityCode = None
     )
@@ -233,8 +233,8 @@ object ItNinoApplicationTestData {
       )),
       applicantHistoricAddresses = None,
       marriages = None,
-      originData = None,
-      priorResidency = None,
+      applicantOrigin = None,
+      applicantPriorResidency = None,
       abroadLiability = None,
       nationalityCode = None
     )
@@ -340,7 +340,7 @@ object ItNinoApplicationTestData {
           surname = Some("Testsurname")
         )
       )),
-      originData = Some(
+      applicantOrigin = Some(
         OriginData(
           birthTown = Some("ATown"), birthProvince = Some("SomeProvince"), birthCountryCode = Some(200),
           birthSurname = Some("ASurname"), maternalForename = Some("MotherForename"), maternalSurname = Some("AnotherSurname"),
@@ -352,7 +352,7 @@ object ItNinoApplicationTestData {
                 Some(AddressLine("Place")),
                 Some(AddressLine("ItsTheFinalLine"))
               )))),
-      priorResidency = Some(Seq(
+      applicantPriorResidency = Some(Seq(
         PriorResidencyModel(Some(DateModel(writeOrReadDate)), Some(DateModel(writeOrReadDate))),
         PriorResidencyModel(Some(DateModel(writeOrReadDate)), Some(DateModel(writeOrReadDate)))
       )),

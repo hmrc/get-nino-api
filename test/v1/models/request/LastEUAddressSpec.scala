@@ -17,7 +17,7 @@
 package v1.models.request
 
 import org.scalatest.{Matchers, WordSpec}
-import play.api.libs.json.Json
+import play.api.libs.json.{JsObject, Json}
 
 class LastEUAddressSpec extends WordSpec with Matchers {
 
@@ -32,13 +32,16 @@ class LastEUAddressSpec extends WordSpec with Matchers {
       Some(AddressLine("5 line address"))
     )
 
-    val maximumLastEUAddressJson = Json.obj(
-      "line1" -> "1 line address",
-      "line2" -> "2 line address",
-      "line3" -> "3 line address",
-      "line4" -> "4 line address",
-      "line5" -> "5 line address"
-    )
+    val maximumLastEUAddressJson: Boolean => JsObject = implicit isWrite => {
+      val addressLinePrefix = (lineNo: Int) => if (isWrite) s"addressLine$lineNo" else s"line$lineNo"
+      Json.obj(
+        addressLinePrefix(1) -> "1 line address",
+        addressLinePrefix(2) -> "2 line address",
+        addressLinePrefix(3) -> "3 line address",
+        addressLinePrefix(4) -> "4 line address",
+        addressLinePrefix(5) -> "5 line address"
+      )
+    }
 
     val minimumLastEUAddressJson = Json.obj()
 
@@ -47,7 +50,7 @@ class LastEUAddressSpec extends WordSpec with Matchers {
 
         "return a LastEUAddress model" in {
 
-          maximumLastEUAddressJson.as[LastEUAddress] shouldBe maximumLastEUAddressModel
+          maximumLastEUAddressJson(false).as[LastEUAddress] shouldBe maximumLastEUAddressModel
         }
       }
 
@@ -65,7 +68,7 @@ class LastEUAddressSpec extends WordSpec with Matchers {
 
         "parse to json correctly" in {
 
-         Json.toJson(maximumLastEUAddressModel) shouldBe maximumLastEUAddressJson
+         Json.toJson(maximumLastEUAddressModel) shouldBe maximumLastEUAddressJson(true)
 
         }
       }

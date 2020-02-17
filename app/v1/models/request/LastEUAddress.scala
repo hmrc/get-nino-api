@@ -16,16 +16,27 @@
 
 package v1.models.request
 
-import play.api.libs.json.{Json, OFormat}
+import play.api.libs.json.{Json, OFormat, Reads}
+import play.api.libs.functional.syntax._
+import play.api.libs.json._
 
 case class LastEUAddress(
-                          line1: Option[AddressLine] = None,
-                          line2: Option[AddressLine] = None,
-                          line3: Option[AddressLine] = None,
-                          line4: Option[AddressLine] = None,
-                          line5: Option[AddressLine] = None
+                          addressLine1: Option[AddressLine] = None,
+                          addressLine2: Option[AddressLine] = None,
+                          addressLine3: Option[AddressLine] = None,
+                          addressLine4: Option[AddressLine] = None,
+                          addressLine5: Option[AddressLine] = None
                         )
 
 object LastEUAddress {
-  implicit val formats: OFormat[LastEUAddress] = Json.format[LastEUAddress]
+
+  implicit val reads: Reads[LastEUAddress] = (
+    (__ \ "line1").readNullable[AddressLine] and
+    (__ \ "line2").readNullable[AddressLine] and
+    (__ \ "line3").readNullable[AddressLine] and
+    (__ \ "line4").readNullable[AddressLine] and
+    (__ \ "line5").readNullable[AddressLine]
+  )(LastEUAddress.apply _)
+
+  implicit val writes: Writes[LastEUAddress] = Json.writes[LastEUAddress]
 }
