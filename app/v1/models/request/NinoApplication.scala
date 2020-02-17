@@ -28,8 +28,8 @@ case class NinoApplication(
                             officeNumber: String,
                             contactNumber: Option[String],
                             country: Int,
-                            name: NameModel,
-                            historicNames: Option[Seq[NameModel]],
+                            applicantNames: Seq[NameModel],
+                            applicantHistoricNames: Option[Seq[NameModel]],
                             address: AddressModel,
                             historicAddresses: Option[Seq[AddressModel]],
                             marriages: Option[Seq[Marriage]],
@@ -61,7 +61,7 @@ object NinoApplication {
   private val officeNumberPath = __ \ "officeNumber"
   private val contactNumberPath = __ \ "contactNumber"
   private val countryPath = __ \ "country"
-  private val namePath = __ \ "name"
+  private val namesPath = __ \ "name"
   private val historicalNamesPath = __ \ "historicNames"
   private val addressPath = __ \ "address"
   private val historicalAddressesPath = __ \ "historicAddresses"
@@ -83,7 +83,7 @@ object NinoApplication {
       officeNumberPath.read[String].filter(commonError("office number"))(validateAgainstRegex(_, officeNumberRegex)) and
       contactNumberPath.readNullable[String].filter(commonError("contact number"))(_.fold(true)(validateAgainstRegex(_, contactNumberRegex))) and
       countryPath.read[Int] and
-      namePath.read[NameModel] and
+      namesPath.read[NameModel].map(Seq(_)) and
       historicalNamesPath.readNullable[Seq[NameModel]] and
       addressPath.read[AddressModel] and
       historicalAddressesPath.readNullable[Seq[AddressModel]] and

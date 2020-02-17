@@ -31,15 +31,18 @@ class NameModelSpec extends UnitSpec {
       "startDate" -> readWriteDate(isWrite)
     )
 
-  val maxJson: Boolean => JsObject = isWrite =>
-    Json.obj(
-      "title" -> "MR",
-      "forename" -> "First",
-      "secondForename" -> "Middle",
-      "surname" -> "Last",
-      "startDate" -> readWriteDate(isWrite),
-      "endDate" -> readWriteDate(isWrite)
-    )
+  val maxJson: Boolean => JsObject = isWrite => {
+    val firstNamePath = if (isWrite) "firstName" else "forename"
+    val middleNamePath = if (isWrite) "middleName" else "secondForename"
+      Json.obj(
+        "title" -> "MR",
+        firstNamePath -> "First",
+        middleNamePath -> "Middle",
+        "surname" -> "Last",
+        "startDate" -> readWriteDate(isWrite),
+        "endDate" -> readWriteDate(isWrite)
+      )
+  }
 
   val maxModel = NameModel(
     Some("MR"),
