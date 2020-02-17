@@ -196,13 +196,13 @@ object ItNinoApplicationTestData {
         startDate = DateModel(writeOrReadDate)
       )),
       applicantHistoricNames = None,
-      address = AddressModel(
+      applicantAddresses = Seq(AddressModel(
         None,
         AddressLine("4 AStreetName"),
         None, None, None, None, None, None,
         DateModel(writeOrReadDate), None
-      ),
-      historicAddresses = None,
+      )),
+      applicantHistoricAddresses = None,
       marriages = None,
       originData = None,
       priorResidency = None,
@@ -226,13 +226,13 @@ object ItNinoApplicationTestData {
         startDate = DateModel(writeOrReadDate)
       )),
       applicantHistoricNames = None,
-      address = AddressModel(
+      applicantAddresses = Seq(AddressModel(
         None,
         AddressLine("4 AStreetName"),
         None, None, None, None, None, None,
         DateModel(writeOrReadDate), None
-      ),
-      historicAddresses = None,
+      )),
+      applicantHistoricAddresses = None,
       marriages = None,
       originData = None,
       priorResidency = None,
@@ -278,19 +278,19 @@ object ItNinoApplicationTestData {
           Some(DateModel(writeOrReadDate))
         )
       )),
-      address = AddressModel(
+      applicantAddresses = Seq(AddressModel(
         addressType = Some(Residential),
-        line1 = AddressLine("4 AStreetName"),
-        line2 = Some(AddressLine("Some")),
-        line3 = Some(AddressLine("Old")),
-        line4 = Some(AddressLine("Place")),
-        line5 = Some(AddressLine("ItsTheFinalLine")),
+        addressLine1 = AddressLine("4 AStreetName"),
+        addressLine2 = Some(AddressLine("Some")),
+        addressLine3 = Some(AddressLine("Old")),
+        addressLine4 = Some(AddressLine("Place")),
+        addressLine5 = Some(AddressLine("ItsTheFinalLine")),
         postcode = Some(Postcode("AA11AA")),
         countryCode = Some("GBR"),
         startDate = DateModel(writeOrReadDate),
         endDate = Some(DateModel(writeOrReadDate))
-      ),
-      historicAddresses = Some(Seq(
+      )),
+      applicantHistoricAddresses = Some(Seq(
         AddressModel(
           Some(Residential),
           AddressLine("1 AStreetName"),

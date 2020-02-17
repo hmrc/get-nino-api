@@ -17,8 +17,7 @@
 package utils
 
 import play.api.libs.json.Json.JsValueWrapper
-import play.api.libs.json.{JsObject, JsValue, Json}
-import v1.models._
+import play.api.libs.json.{JsObject, Json}
 import v1.models.request._
 
 object NinoApplicationTestData {
@@ -39,8 +38,20 @@ object NinoApplicationTestData {
         "startDate" -> writeOrReadDate
       )
     }
-    Json.obj(
 
+    val addressJsObject: (String, JsValueWrapper) = if (isWrite) {
+      "applicantAddresses" -> Json.arr(Json.obj(
+        "addressLine1" -> "4 AStreetName",
+        "startDate" -> writeOrReadDate
+      ))
+    } else {
+      "address" -> Json.obj(
+        "line1" -> "4 AStreetName",
+        "startDate" -> writeOrReadDate
+      )
+    }
+
+    Json.obj(
       "nino" -> "TC452994B",
       "gender" -> "MALE",
       "entryDate" -> writeOrReadDate,
@@ -49,12 +60,10 @@ object NinoApplicationTestData {
       "officeNumber" -> "1234",
       "country" -> 1,
       nameJsObject,
-      "address" -> Json.obj(
-        "line1" -> "4 AStreetName",
-        "startDate" -> writeOrReadDate
-      )
+      addressJsObject
     )
   }
+
 
   val faultyRegisterNinoRequestJson: Boolean => JsObject = implicit isWrite => Json.obj(
     "nino" -> "TC452994BAAAAAAAAA",
@@ -80,6 +89,90 @@ object NinoApplicationTestData {
     val historicNamesPath = if(isWrite) "applicantHistoricNames" else "historicNames"
     val firstNamePath = if(isWrite) "firstName" else "forename"
     val middleNamePath  = if(isWrite) "middleName" else "secondForename"
+    val addressJsObject: (String, JsValueWrapper) = if (isWrite) {
+      "applicantAddresses" -> Json.arr(Json.obj(
+        "addressType" -> "RESIDENTIAL",
+        "addressLine1" -> "4 AStreetName",
+        "addressLine2" -> "Some",
+        "addressLine3" -> "Old",
+        "addressLine4" -> "Place",
+        "addressLine5" -> "ItsTheFinalLine",
+        "postcode" -> "AA11AA",
+        "countryCode" -> "GBR",
+        "startDate" -> writeOrReadDate,
+        "endDate" -> writeOrReadDate
+      ))
+    } else {
+      "address" -> Json.obj(
+        "addressType" -> "RESIDENTIAL",
+        "line1" -> "4 AStreetName",
+        "line2" -> "Some",
+        "line3" -> "Old",
+        "line4" -> "Place",
+        "line5" -> "ItsTheFinalLine",
+        "postcode" -> "AA11AA",
+        "countryCode" -> "GBR",
+        "startDate" -> writeOrReadDate,
+        "endDate" -> writeOrReadDate
+      )
+    }
+
+    val historicAddressJsObject: (String, JsValueWrapper) = if (isWrite) {
+      "applicantHistoricAddresses" -> Json.arr(
+        Json.obj(
+          "addressType" -> "RESIDENTIAL",
+          "addressLine1" -> "1 AStreetName",
+          "addressLine2" -> "Some",
+          "addressLine3" -> "Old",
+          "addressLine4" -> "Place",
+          "addressLine5" -> "ItsTheFinalLine",
+          "postcode" -> "AA11AA",
+          "countryCode" -> "GBR",
+          "startDate" -> writeOrReadDate,
+          "endDate" -> writeOrReadDate
+        ),
+        Json.obj(
+          "addressType" -> "RESIDENTIAL",
+          "addressLine1" -> "4 AStreetName",
+          "addressLine2" -> "Some",
+          "addressLine3" -> "Old",
+          "addressLine4" -> "Place",
+          "addressLine5" -> "ItsTheFinalLine",
+          "postcode" -> "AA11AA",
+          "countryCode" -> "GBR",
+          "startDate" -> writeOrReadDate,
+          "endDate" -> writeOrReadDate
+        )
+      )
+    } else {
+      "historicAddresses" -> Json.arr(
+        Json.obj(
+          "addressType" -> "RESIDENTIAL",
+          "line1" -> "1 AStreetName",
+          "line2" -> "Some",
+          "line3" -> "Old",
+          "line4" -> "Place",
+          "line5" -> "ItsTheFinalLine",
+          "postcode" -> "AA11AA",
+          "countryCode" -> "GBR",
+          "startDate" -> writeOrReadDate,
+          "endDate" -> writeOrReadDate
+        ),
+        Json.obj(
+          "addressType" -> "RESIDENTIAL",
+          "line1" -> "4 AStreetName",
+          "line2" -> "Some",
+          "line3" -> "Old",
+          "line4" -> "Place",
+          "line5" -> "ItsTheFinalLine",
+          "postcode" -> "AA11AA",
+          "countryCode" -> "GBR",
+          "startDate" -> writeOrReadDate,
+          "endDate" -> writeOrReadDate
+        )
+      )
+    }
+
     val nameJsObject: (String, JsValueWrapper) = if (isWrite) {
       "applicantNames" -> Json.arr(Json.obj(
         "title" -> "MR",
@@ -128,44 +221,8 @@ object NinoApplicationTestData {
           "endDate" -> writeOrReadDate
         )
       ),
-      "address" -> Json.obj(
-        "addressType" -> "RESIDENTIAL",
-        "line1" -> "4 AStreetName",
-        "line2" -> "Some",
-        "line3" -> "Old",
-        "line4" -> "Place",
-        "line5" -> "ItsTheFinalLine",
-        "postcode" -> "AA11AA",
-        "countryCode" -> "GBR",
-        "startDate" -> writeOrReadDate,
-        "endDate" -> writeOrReadDate
-      ),
-      "historicAddresses" -> Json.arr(
-        Json.obj(
-          "addressType" -> "RESIDENTIAL",
-          "line1" -> "1 AStreetName",
-          "line2" -> "Some",
-          "line3" -> "Old",
-          "line4" -> "Place",
-          "line5" -> "ItsTheFinalLine",
-          "postcode" -> "AA11AA",
-          "countryCode" -> "GBR",
-          "startDate" -> writeOrReadDate,
-          "endDate" -> writeOrReadDate
-        ),
-        Json.obj(
-          "addressType" -> "RESIDENTIAL",
-          "line1" -> "4 AStreetName",
-          "line2" -> "Some",
-          "line3" -> "Old",
-          "line4" -> "Place",
-          "line5" -> "ItsTheFinalLine",
-          "postcode" -> "AA11AA",
-          "countryCode" -> "GBR",
-          "startDate" -> writeOrReadDate,
-          "endDate" -> writeOrReadDate
-        )
-      ),
+      addressJsObject,
+      historicAddressJsObject,
       "marriages" -> Json.arr(
         Json.obj(
           "maritalStatus" -> 1,
@@ -229,13 +286,13 @@ object NinoApplicationTestData {
         startDate = DateModel(writeOrReadDate)
       )),
       applicantHistoricNames = None,
-      address = AddressModel(
+      applicantAddresses = Seq(AddressModel(
         None,
         AddressLine("4 AStreetName"),
         None, None, None, None, None, None,
         DateModel(writeOrReadDate), None
-      ),
-      historicAddresses = None,
+      )),
+      applicantHistoricAddresses = None,
       marriages = None,
       originData = None,
       priorResidency = None,
@@ -259,13 +316,13 @@ object NinoApplicationTestData {
         startDate = DateModel(writeOrReadDate)
       )),
       applicantHistoricNames = None,
-      address = AddressModel(
+      applicantAddresses = Seq(AddressModel(
         None,
         AddressLine("4 AStreetName"),
         None, None, None, None, None, None,
         DateModel(writeOrReadDate), None
-      ),
-      historicAddresses = None,
+      )),
+      applicantHistoricAddresses = None,
       marriages = None,
       originData = None,
       priorResidency = None,
@@ -311,19 +368,19 @@ object NinoApplicationTestData {
           Some(DateModel(writeOrReadDate))
         )
       )),
-      address = AddressModel(
+      applicantAddresses = Seq(AddressModel(
         addressType = Some(Residential),
-        line1 = AddressLine("4 AStreetName"),
-        line2 = Some(AddressLine("Some")),
-        line3 = Some(AddressLine("Old")),
-        line4 = Some(AddressLine("Place")),
-        line5 = Some(AddressLine("ItsTheFinalLine")),
+        addressLine1 = AddressLine("4 AStreetName"),
+        addressLine2 = Some(AddressLine("Some")),
+        addressLine3 = Some(AddressLine("Old")),
+        addressLine4 = Some(AddressLine("Place")),
+        addressLine5 = Some(AddressLine("ItsTheFinalLine")),
         postcode = Some(Postcode("AA11AA")),
         countryCode = Some("GBR"),
         startDate = DateModel(writeOrReadDate),
         endDate = Some(DateModel(writeOrReadDate))
-      ),
-      historicAddresses = Some(Seq(
+      )),
+      applicantHistoricAddresses = Some(Seq(
         AddressModel(
           Some(Residential),
           AddressLine("1 AStreetName"),
