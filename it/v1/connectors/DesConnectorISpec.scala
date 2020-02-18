@@ -19,7 +19,6 @@ package v1.connectors
 import com.github.tomakehurst.wiremock.client.WireMock._
 import com.github.tomakehurst.wiremock.stubbing.StubMapping
 import config.AppConfig
-import javax.inject.Inject
 import play.api.http.Status
 import play.api.libs.json.Json
 import support.IntegrationBaseSpec
@@ -28,7 +27,6 @@ import uk.gov.hmrc.play.bootstrap.http.HttpClient
 import utils.ItNinoApplicationTestData._
 import v1.connectors.httpParsers.HttpResponseTypes.HttpPostResponse
 import v1.models.errors.Error
-import v1.models.response.DesResponseModel
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
@@ -45,13 +43,7 @@ class DesConnectorISpec extends IntegrationBaseSpec {
       stubFor(post(url)
         .willReturn(
           aResponse()
-            .withHeader("Content-Type", "application/json")
-            .withStatus(Status.OK)
-            .withBody(Json.stringify(
-              Json.obj(
-                "message" -> "YAY SUCCESS"
-              )
-            ))
+            .withStatus(Status.ACCEPTED)
         ))
     }
 
@@ -75,12 +67,12 @@ class DesConnectorISpec extends IntegrationBaseSpec {
         "the request is successful" in new Test {
           stubSuccess("/register")
 
-          val response: HttpPostResponse[DesResponseModel] = {
+          val response: HttpPostResponse[Boolean] = {
             appConfig.features.useDesStub(true)
             await(connector.sendRegisterRequest(maxRegisterNinoRequestModel))
           }
 
-          response shouldBe Right(DesResponseModel("YAY SUCCESS"))
+          response shouldBe Right(true)
         }
       }
       "return an Error model" when {
@@ -88,7 +80,7 @@ class DesConnectorISpec extends IntegrationBaseSpec {
         "the request is unsuccessful" in new Test {
           stubFailure("/register")
 
-          val response: HttpPostResponse[DesResponseModel] = {
+          val response: HttpPostResponse[Boolean] = {
             appConfig.features.useDesStub(true)
             await(connector.sendRegisterRequest(maxRegisterNinoRequestModel))
           }
@@ -105,12 +97,12 @@ class DesConnectorISpec extends IntegrationBaseSpec {
         "the request is successful" in new Test {
           stubSuccess("/desContext")
 
-          val response: HttpPostResponse[DesResponseModel] = {
+          val response: HttpPostResponse[Boolean] = {
             appConfig.features.useDesStub(false)
             await(connector.sendRegisterRequest(maxRegisterNinoRequestModel))
           }
 
-          response shouldBe Right(DesResponseModel("YAY SUCCESS"))
+          response shouldBe Right(true)
         }
       }
       "return an Error model" when {
@@ -118,7 +110,7 @@ class DesConnectorISpec extends IntegrationBaseSpec {
         "the request is unsuccessful" in new Test {
           stubFailure("/desContext")
 
-          val response: HttpPostResponse[DesResponseModel] = {
+          val response: HttpPostResponse[Boolean] = {
             appConfig.features.useDesStub(false)
             await(connector.sendRegisterRequest(maxRegisterNinoRequestModel))
           }

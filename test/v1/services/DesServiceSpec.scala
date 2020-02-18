@@ -22,7 +22,6 @@ import utils.NinoApplicationTestData._
 import v1.connectors.DesConnector
 import v1.models.errors.Error
 import v1.models.request.NinoApplication
-import v1.models.response.DesResponseModel
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.{ExecutionContext, Future}
@@ -36,7 +35,7 @@ class DesServiceSpec extends UnitSpec {
   "registerNino" should {
     "return a des response model" when {
       "a response is returned from the connector" in {
-        val returnedResponse = DesResponseModel("this is a message")
+        val returnedResponse = true
 
         (mockConnector.sendRegisterRequest(_: NinoApplication)(_: HeaderCarrier, _: ExecutionContext))
           .expects(maxRegisterNinoRequestModel, *, *)

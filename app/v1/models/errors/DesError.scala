@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-package v1.models.response
+package v1.models.errors
 
 import play.api.libs.json.{Format, Json}
 
-case class DesResponseModel(message: String)
+case class DesError(code: String, reason: String)
 
-object DesResponseModel {
-  implicit val formats: Format[DesResponseModel] = Json.format[DesResponseModel]
+object DesError {
+  implicit val formats: Format[DesError] = Json.format[DesError]
 }

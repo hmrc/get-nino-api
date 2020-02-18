@@ -25,9 +25,16 @@ object DesStub extends WireMockMethods {
   private val desUrl = "/desContext"
   private val desStubUrl = "/register"
 
-  def stubCall(responseStatus: Int, returnBody: JsValue, stubbed: Boolean = false): StubMapping = {
-    when(method = POST, uri = if(stubbed) desStubUrl else desUrl)
-      .thenReturn(responseStatus, returnBody)
+  def stubCall(responseStatus: Int, maybeReturnBody: Option[JsValue], stubbed: Boolean = false): StubMapping = {
+    maybeReturnBody match {
+      case Some(returnBody) =>
+        when(method = POST, uri = if(stubbed) desStubUrl else desUrl)
+          .thenReturn(responseStatus, returnBody)
+      case None =>
+        when(method = POST, uri = if(stubbed) desStubUrl else desUrl)
+          .thenReturn(responseStatus)
+    }
+
   }
 
 }

@@ -25,7 +25,6 @@ import uk.gov.hmrc.http.{HeaderCarrier, HeaderNames}
 import utils.NinoApplicationTestData.{maxRegisterNinoRequestJson, maxRegisterNinoRequestModel}
 import v1.models.errors.{BadRequestError, InvalidBodyTypeError, Error => NinoError, JsonValidationError => NinoJsonValidationError}
 import v1.models.request.NinoApplication
-import v1.models.response.DesResponseModel
 import v1.services.DesService
 
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -39,10 +38,10 @@ class RegisterNinoControllerSpec extends ControllerBaseSpec {
   "Calling the register action" when {
 
     "the request is valid" should {
-      "return 200" in {
+      "return 202" in {
         (mockService.registerNino(_: NinoApplication)(_: HeaderCarrier, _: ExecutionContext))
           .expects(maxRegisterNinoRequestModel, *, *)
-          .returning(Future.successful(Right(DesResponseModel("A response"))))
+          .returning(Future.successful(Right(true)))
 
         val result = controller.register()(
           fakeRequest
@@ -54,8 +53,7 @@ class RegisterNinoControllerSpec extends ControllerBaseSpec {
         MDC.get(HeaderNames.xRequestId) shouldBe "1234567890"
         MDC.get(HeaderNames.xSessionId) shouldBe "0987654321"
 
-        status(result) shouldBe Status.OK
-        contentAsJson(result) shouldBe Json.obj("message" -> "A response")
+        status(result) shouldBe Status.ACCEPTED
       }
     }
 
