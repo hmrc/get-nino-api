@@ -26,6 +26,26 @@ object AuthStub extends WireMockMethods {
 
   def authorised(): StubMapping = {
     when(method = POST, uri = authoriseUri)
-      .thenReturn(status = OK)
+      .thenReturn(status = OK, body = "true")
+  }
+
+  def notAuthorised(): StubMapping = {
+    when(method = POST, uri = authoriseUri)
+      .thenReturn(status = UNAUTHORIZED, Map("WWW-Authenticate" -> """MDTP detail="someReason""""))
+  }
+
+  def noActiveSession(): StubMapping = {
+    when(method = POST, uri = authoriseUri)
+      .thenReturn(status = UNAUTHORIZED, Map("WWW-Authenticate" -> """MDTP detail="MissingBearerToken""""))
+  }
+
+  def authDown(): StubMapping = {
+    when(method = POST, uri = authoriseUri)
+      .thenReturn(status = BAD_GATEWAY)
+  }
+
+  def otherStatus(): StubMapping = {
+    when(method = POST, uri = authoriseUri)
+      .thenReturn(status = NOT_IMPLEMENTED)
   }
 }

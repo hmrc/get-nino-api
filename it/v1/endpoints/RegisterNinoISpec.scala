@@ -24,7 +24,7 @@ import play.api.libs.json.{JsValue, Json}
 import play.api.libs.ws.{WSRequest, WSResponse}
 import support.IntegrationBaseSpec
 import utils.ItNinoApplicationTestData.{faultyRegisterNinoRequestJson, maxRegisterNinoRequestJson}
-import v1.stubs.{AuditStub, DesStub}
+import v1.stubs.{AuditStub, AuthStub, DesStub}
 
 class RegisterNinoISpec extends IntegrationBaseSpec {
 
@@ -43,7 +43,7 @@ class RegisterNinoISpec extends IntegrationBaseSpec {
 
   "Calling the /api/register endpoint" when {
 
-    "the feature switch is on" when {
+    "the desStub feature switch is on" when {
 
       "any valid request is made" should {
 
@@ -53,6 +53,7 @@ class RegisterNinoISpec extends IntegrationBaseSpec {
           override def setupStubs(): StubMapping = {
             AuditStub.audit()
             DesStub.stubCall(Status.ACCEPTED, None, stubbed = true)
+            AuthStub.authorised()
           }
 
           lazy val response: WSResponse = await(request().post(maxRegisterNinoRequestJson(false)))
@@ -66,7 +67,8 @@ class RegisterNinoISpec extends IntegrationBaseSpec {
 
             override def setupStubs(): StubMapping = {
               AuditStub.audit()
-              DesStub.stubCall(Status.BAD_REQUEST, Some(Json.obj("message" -> "A response")), stubbed = true)
+              DesStub.stubCall(Status.BAD_REQUEST, Some(Json.obj("code" -> "OK", "message" -> "A response")), stubbed = true)
+              AuthStub.authorised()
             }
 
             lazy val response: WSResponse = await(request().post(maxRegisterNinoRequestJson(false)))
@@ -85,6 +87,7 @@ class RegisterNinoISpec extends IntegrationBaseSpec {
 
           override def setupStubs(): StubMapping = {
             AuditStub.audit()
+            AuthStub.authorised()
           }
 
           lazy val response: WSResponse = await(request().post(faultyRegisterNinoRequestJson(false)))
@@ -101,9 +104,63 @@ class RegisterNinoISpec extends IntegrationBaseSpec {
           )
         }
       }
+
+      "the user is not authorised" should {
+
+        "return an Unauthorised error with the reason provided by the AuthClient" in new Test {
+          appConfig.features.useDesStub(true)
+
+          override def setupStubs(): StubMapping = {
+            AuditStub.audit()
+            AuthStub.notAuthorised()
+          }
+
+          lazy val response: WSResponse = await(request().post(maxRegisterNinoRequestJson(true)))
+          response.body[JsValue] shouldBe Json.obj(
+            "code" -> "UNAUTHORISED",
+            "message" -> "someReason"
+          )
+        }
+      }
+
+      "auth is down" should {
+
+        "return a BadGateway(AuthDownError)" in new Test {
+          appConfig.features.useDesStub(true)
+
+          override def setupStubs(): StubMapping = {
+            AuditStub.audit()
+            AuthStub.authDown()
+          }
+
+          lazy val response: WSResponse = await(request().post(maxRegisterNinoRequestJson(true)))
+          response.body[JsValue] shouldBe Json.obj(
+            "code" -> "BAD_GATEWAY",
+            "message" -> "Auth is currently down."
+          )
+        }
+      }
+
+      "any other error code is returned" should {
+
+        "return a InternalServerError(DownstreamError)" in new Test {
+          appConfig.features.useDesStub(true)
+
+          override def setupStubs(): StubMapping = {
+            AuditStub.audit()
+            AuthStub.otherStatus()
+          }
+
+          lazy val response: WSResponse = await(request().post(maxRegisterNinoRequestJson(true)))
+          response.body[JsValue] shouldBe Json.obj(
+            "code" -> "INTERNAL_SERVER_ERROR",
+            "message" -> "An internal server error occurred"
+          )
+        }
+      }
     }
 
-    "the feature switch is off" when {
+    "the desStub feature switch is off" when {
 
       "any valid request is made" should {
 
@@ -113,6 +170,7 @@ class RegisterNinoISpec extends IntegrationBaseSpec {
           override def setupStubs(): StubMapping = {
             AuditStub.audit()
             DesStub.stubCall(Status.ACCEPTED, None)
+            AuthStub.authorised()
           }
 
           lazy val response: WSResponse = await(request().post(maxRegisterNinoRequestJson(false)))
@@ -126,7 +184,8 @@ class RegisterNinoISpec extends IntegrationBaseSpec {
 
             override def setupStubs(): StubMapping = {
               AuditStub.audit()
-              DesStub.stubCall(Status.BAD_REQUEST, Some(Json.obj("message" -> "A response")))
+              DesStub.stubCall(Status.BAD_REQUEST, Some(Json.obj("code" -> s"${Status.BAD_REQUEST}", "message" -> "A response")))
+              AuthStub.authorised()
             }
 
             lazy val response: WSResponse = await(request().post(maxRegisterNinoRequestJson(false)))
@@ -145,6 +204,7 @@ class RegisterNinoISpec extends IntegrationBaseSpec {
 
           override def setupStubs(): StubMapping = {
             AuditStub.audit()
+            AuthStub.authorised()
           }
 
           lazy val response: WSResponse = await(request().post(faultyRegisterNinoRequestJson(false)))

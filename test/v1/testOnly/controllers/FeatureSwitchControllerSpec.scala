@@ -17,7 +17,7 @@
 package v1.testOnly.controllers
 
 import play.api.http.Status
-import play.api.libs.json.{JsString, JsValue, Json}
+import play.api.libs.json.{JsValue, Json}
 import play.api.mvc.AnyContentAsJson
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
@@ -99,10 +99,7 @@ class FeatureSwitchControllerSpec extends ControllerBaseSpec {
             "useDesStub" -> false
           )
         }
-
       }
-
     }
   }
-
 }

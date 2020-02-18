@@ -55,6 +55,10 @@ object UnsupportedVersionError extends Error("NOT_FOUND", "The requested resourc
 
 object InvalidJsonResponseError extends Error("INVALID_JSON", "The Json returned from DES is invalid")
 
+object UnsupportedAuthProvider extends Error("UNAUTHORISED", "The credentials used to access the API are invalid.")
+
+object AuthDownError extends Error("BAD_GATEWAY", "Auth is currently down.")
+
 class JsonValidationError(jsErrors: JsError)
   extends Error("JSON_VALIDATION_ERROR", "The provided JSON was unable to be validated as the selected model.") {
     val getErrors: JsValue = Json.toJson(jsErrors.errors.flatMap {
