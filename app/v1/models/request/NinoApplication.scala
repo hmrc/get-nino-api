@@ -31,7 +31,7 @@ case class NinoApplication(
                             applicantHistoricNames: Option[Seq[NameModel]],
                             applicantAddresses: Seq[AddressModel],
                             applicantHistoricAddresses: Option[Seq[AddressModel]],
-                            marriages: Option[Seq[Marriage]],
+                            applicantMarriages: Option[Seq[Marriage]],
                             applicantOrigin: Option[OriginData],
                             applicantPriorResidency: Option[Seq[PriorResidencyModel]],
                             abroadLiability: Option[AbroadLiabilityModel],
@@ -65,7 +65,7 @@ object NinoApplication {
   private val historicalNamesPath = __ \ "historicNames"
   private val addressesPath = __ \ "address"
   private val historicalAddressesPath = __ \ "historicAddresses"
-  private val marriagesPath = __ \ "marriages"
+  private val applicantMarriagesPath = __ \ "marriages"
   private val originDataPath = __ \ "originData"
   private val priorResidencyPath = __ \ "priorResidency"
   private val abroadLiabilityPath = __ \ "abroadLiability"
@@ -87,7 +87,7 @@ object NinoApplication {
       historicalNamesPath.readNullable[Seq[NameModel]] and
       addressesPath.read[AddressModel].map(Seq(_)) and
       historicalAddressesPath.readNullable[Seq[AddressModel]] and
-      marriagesPath.readNullable[Seq[Marriage]] and
+      applicantMarriagesPath.readNullable[Seq[Marriage]] and
       originDataPath.readNullable[OriginData] and
       priorResidencyPath.readNullable[Seq[PriorResidencyModel]] and
       abroadLiabilityPath.readNullable[AbroadLiabilityModel] and

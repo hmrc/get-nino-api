@@ -202,7 +202,7 @@ object ItNinoApplicationTestData {
         DateModel(writeOrReadDate), None
       )),
       applicantHistoricAddresses = None,
-      marriages = None,
+      applicantMarriages = None,
       applicantOrigin = None,
       applicantPriorResidency = None,
       abroadLiability = None,
@@ -232,7 +232,7 @@ object ItNinoApplicationTestData {
         DateModel(writeOrReadDate), None
       )),
       applicantHistoricAddresses = None,
-      marriages = None,
+      applicantMarriages = None,
       applicantOrigin = None,
       applicantPriorResidency = None,
       abroadLiability = None,
@@ -318,26 +318,26 @@ object ItNinoApplicationTestData {
           Some(DateModel(writeOrReadDate))
         )
       )),
-      marriages = Some(Seq(
+      applicantMarriages = Some(Seq(
         Marriage(
           maritalStatus = Some(1),
           startDate = Some(DateModel(writeOrReadDate)),
           endDate = Some(DateModel(writeOrReadDate)),
           partnerNino = "AA000000B",
-          birthDate = DateModel(writeOrReadDate),
-          forename = Some("Testforename"),
+          spouseDateOfBirth = DateModel(writeOrReadDate),
+          spouseFirstName = Some("Testforename"),
           secondForename = Some("Testsecondforename"),
-          surname = Some("Testsurname")
+          spouseSurname = Some("Testsurname")
         ),
         Marriage(
           maritalStatus = Some(1),
           startDate = Some(DateModel(writeOrReadDate)),
           endDate = Some(DateModel(writeOrReadDate)),
           partnerNino = "AA000000C",
-          birthDate = DateModel(writeOrReadDate),
-          forename = Some("Othertestforename"),
+          spouseDateOfBirth = DateModel(writeOrReadDate),
+          spouseFirstName = Some("Othertestforename"),
           secondForename = Some("Testsecondforename"),
-          surname = Some("Testsurname")
+          spouseSurname = Some("Testsurname")
         )
       )),
       applicantOrigin = Some(

@@ -25,10 +25,10 @@ case class Marriage(
                      startDate: Option[DateModel] = None,
                      endDate: Option[DateModel] = None,
                      partnerNino: String,
-                     birthDate: DateModel,
-                     forename: Option[String] = None,
+                     spouseDateOfBirth: DateModel,
+                     spouseFirstName: Option[String] = None,
                      secondForename: Option[String] = None,
-                     surname: Option[String] = None
+                     spouseSurname: Option[String] = None
                    )
 
 object Marriage {
@@ -37,10 +37,10 @@ object Marriage {
   private lazy val startDatePath = __ \ "startDate"
   private lazy val endDatePath = __ \ "endDate"
   private lazy val partnerNinoPath = __ \ "partnerNino"
-  private lazy val birthDatePath = __ \ "birthDate"
-  private lazy val forenamePath = __ \ "forename"
+  private lazy val spouseDateOfBirthPath = __ \ "birthDate"
+  private lazy val spouseFirstNamePath = __ \ "forename"
   private lazy val secondForenamePath = __ \ "secondForename"
-  private lazy val surnamePath = __ \ "surname"
+  private lazy val spouseSurnamePath = __ \ "surname"
 
   private[models] def maritalStatusValidation: Option[Int] => Boolean = {
     case Some(maritalValue) =>
@@ -73,10 +73,10 @@ object Marriage {
       startDatePath.readNullable[DateModel] and
       endDatePath.readNullable[DateModel] and
       partnerNinoPath.read[String].filter(commonError("Partner NINO"))(_.matches(ninoRegex)) and
-      birthDatePath.read[DateModel] and
-      forenamePath.readNullable[String].filter(commonError("Forename"))(stringValidation(_, "forename")) and
+      spouseDateOfBirthPath.read[DateModel] and
+      spouseFirstNamePath.readNullable[String].filter(commonError("Forename"))(stringValidation(_, "forename")) and
       secondForenamePath.readNullable[String].filter(commonError("Second forename"))(stringValidation(_, "secondForename")) and
-      surnamePath.readNullable[String].filter(commonError("Surname"))(stringValidation(_, "surname"))
+      spouseSurnamePath.readNullable[String].filter(commonError("Surname"))(stringValidation(_, "surname"))
     ) (Marriage.apply _)
 
   implicit val writes: Writes[Marriage] = Json.writes[Marriage]

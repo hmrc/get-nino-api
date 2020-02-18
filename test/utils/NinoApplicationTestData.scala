@@ -26,6 +26,12 @@ object NinoApplicationTestData {
     if (isWrite) "2020-10-10" else "10-10-2020"
   }
 
+  private def nationalityJsObject(implicit isWrite: Boolean): (String, JsValueWrapper) = if (isWrite) {
+    "nationalityCode" -> 1
+  } else {
+    "country" -> 1
+  }
+
   val minRegisterNinoRequestJson: Boolean => JsObject = implicit isWrite => {
     val nameJsObject: (String, JsValueWrapper) = if (isWrite) {
       "applicantNames" -> Json.arr(Json.obj(
@@ -42,14 +48,14 @@ object NinoApplicationTestData {
     val addressJsObject: (String, JsValueWrapper) = if (isWrite) {
       "applicantAddresses" -> Json.arr(Json.obj(
         "addressLine1" -> "4 AStreetName",
-        "startDate" -> writeOrReadDate,
-        "countryCode" -> "USA"
+        "countryCode" -> "USA",
+        "startDate" -> writeOrReadDate
       ))
     } else {
       "address" -> Json.obj(
         "line1" -> "4 AStreetName",
-        "startDate" -> writeOrReadDate,
-        "countryCode" -> "USA"
+        "countryCode" -> "USA",
+        "startDate" -> writeOrReadDate
       )
     }
 
@@ -85,14 +91,58 @@ object NinoApplicationTestData {
   )
 
   val maxRegisterNinoRequestJson: Boolean => JsObject = implicit isWrite => {
-    val originDataPath = if(isWrite) "applicantOrigin" else "originData"
-    val priorResidencyPath = if(isWrite) "applicantPriorResidency" else "priorResidency"
-    val priorStartDatePath = if(isWrite) "startDate" else "priorStartDate"
-    val priorEndDatePath = if(isWrite) "endDate" else "priorEndDate"
+    val originDataPath = if (isWrite) "applicantOrigin" else "originData"
+    val priorResidencyPath = if (isWrite) "applicantPriorResidency" else "priorResidency"
+    val priorStartDatePath = if (isWrite) "startDate" else "priorStartDate"
+    val priorEndDatePath = if (isWrite) "endDate" else "priorEndDate"
     val addressLinePrefix = (lineNo: Int) => if (isWrite) s"addressLine$lineNo" else s"line$lineNo"
-    val historicNamesPath = if(isWrite) "applicantHistoricNames" else "historicNames"
-    val firstNamePath = if(isWrite) "firstName" else "forename"
-    val middleNamePath  = if(isWrite) "middleName" else "secondForename"
+    val historicNamesPath = if (isWrite) "applicantHistoricNames" else "historicNames"
+    val firstNamePath = if (isWrite) "firstName" else "forename"
+    val middleNamePath = if (isWrite) "middleName" else "secondForename"
+
+    val applicantMarriageJsObject: (String, JsValueWrapper) = if (isWrite) {
+      "applicantMarriages" -> Json.arr(
+        Json.obj(
+          "maritalStatus" -> 1,
+          "startDate" -> writeOrReadDate,
+          "endDate" -> writeOrReadDate,
+          "partnerNino" -> "AA000000B",
+          "spouseDateOfBirth" -> writeOrReadDate,
+          "spouseFirstName" -> "Testforename",
+          "secondForename" -> "Testsecondforename",
+          "spouseSurname" -> "Testsurname"),
+        Json.obj(
+          "maritalStatus" -> 1,
+          "startDate" -> writeOrReadDate,
+          "endDate" -> writeOrReadDate,
+          "partnerNino" -> "AA000000C",
+          "spouseDateOfBirth" -> writeOrReadDate,
+          "spouseFirstName" -> "Othertestforename",
+          "secondForename" -> "Testsecondforename",
+          "spouseSurname" -> "Testsurname")
+      )
+    } else {
+      "marriages" -> Json.arr(
+        Json.obj(
+          "maritalStatus" -> 1,
+          "startDate" -> writeOrReadDate,
+          "endDate" -> writeOrReadDate,
+          "partnerNino" -> "AA000000B",
+          "birthDate" -> writeOrReadDate,
+          "forename" -> "Testforename",
+          "secondForename" -> "Testsecondforename",
+          "surname" -> "Testsurname"),
+        Json.obj(
+          "maritalStatus" -> 1,
+          "startDate" -> writeOrReadDate,
+          "endDate" -> writeOrReadDate,
+          "partnerNino" -> "AA000000C",
+          "birthDate" -> writeOrReadDate,
+          "forename" -> "Othertestforename",
+          "secondForename" -> "Testsecondforename",
+          "surname" -> "Testsurname")
+      )
+    }
 
     val addressJsObject: (String, JsValueWrapper) = if (isWrite) {
       "applicantAddresses" -> Json.arr(Json.obj(
@@ -231,26 +281,7 @@ object NinoApplicationTestData {
       ),
       addressJsObject,
       historicAddressJsObject,
-      "marriages" -> Json.arr(
-        Json.obj(
-          "maritalStatus" -> 1,
-          "startDate" -> writeOrReadDate,
-          "endDate" -> writeOrReadDate,
-          "partnerNino" -> "AA000000B",
-          "birthDate" -> writeOrReadDate,
-          "forename" -> "Testforename",
-          "secondForename" -> "Testsecondforename",
-          "surname" -> "Testsurname"),
-        Json.obj(
-          "maritalStatus" -> 1,
-          "startDate" -> writeOrReadDate,
-          "endDate" -> writeOrReadDate,
-          "partnerNino" -> "AA000000C",
-          "birthDate" -> writeOrReadDate,
-          "forename" -> "Othertestforename",
-          "secondForename" -> "Testsecondforename",
-          "surname" -> "Testsurname")
-      ),
+      applicantMarriageJsObject,
       originDataPath -> Json.obj(
         "birthTown" -> "ATown",
         "birthProvince" -> "SomeProvince",
@@ -300,7 +331,7 @@ object NinoApplicationTestData {
         DateModel(writeOrReadDate), None
       )),
       applicantHistoricAddresses = None,
-      marriages = None,
+      applicantMarriages = None,
       applicantOrigin = None,
       applicantPriorResidency = None,
       abroadLiability = None,
@@ -330,14 +361,13 @@ object NinoApplicationTestData {
         DateModel(writeOrReadDate), None
       )),
       applicantHistoricAddresses = None,
-      marriages = None,
+      applicantMarriages = None,
       applicantOrigin = None,
       applicantPriorResidency = None,
       abroadLiability = None,
       nationalityCode = Some("GBR")
     )
   }
-
 
   val maxRegisterNinoRequestModel: NinoApplication = {
     implicit val isWrite: Boolean = false
@@ -416,26 +446,26 @@ object NinoApplicationTestData {
           Some(DateModel(writeOrReadDate))
         )
       )),
-      marriages = Some(Seq(
+      applicantMarriages = Some(Seq(
         Marriage(
           maritalStatus = Some(1),
           startDate = Some(DateModel(writeOrReadDate)),
           endDate = Some(DateModel(writeOrReadDate)),
           partnerNino = "AA000000B",
-          birthDate = DateModel(writeOrReadDate),
-          forename = Some("Testforename"),
+          spouseDateOfBirth = DateModel(writeOrReadDate),
+          spouseFirstName = Some("Testforename"),
           secondForename = Some("Testsecondforename"),
-          surname = Some("Testsurname")
+          spouseSurname = Some("Testsurname")
         ),
         Marriage(
           maritalStatus = Some(1),
           startDate = Some(DateModel(writeOrReadDate)),
           endDate = Some(DateModel(writeOrReadDate)),
           partnerNino = "AA000000C",
-          birthDate = DateModel(writeOrReadDate),
-          forename = Some("Othertestforename"),
+          spouseDateOfBirth = DateModel(writeOrReadDate),
+          spouseFirstName = Some("Othertestforename"),
           secondForename = Some("Testsecondforename"),
-          surname = Some("Testsurname")
+          spouseSurname = Some("Testsurname")
         )
       )),
       applicantOrigin = Some(
@@ -443,12 +473,12 @@ object NinoApplicationTestData {
           birthSurname = Some("ASurname"), maternalForename = Some("MotherForename"),
           maternalSurname = Some("AnotherSurname"), paternalForename = Some("AForename"), paternalSurname = Some("ASurname"),
           foreignSocialSecurity = Some("SomeSocialSecurityNumber"), lastEUAddress = Some(LastEUAddress(
-                Some(AddressLine("4 AStreetName")),
-                Some(AddressLine("Some")),
-                Some(AddressLine("Old")),
-                Some(AddressLine("Place")),
-                Some(AddressLine("ItsTheFinalLine"))
-              )))),
+            Some(AddressLine("4 AStreetName")),
+            Some(AddressLine("Some")),
+            Some(AddressLine("Old")),
+            Some(AddressLine("Place")),
+            Some(AddressLine("ItsTheFinalLine"))
+          )))),
       applicantPriorResidency = Some(Seq(
         PriorResidencyModel(Some(DateModel(writeOrReadDate)), Some(DateModel(writeOrReadDate))),
         PriorResidencyModel(Some(DateModel(writeOrReadDate)), Some(DateModel(writeOrReadDate)))
