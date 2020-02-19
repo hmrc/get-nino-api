@@ -19,6 +19,7 @@ package v1.controllers.predicates
 import config.AppConfig
 import javax.inject.{Inject, Singleton}
 import org.slf4j.MDC
+import play.api.Logger
 import play.api.libs.json.Json
 import play.api.mvc.{Result, _}
 import uk.gov.hmrc.auth.core.AuthProvider.PrivilegedApplication
@@ -48,7 +49,9 @@ class PrivilegedApplicationPredicate @Inject()(
     authorised(AuthProviders(PrivilegedApplication)) {
       block(request)
     } recover {
-      case error: AuthorisationException => Unauthorized(Json.toJson(APIError("UNAUTHORISED", error.reason)))
+      case error: AuthorisationException =>
+        Logger.debug(s"Authorization failed. Bearer token sent: ${hc.authorization}")
+        Unauthorized(Json.toJson(APIError("UNAUTHORISED", error.reason)))
       case Upstream5xxResponse(_, BAD_GATEWAY, _) => BadGateway(Json.toJson(AuthDownError))
       case _ => InternalServerError(Json.toJson(DownstreamError))
     }

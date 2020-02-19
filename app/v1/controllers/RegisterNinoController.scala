@@ -51,6 +51,7 @@ class RegisterNinoController @Inject()(
   }
 
   private def badRequestWithLog[T <: JsValue](input: T)(implicit hc: HeaderCarrier): Result = {
+    Logger.debug(s"Header Carrier for failed request: $hc")
     Logger.warn(Json.prettyPrint(input))
     BadRequest(input)
   }
