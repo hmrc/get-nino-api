@@ -16,6 +16,9 @@
 
 package v1.models.request
 
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
+
 import play.api.libs.json.{JsResultException, Json}
 import support.UnitSpec
 import utils.NinoApplicationTestData._
@@ -235,6 +238,42 @@ class NinoApplicationSpec extends UnitSpec {
         val seqInput = Seq("one", "two", "three", "four")
 
         NinoApplication.seqMinMaxValidation(seqInput, 1, 3) shouldBe false
+      }
+    }
+  }
+
+  ".validateAge" should {
+
+    "return true" when {
+
+      "the provided age is above 15 years and 8 months" in {
+        val today = LocalDateTime.now()
+        //noinspection ScalaStyle
+        val validAge = today.minusYears(15).minusMonths(8).minusDays(1)
+        val validAgeAsDateModel = DateModel(validAge.format(DateTimeFormatter.ofPattern("dd-MM-yyyy")))
+
+        NinoApplication.validateAge(validAgeAsDateModel) shouldBe true
+      }
+    }
+
+    "return false" when {
+
+      "the provided age is exactly 15 years and 8 months" in {
+        val today = LocalDateTime.now()
+        //noinspection ScalaStyle
+        val invalidAge = today.minusYears(15).minusMonths(8)
+        val invalidAgeAsDateModel = DateModel(invalidAge.format(DateTimeFormatter.ofPattern("dd-MM-yyyy")))
+
+        NinoApplication.validateAge(invalidAgeAsDateModel) shouldBe false
+      }
+
+      "the provided age is less than 15 years and 8 months" in {
+        val today = LocalDateTime.now()
+        //noinspection ScalaStyle
+        val invalidAge = today.minusYears(15).minusMonths(8).plusDays(1)
+        val invalidAgeAsDateModel = DateModel(invalidAge.format(DateTimeFormatter.ofPattern("dd-MM-yyyy")))
+
+        NinoApplication.validateAge(invalidAgeAsDateModel) shouldBe false
       }
     }
   }
