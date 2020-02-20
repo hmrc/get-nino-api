@@ -21,13 +21,12 @@ import play.api.libs.functional.syntax._
 import play.api.libs.json._
 
 case class Marriage(
-                     maritalStatus: Option[Int] = None,
+                     maritalStatus: Option[MaritalStatus] = None,
                      startDate: Option[DateModel] = None,
                      endDate: Option[DateModel] = None,
                      partnerNino: String,
                      spouseDateOfBirth: DateModel,
                      spouseFirstName: Option[String] = None,
-                     secondForename: Option[String] = None,
                      spouseSurname: Option[String] = None
                    )
 
@@ -41,14 +40,6 @@ object Marriage {
   private lazy val spouseFirstNamePath = __ \ "forename"
   private lazy val secondForenamePath = __ \ "secondForename"
   private lazy val spouseSurnamePath = __ \ "surname"
-
-  private[models] def maritalStatusValidation: Option[Int] => Boolean = {
-    case Some(maritalValue) =>
-      val passedValidation: Boolean = (maritalValue >= 0) && (maritalValue <= 12)
-      if (!passedValidation) Logger.warn("[Marriage][maritalStatusValidation] - maritalStatus is not valid")
-      passedValidation
-    case _ => true
-  }
 
   private val ninoRegex = "^([ACEHJLMOPRSWXY][A-CEGHJ-NPR-TW-Z]|B[A-CEHJ-NPR-TW-Z]|" +
     "G[ACEGHJ-NPR-TW-Z]|[KT][A-CEGHJ-MPR-TW-Z]|N[A-CEGHJL-NPR-SW-Z]|Z[A-CEGHJ-NPR-TW-Y])[0-9]{6}[A-D]$"
@@ -69,13 +60,12 @@ object Marriage {
   }
 
   implicit val reads: Reads[Marriage] = (
-    maritalStatusPath.readNullable[Int].filter(commonError("Marital status"))(maritalStatusValidation) and
+    maritalStatusPath.readNullable[MaritalStatus] and
       startDatePath.readNullable[DateModel] and
       endDatePath.readNullable[DateModel] and
       partnerNinoPath.read[String].filter(commonError("Partner NINO"))(_.matches(ninoRegex)) and
       spouseDateOfBirthPath.read[DateModel] and
       spouseFirstNamePath.readNullable[String].filter(commonError("Forename"))(stringValidation(_, "forename")) and
-      secondForenamePath.readNullable[String].filter(commonError("Second forename"))(stringValidation(_, "secondForename")) and
       spouseSurnamePath.readNullable[String].filter(commonError("Surname"))(stringValidation(_, "surname"))
     ) (Marriage.apply _)
 

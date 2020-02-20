@@ -97,43 +97,39 @@ object NinoApplicationTestData {
     val applicantMarriageJsObject: (String, JsValueWrapper) = if (isWrite) {
       "applicantMarriages" -> Json.arr(
         Json.obj(
-          "maritalStatus" -> 1,
+          "maritalStatus" -> "DIVORCED",
           "startDate" -> writeOrReadDate,
           "endDate" -> writeOrReadDate,
           "partnerNino" -> "AA000000B",
           "spouseDateOfBirth" -> writeOrReadDate,
           "spouseFirstName" -> "Testforename",
-          "secondForename" -> "Testsecondforename",
           "spouseSurname" -> "Testsurname"),
         Json.obj(
-          "maritalStatus" -> 1,
+          "maritalStatus" -> "DIVORCED",
           "startDate" -> writeOrReadDate,
           "endDate" -> writeOrReadDate,
           "partnerNino" -> "AA000000C",
           "spouseDateOfBirth" -> writeOrReadDate,
           "spouseFirstName" -> "Othertestforename",
-          "secondForename" -> "Testsecondforename",
           "spouseSurname" -> "Testsurname")
       )
     } else {
       "marriages" -> Json.arr(
         Json.obj(
-          "maritalStatus" -> 1,
+          "maritalStatus" -> "DIVORCED",
           "startDate" -> writeOrReadDate,
           "endDate" -> writeOrReadDate,
           "partnerNino" -> "AA000000B",
           "birthDate" -> writeOrReadDate,
           "forename" -> "Testforename",
-          "secondForename" -> "Testsecondforename",
           "surname" -> "Testsurname"),
         Json.obj(
-          "maritalStatus" -> 1,
+          "maritalStatus" -> "DIVORCED",
           "startDate" -> writeOrReadDate,
           "endDate" -> writeOrReadDate,
           "partnerNino" -> "AA000000C",
           "birthDate" -> writeOrReadDate,
           "forename" -> "Othertestforename",
-          "secondForename" -> "Testsecondforename",
           "surname" -> "Testsurname")
       )
     }
@@ -505,23 +501,21 @@ object NinoApplicationTestData {
       )),
       applicantMarriages = Some(Seq(
         Marriage(
-          maritalStatus = Some(1),
+          maritalStatus = Some(DIVORCED),
           startDate = Some(DateModel(writeOrReadDate)),
           endDate = Some(DateModel(writeOrReadDate)),
           partnerNino = "AA000000B",
           spouseDateOfBirth = DateModel(writeOrReadDate),
           spouseFirstName = Some("Testforename"),
-          secondForename = Some("Testsecondforename"),
           spouseSurname = Some("Testsurname")
         ),
         Marriage(
-          maritalStatus = Some(1),
+          maritalStatus = Some(DIVORCED),
           startDate = Some(DateModel(writeOrReadDate)),
           endDate = Some(DateModel(writeOrReadDate)),
           partnerNino = "AA000000C",
           spouseDateOfBirth = DateModel(writeOrReadDate),
           spouseFirstName = Some("Othertestforename"),
-          secondForename = Some("Testsecondforename"),
           spouseSurname = Some("Testsurname")
         )
       )),
