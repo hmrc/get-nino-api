@@ -116,7 +116,7 @@ class RegisterNinoControllerSpec extends ControllerBaseSpec {
 
           status(result) shouldBe Status.BAD_REQUEST
           contentAsJson(result) shouldBe Json.toJson(new NinoJsonValidationError(JsError(
-            Seq("address", "entryDate", "name", "gender", "officeNumber", "nino", "birthDate").map { field =>
+            Seq("addresses", "entryDate", "gender", "officeNumber", "nino", "birthDate", "names").map { field =>
               (JsPath \ field, Seq(JavaJsonValidationError("error.path.missing")))
             }
           )))(NinoError.validationWrites)

@@ -165,6 +165,80 @@ class NinoApplicationSpec extends UnitSpec {
     }
   }
 
+  ".sequenceMinMaxValidation" should {
+
+    "return true" when {
+
+      "a None is passed in" in {
+        NinoApplication.sequenceMinMaxValidation(None, 1, 2) shouldBe true
+      }
+
+      "an optional sequence length is within the limits" in {
+        val seqInput = Some(Seq(1, 2))
+
+        NinoApplication.sequenceMinMaxValidation(seqInput, 1, 3) shouldBe true
+      }
+
+      "an optional sequence length is on the lower bound of the limits" in {
+        val seqInput = Some(Seq(1))
+
+        NinoApplication.sequenceMinMaxValidation(seqInput, 1, 3) shouldBe true
+      }
+
+      "an optional sequence length is on the upper bound of the limits" in {
+        val seqInput = Some(Seq(1, 2, 3))
+
+        NinoApplication.sequenceMinMaxValidation(seqInput, 1, 3) shouldBe true
+      }
+
+      "a sequence length is within the limits" in {
+        val seqInput = Some(Seq(1, 2))
+
+        NinoApplication.sequenceMinMaxValidation(seqInput, 1, 3) shouldBe true
+      }
+
+      "a sequence length is on the lower bound of the limits" in {
+        val seqInput = Some(Seq(1))
+
+        NinoApplication.sequenceMinMaxValidation(seqInput, 1, 3) shouldBe true
+      }
+
+      "a sequence length is on the upper bound of the limits" in {
+        val seqInput = Some(Seq(1, 2, 3))
+
+        NinoApplication.sequenceMinMaxValidation(seqInput, 1, 3) shouldBe true
+      }
+
+    }
+
+    "return false" when {
+
+      "an optional sequence is below the lower bound of the limits" in {
+        val seqInput = Some(Seq())
+
+        NinoApplication.sequenceMinMaxValidation(seqInput, 1, 3) shouldBe false
+      }
+
+      "an optional sequence is above the upper bound of the limits" in {
+        val seqInput = Some(Seq("one", "two", "three", "four"))
+
+        NinoApplication.sequenceMinMaxValidation(seqInput, 1, 3) shouldBe false
+      }
+
+      "a sequence is below the lower bound of the limits" in {
+        val seqInput = Seq()
+
+        NinoApplication.sequenceMinMaxValidation(seqInput, 1, 3) shouldBe false
+      }
+
+      "a sequence is above the upper bound of the limits" in {
+        val seqInput = Seq("one", "two", "three", "four")
+
+        NinoApplication.sequenceMinMaxValidation(seqInput, 1, 3) shouldBe false
+      }
+    }
+  }
+
   "NinoApplication" should {
 
     "correctly parse from json" when {
