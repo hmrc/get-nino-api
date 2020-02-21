@@ -303,6 +303,57 @@ class NinoApplicationSpec extends UnitSpec {
 
   }
 
+  ".validateOneResidentialAddress" should {
+
+    "return true" when {
+
+      "at least one NameModel provided contains a REGISTERED name" in {
+        NinoApplication.validateOneResidentialAddress(
+          Seq(
+            AddressModel(
+              Some(Residential),
+              AddressLine("Some address"),
+              None, None, None, None, None,
+              "GBR",
+              DateModel("01-01-2000"), None
+            ),
+            AddressModel(
+              None,
+              AddressLine("Some address"),
+              None, None, None, None, None,
+              "GBR",
+              DateModel("01-01-2000"), None
+            )
+          )
+        ) shouldBe true
+      }
+    }
+
+    "return false" when {
+
+      "none of the provided names are REGISTERED" in {
+        NinoApplication.validateOneResidentialAddress(
+          Seq(
+            AddressModel(
+              None,
+              AddressLine("Some address"),
+              None, None, None, None, None,
+              "GBR",
+              DateModel("01-01-2000"), None
+            ),
+            AddressModel(
+              None,
+              AddressLine("Some address"),
+              None, None, None, None, None,
+              "GBR",
+              DateModel("01-01-2000"), None
+            )
+          )
+        ) shouldBe false
+      }
+    }
+  }
+
   "NinoApplication" should {
 
     "correctly parse from json" when {

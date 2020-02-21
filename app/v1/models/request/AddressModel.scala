@@ -16,8 +16,10 @@
 
 package v1.models.request
 
+import java.time.{LocalDate, ZoneId}
+import java.time.format.DateTimeFormatter
+
 import play.api.Logger
-import play.api.libs.functional.syntax._
 import play.api.libs.json._
 
 case class AddressModel(addressType: Option[AddressType],
@@ -57,23 +59,48 @@ object AddressModel {
 
   }
 
+  private[models] def validateDateAsPriorDate(earlierDate: DateModel, optionalLaterDate: Option[DateModel] = None, canBeEqual: Boolean = true): Boolean = {
+    optionalLaterDate.fold(true){ laterDate =>
+      val earlierModelAsDate = LocalDate.parse(earlierDate.dateString, DateTimeFormatter.ofPattern("dd-MM-yyyy"))
+      val laterModelAsDate = LocalDate.parse(laterDate.dateString, DateTimeFormatter.ofPattern("dd-MM-yyyy"))
+      earlierModelAsDate.isBefore(laterModelAsDate) || (canBeEqual && earlierModelAsDate.isEqual(laterModelAsDate))
+    }
+  }
+
   private def commonError(fieldName: String) = {
     JsonValidationError(s"There has been an error parsing the $fieldName field. Please check against the regex.")
   }
 
-  implicit val reads: Reads[AddressModel] = (
-    addressTypePath.readNullable[AddressType] and
-      line1Path.read[AddressLine] and
-      line2Path.readNullable[AddressLine] and
-      line3Path.readNullable[AddressLine] and
-      line4Path.readNullable[AddressLine] and
-      line5Path.readNullable[AddressLine] and
-      countryCodePath.read[String].flatMap(countryCode =>
-        postcodePath.readNullable[Postcode].filter(commonError("Post code"))(checkPostcodeMandated(_, countryCode))) and
-      countryCodePath.read[String] and
-      startDatePath.read[DateModel] and
-      endDatePath.readNullable[DateModel]
-    ) (AddressModel.apply _)
+  private def startDateAfterEndDateError = {
+    Logger.warn("[NameModel][validateDateAsPriorDate] The provided earlierDate is after the laterDate.")
+    JsonValidationError("The given start date is after the given end date.")
+  }
+
+  private def dateAfterCurrentError = {
+    Logger.warn("[NameModel][validateDateAsPriorDate] The provided earlierDate is after the laterDate.")
+    JsonValidationError("The given start date is after the given end date.")
+  }
+
+  private def currentDate = Some(DateModel(LocalDate.now(ZoneId.of("UTC")).format(DateTimeFormatter.ofPattern("dd-MM-yyyy"))))
+
+  implicit val reads: Reads[AddressModel] = for {
+    addressType <- addressTypePath.readNullable[AddressType]
+    line1 <- line1Path.read[AddressLine]
+    line2 <- line2Path.readNullable[AddressLine]
+    line3 <- line3Path.readNullable[AddressLine]
+    line4 <- line4Path.readNullable[AddressLine]
+    line5 <- line5Path.readNullable[AddressLine]
+    countryCode <- countryCodePath.read[String]
+    postcode <- postcodePath.readNullable[Postcode].filter(commonError("Post code"))(checkPostcodeMandated(_, countryCode))
+    startDate <- startDatePath.read[DateModel].filter(dateAfterCurrentError) { nonOptionalStartDate =>
+      validateDateAsPriorDate(nonOptionalStartDate, Some(DateModel(LocalDate.now(ZoneId.of("UTC")).format(DateTimeFormatter.ofPattern("dd-MM-yyyy")))))
+    }
+    endDate <- endDatePath.readNullable[DateModel]
+      .filter(startDateAfterEndDateError)(validateDateAsPriorDate(startDate, _, canBeEqual = false))
+      .filter(dateAfterCurrentError)(_.fold(true)(validateDateAsPriorDate(_, currentDate)))
+  } yield {
+    AddressModel(addressType, line1, line2, line3, line4, line5, postcode, countryCode, startDate, endDate)
+  }
 
   implicit val writes: Writes[AddressModel] = Json.writes[AddressModel]
 }

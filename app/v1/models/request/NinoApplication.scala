@@ -81,6 +81,8 @@ object NinoApplication {
 
   private[models] def validateOneRegisteredName(input: Seq[NameModel]) = input.exists(_.nameType == "REGISTERED")
 
+  private[models] def validateOneResidentialAddress(input: Seq[AddressModel]) = input.exists(_.addressType.contains(Residential))
+
   implicit val writes: Writes[NinoApplication] = Json.writes[NinoApplication]
 
   private val ninoPath = __ \ "nino"
@@ -114,6 +116,8 @@ object NinoApplication {
 
   private def noRegisteredNamesError = JsonValidationError("At least one provided name must be REGISTERED.")
 
+  private def noResidentialAddressError = JsonValidationError("At least one provided address must be RESIDENTIAL.")
+
   implicit val reads: Reads[NinoApplication] = (
     ninoPath.read[String].filter(commonError("nino"))(validateAgainstRegex(_, ninoRegex)) and
       genderPath.read[Gender] and
@@ -124,7 +128,7 @@ object NinoApplication {
       contactNumberPath.readNullable[String].filter(commonError("contact number"))(_.fold(true)(validateAgainstRegex(_, contactNumberRegex))) and
       namesPath.read[Seq[NameModel]].filter(minMaxError("names"))(seqMinMaxValidation(_, 1, 2)).filter(noRegisteredNamesError)(validateOneRegisteredName) and
       historicalNamesPath.readNullable[Seq[NameModel]].filter(minMaxError("historicNames"))(seqMinMaxValidation(_, 1, historicSeqLength)) and
-      addressesPath.read[Seq[AddressModel]].filter(minMaxError("addresses"))(seqMinMaxValidation(_, 1, 2)) and
+      addressesPath.read[Seq[AddressModel]].filter(minMaxError("addresses"))(seqMinMaxValidation(_, 1, 2)).filter(noResidentialAddressError)(validateOneResidentialAddress) and
       historicalAddressesPath.readNullable[Seq[AddressModel]].filter(minMaxError("historicAddresses"))(seqMinMaxValidation(_, 1, historicSeqLength)) and
       applicantMarriagesPath.readNullable[Seq[Marriage]].filter(minMaxError("marriages"))(seqMinMaxValidation(_, 1, marriagesSeqLength)) and
       originDataPath.readNullable[OriginData] and
