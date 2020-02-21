@@ -1,7 +1,7 @@
 displayName: Register NINO API
 description: Sends data down to NPS to register a NINO
 is: [ headers.acceptJson, headers.contentTypeJson, headers.correlationID, headers.originatorID]
-(annottations.scope): "read:register-nino"
+(annotations.scope): "read:register-nino"
 securedBy: [ sec.oauth_2_0: { scopes: [ "read:register-nino" ] } ]
 
 body:
