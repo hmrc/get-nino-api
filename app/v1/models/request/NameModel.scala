@@ -16,6 +16,9 @@
 
 package v1.models.request
 
+import java.time.{LocalDate, LocalDateTime, ZoneId}
+import java.time.format.DateTimeFormatter
+
 import play.api.Logger
 import play.api.libs.functional.syntax._
 import play.api.libs.json._
@@ -25,7 +28,7 @@ case class NameModel(
                       firstName: Option[String] = None,
                       middleName: Option[String] = None,
                       surname: String,
-                      startDate: Option[DateModel] =  None,
+                      startDate: Option[DateModel] = None,
                       endDate: Option[DateModel] = None,
                       nameType: String
                     )
@@ -46,6 +49,8 @@ object NameModel {
     s"Ensure it matches the regex.")
 
   private def typeValidationError: JsonValidationError = JsonValidationError("Name Type failed validation. Must be one of: \'REGISTERED, ALIAS\'")
+
+  private def dateNonPriorError: JsonValidationError = JsonValidationError("The date provided is after today. The date must be before.")
 
   private val validTitles = Seq(
     "NOT KNOWN",
@@ -72,6 +77,7 @@ object NameModel {
     "REGISTERED",
     "ALIAS"
   )
+
   private[models] def validateType: String => Boolean = { inputString =>
     val passedValidation = validTypes.contains(inputString)
     if (!passedValidation) {
@@ -101,13 +107,21 @@ object NameModel {
     }
   }
 
+  private[models] def validateDateAsPriorDate(optionalDateModel: Option[DateModel]) = {
+    optionalDateModel.fold(true) { dateModel =>
+      val modelAsDate = LocalDate.parse(dateModel.dateString, DateTimeFormatter.ofPattern("dd-MM-yyyy"))
+      val todayDate = LocalDate.now(ZoneId.of("UTC"))
+      modelAsDate.isBefore(todayDate) || modelAsDate.isEqual(todayDate)
+    }
+  }
+
   implicit val reads: Reads[NameModel] = (
     titlePath.readNullable[String].filter(titleValidationError)(validateTitle) and
       forename.readNullable[String].filter(nameValidationError("forename"))(validateName(_, "forename")) and
       secondForename.readNullable[String].filter(nameValidationError("second forename"))(validateName(_, "secondForename")) and
       surname.read[String].filter(nameValidationError("surname"))(validateName(_, "surname")) and
-      startDate.readNullable[DateModel] and
-      endDate.readNullable[DateModel] and
+      startDate.readNullable[DateModel].filter(dateNonPriorError)(validateDateAsPriorDate) and
+      endDate.readNullable[DateModel].filter(dateNonPriorError)(validateDateAsPriorDate) and
       typePath.read[String].filter(typeValidationError)(validateType)
     ) (NameModel.apply _)
 

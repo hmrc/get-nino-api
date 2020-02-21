@@ -34,10 +34,6 @@ object DateModel {
     dateInput.split("-").reverse.mkString("-")
   }
 
-  implicit val writes: Writes[DateModel] = Writes[DateModel] { model =>
-    JsString(changeDateToNpsFormat(model.dateString))
-  }
-
   private def validateDwpDate(dateInput: Reads[String]): Reads[String] = {
     val isValidDwpDate: String => Boolean = dateInput => {
       val passedValidation = dateInput.matches(dwpDateRegex)
@@ -64,4 +60,9 @@ object DateModel {
   } yield {
     DateModel(dateString)
   }
+
+  implicit val writes: Writes[DateModel] = Writes[DateModel] { model =>
+    JsString(changeDateToNpsFormat(model.dateString))
+  }
+
 }

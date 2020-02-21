@@ -16,13 +16,16 @@
 
 package v1.models.request
 
+import java.time.format.DateTimeFormatter
+import java.time.{LocalDate, ZoneId}
+
 import play.api.libs.json._
 import support.UnitSpec
 
 class NameModelSpec extends UnitSpec {
 
   private def readWriteDate(isWrite: Boolean): String = {
-    if (isWrite) "2020-10-10" else "10-10-2020"
+    if (isWrite) "2000-10-10" else "10-10-2000"
   }
 
   val minJson: Boolean => JsObject = isWrite =>
@@ -51,8 +54,8 @@ class NameModelSpec extends UnitSpec {
     Some("First"),
     Some("Middle"),
     "Last",
-    Some(DateModel("10-10-2020")),
-    Some(DateModel("10-10-2020")),
+    Some(DateModel("10-10-2000")),
+    Some(DateModel("10-10-2000")),
     nameType = "REGISTERED"
   )
 
@@ -172,6 +175,37 @@ class NameModelSpec extends UnitSpec {
 
         "a value is entered that is not a String, or an Optional String (including None)" in {
           runValidation(123, "SomeNameType") shouldBe false
+        }
+      }
+    }
+
+    ".validateDateAsPriorDate" should {
+
+      "return true" when {
+
+        "the date provided is prior to the current date" in {
+          val validDate = DateModel("01-01-2000")
+
+          NameModel.validateDateAsPriorDate(Some(validDate)) shouldBe true
+        }
+
+        "the date provided is equal to the current date" in {
+          val validDate = DateModel(
+            LocalDate.now(ZoneId.of("UTC")).format(DateTimeFormatter.ofPattern("dd-MM-yyyy"))
+          )
+
+          NameModel.validateDateAsPriorDate(Some(validDate)) shouldBe true
+        }
+      }
+
+      "return false" when {
+
+        "the date provided is after the current date" in {
+          val invalidDate = DateModel(
+            LocalDate.now(ZoneId.of("UTC")).plusDays(1).format(DateTimeFormatter.ofPattern("dd-MM-yyyy"))
+          )
+
+          NameModel.validateDateAsPriorDate(Some(invalidDate)) shouldBe false
         }
       }
     }
