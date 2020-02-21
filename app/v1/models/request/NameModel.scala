@@ -35,11 +35,11 @@ case class NameModel(
 
 object NameModel {
   private lazy val titlePath = __ \ "title"
-  private lazy val forename = __ \ "forename"
-  private lazy val secondForename = __ \ "secondForename"
-  private lazy val surname = __ \ "surname"
-  private lazy val startDate = __ \ "startDate"
-  private lazy val endDate = __ \ "endDate"
+  private lazy val forenamePath = __ \ "forename"
+  private lazy val secondForenamePath = __ \ "secondForename"
+  private lazy val surnamePath = __ \ "surname"
+  private lazy val startDatePath = __ \ "startDate"
+  private lazy val endDatePath = __ \ "endDate"
   private lazy val typePath = __ \ "nameType"
 
   private val titleValidationError: JsonValidationError = JsonValidationError("Title failed validation. Must be one of: \'NOT KNOWN, MR, " +
@@ -51,6 +51,8 @@ object NameModel {
   private def typeValidationError: JsonValidationError = JsonValidationError("Name Type failed validation. Must be one of: \'REGISTERED, ALIAS\'")
 
   private def dateNonPriorError: JsonValidationError = JsonValidationError("The date provided is after today. The date must be before.")
+
+  private def startDateAfterEndDateError: JsonValidationError = JsonValidationError("The given start date is after the given end date.")
 
   private val validTitles = Seq(
     "NOT KNOWN",
@@ -107,23 +109,41 @@ object NameModel {
     }
   }
 
-  private[models] def validateDateAsPriorDate(optionalDateModel: Option[DateModel]) = {
-    optionalDateModel.fold(true) { dateModel =>
-      val modelAsDate = LocalDate.parse(dateModel.dateString, DateTimeFormatter.ofPattern("dd-MM-yyyy"))
-      val todayDate = LocalDate.now(ZoneId.of("UTC"))
-      modelAsDate.isBefore(todayDate) || modelAsDate.isEqual(todayDate)
+  private[models] def validateDateAsPriorDate(earlierDate: Option[DateModel], laterDate: Option[DateModel]) = {
+    (earlierDate, laterDate) match {
+      case (Some(earlierDateModel), Some(laterDateModel)) =>
+        val earlierModelAsDate = LocalDate.parse(earlierDateModel.dateString, DateTimeFormatter.ofPattern("dd-MM-yyyy"))
+        val laterModelAsDate = LocalDate.parse(laterDateModel.dateString, DateTimeFormatter.ofPattern("dd-MM-yyyy"))
+        Logger.warn("[NameModel][validateDateAsPriorDate] The provided earlierDate is after the laterDate.")
+        earlierModelAsDate.isBefore(laterModelAsDate) || earlierModelAsDate.isEqual(laterModelAsDate)
+      case _ => true
     }
+
   }
 
-  implicit val reads: Reads[NameModel] = (
-    titlePath.readNullable[String].filter(titleValidationError)(validateTitle) and
-      forename.readNullable[String].filter(nameValidationError("forename"))(validateName(_, "forename")) and
-      secondForename.readNullable[String].filter(nameValidationError("second forename"))(validateName(_, "secondForename")) and
-      surname.read[String].filter(nameValidationError("surname"))(validateName(_, "surname")) and
-      startDate.readNullable[DateModel].filter(dateNonPriorError)(validateDateAsPriorDate) and
-      endDate.readNullable[DateModel].filter(dateNonPriorError)(validateDateAsPriorDate) and
-      typePath.read[String].filter(typeValidationError)(validateType)
-    ) (NameModel.apply _)
+  private def todayDateAsDateModel = Some(DateModel(LocalDate.now(ZoneId.of("UTC")).format(DateTimeFormatter.ofPattern("dd-MM-yyyy"))))
+
+  implicit val reads: Reads[NameModel] = for {
+    title <- titlePath.readNullable[String].filter(titleValidationError)(validateTitle)
+    foreName <- forenamePath.readNullable[String].filter(nameValidationError("forename"))(validateName(_, "forename"))
+    secondForename <- secondForenamePath.readNullable[String].filter(nameValidationError("second forename"))(validateName(_, "secondForename"))
+    surname <- surnamePath.read[String].filter(nameValidationError("surname"))(validateName(_, "surname"))
+    startDate <- startDatePath.readNullable[DateModel].filter(dateNonPriorError)(validateDateAsPriorDate(_, todayDateAsDateModel))
+    endDate <- endDatePath.readNullable[DateModel]
+            .filter(dateNonPriorError)(validateDateAsPriorDate(_, todayDateAsDateModel))
+            .filter(startDateAfterEndDateError)(validateDateAsPriorDate(startDate, _))
+    nameType <- typePath.read[String].filter(typeValidationError)(validateType)
+  } yield {
+    NameModel(
+      title,
+      foreName,
+      secondForename,
+      surname,
+      startDate,
+      endDate,
+      nameType
+    )
+  }
 
   implicit val writes: Writes[NameModel] = Json.writes[NameModel]
 }

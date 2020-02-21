@@ -49,6 +49,25 @@ class NameModelSpec extends UnitSpec {
     )
   }
 
+  val faultyStartDateModelJson: JsObject = Json.obj(
+    "surname" -> "Miles",
+    "nameType" -> "REGISTERED",
+    "startDate" -> LocalDate.now().plusDays(1).format(DateTimeFormatter.ofPattern("dd-MM-yyyy"))
+  )
+
+  val faultyEndDateModelJson: JsObject = Json.obj(
+    "surname" -> "Miles",
+    "nameType" -> "REGISTERED",
+    "endDate" -> LocalDate.now().plusDays(1).format(DateTimeFormatter.ofPattern("dd-MM-yyyy"))
+  )
+
+  val beforeDateAfterEndDateModel: JsObject = Json.obj(
+    "surname" -> "Miles",
+    "nameType" -> "REGISTERED",
+    "startDate" -> LocalDate.now().minusDays(1).format(DateTimeFormatter.ofPattern("dd-MM-yyyy")),
+    "endDate" -> LocalDate.now().minusDays(2).format(DateTimeFormatter.ofPattern("dd-MM-yyyy"))
+  )
+
   val maxModel = NameModel(
     Some("MR"),
     Some("First"),
@@ -82,6 +101,36 @@ class NameModelSpec extends UnitSpec {
 
       "no optional fields are present" in {
         minJson(false).as[NameModel] shouldBe minModel
+      }
+    }
+
+    "fail to parse from json" when {
+
+      "the start date given is after the current date" in {
+        val result: JsResultException = intercept[JsResultException] {
+          faultyStartDateModelJson.as[NameModel]
+        }
+
+        result.getMessage should include ("startDate")
+        result.getMessage should include ("The date provided is after today. The date must be before.")
+      }
+
+      "the end date given is after the current date" in {
+        val result: JsResultException = intercept[JsResultException] {
+          faultyEndDateModelJson.as[NameModel]
+        }
+
+        result.getMessage should include ("endDate")
+        result.getMessage should include ("The date provided is after today. The date must be before.")
+      }
+
+      "the start date given is after the end date given" in {
+        val result: JsResultException = intercept[JsResultException] {
+          beforeDateAfterEndDateModel.as[NameModel]
+        }
+
+        result.getMessage should include ("endDate")
+        result.getMessage should include ("The given start date is after the given end date.")
       }
     }
 
@@ -181,31 +230,41 @@ class NameModelSpec extends UnitSpec {
 
     ".validateDateAsPriorDate" should {
 
+      val currentDate = Some(DateModel(LocalDate.now(ZoneId.of("UTC")).format(DateTimeFormatter.ofPattern("dd-MM-yyyy"))))
+
       "return true" when {
 
-        "the date provided is prior to the current date" in {
+        "the first date provided is before the second" in {
           val validDate = DateModel("01-01-2000")
 
-          NameModel.validateDateAsPriorDate(Some(validDate)) shouldBe true
+          NameModel.validateDateAsPriorDate(Some(validDate), currentDate) shouldBe true
         }
 
-        "the date provided is equal to the current date" in {
+        "the provided dates are equal" in {
           val validDate = DateModel(
             LocalDate.now(ZoneId.of("UTC")).format(DateTimeFormatter.ofPattern("dd-MM-yyyy"))
           )
 
-          NameModel.validateDateAsPriorDate(Some(validDate)) shouldBe true
+          NameModel.validateDateAsPriorDate(Some(validDate), Some(validDate)) shouldBe true
+        }
+
+        "only an earlier date is provided" in {
+          NameModel.validateDateAsPriorDate(currentDate, None) shouldBe true
+        }
+
+        "only a later date is provided" in {
+          NameModel.validateDateAsPriorDate(None, currentDate) shouldBe true
         }
       }
 
       "return false" when {
 
-        "the date provided is after the current date" in {
+        "the first date provided is after the second" in {
           val invalidDate = DateModel(
             LocalDate.now(ZoneId.of("UTC")).plusDays(1).format(DateTimeFormatter.ofPattern("dd-MM-yyyy"))
           )
 
-          NameModel.validateDateAsPriorDate(Some(invalidDate)) shouldBe false
+          NameModel.validateDateAsPriorDate(Some(invalidDate), currentDate) shouldBe false
         }
       }
     }

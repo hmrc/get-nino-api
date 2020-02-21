@@ -22,7 +22,7 @@ import v1.models.request._
 object ItNinoApplicationTestData {
 
   private def writeOrReadDate(implicit isWrite: Boolean): String = {
-    if (isWrite) "2020-10-10" else "10-10-2020"
+    if (isWrite) "2000-10-10" else "10-10-2000"
   }
 
   private def writeOrReadBirthDate(implicit isWrite: Boolean): String = {

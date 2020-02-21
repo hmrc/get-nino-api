@@ -79,6 +79,8 @@ object NinoApplication {
     ChronoUnit.DAYS.between(dateOfBirth, LocalDate.now(ZoneId.of("UTC"))) > minimumDaysOfAge
   }
 
+  private[models] def validateOneRegisteredName(input: Seq[NameModel]) = input.exists(_.nameType == "REGISTERED")
+
   implicit val writes: Writes[NinoApplication] = Json.writes[NinoApplication]
 
   private val ninoPath = __ \ "nino"
@@ -110,6 +112,8 @@ object NinoApplication {
     JsonValidationError("The applicant needs to be over 15 years and 8 months old.")
   }
 
+  private def noRegisteredNamesError = JsonValidationError("At least one provided name must be REGISTERED.")
+
   implicit val reads: Reads[NinoApplication] = (
     ninoPath.read[String].filter(commonError("nino"))(validateAgainstRegex(_, ninoRegex)) and
       genderPath.read[Gender] and
@@ -118,7 +122,7 @@ object NinoApplication {
       birthDateVerificationPath.readNullable[BirthDateVerification] and
       officeNumberPath.read[String].filter(commonError("office number"))(validateAgainstRegex(_, officeNumberRegex)) and
       contactNumberPath.readNullable[String].filter(commonError("contact number"))(_.fold(true)(validateAgainstRegex(_, contactNumberRegex))) and
-      namesPath.read[Seq[NameModel]].filter(minMaxError("names"))(seqMinMaxValidation(_, 1, 2)) and
+      namesPath.read[Seq[NameModel]].filter(minMaxError("names"))(seqMinMaxValidation(_, 1, 2)).filter(noRegisteredNamesError)(validateOneRegisteredName) and
       historicalNamesPath.readNullable[Seq[NameModel]].filter(minMaxError("historicNames"))(seqMinMaxValidation(_, 1, historicSeqLength)) and
       addressesPath.read[Seq[AddressModel]].filter(minMaxError("addresses"))(seqMinMaxValidation(_, 1, 2)) and
       historicalAddressesPath.readNullable[Seq[AddressModel]].filter(minMaxError("historicAddresses"))(seqMinMaxValidation(_, 1, historicSeqLength)) and

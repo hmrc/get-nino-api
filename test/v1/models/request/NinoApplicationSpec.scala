@@ -275,6 +275,34 @@ class NinoApplicationSpec extends UnitSpec {
     }
   }
 
+  ".validateOneRegisteredName" should {
+
+    "return true" when {
+
+      "at least one NameModel provided contains a REGISTERED name" in {
+        NinoApplication.validateOneRegisteredName(
+          Seq(
+            NameModel(surname = "Miles", nameType = "REGISTERED"),
+            NameModel(surname = "Miles", nameType = "ALIAS")
+          )
+        ) shouldBe true
+      }
+    }
+
+    "return false" when {
+
+      "none of the provided names are REGISTERED" in {
+        NinoApplication.validateOneRegisteredName(
+          Seq(
+            NameModel(surname = "Miles", nameType = "ALIAS"),
+            NameModel(surname = "Miles", nameType = "ALIAS")
+          )
+        ) shouldBe false
+      }
+    }
+
+  }
+
   "NinoApplication" should {
 
     "correctly parse from json" when {
