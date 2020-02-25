@@ -45,8 +45,8 @@ object AddressModel {
   val endDatePath: JsPath = __ \ "endDate"
 
   private[models] def checkPostcodeMandated(postcode: Option[Postcode], countryCode: String): Boolean = {
-    countryCode match {
-      case "GBR" => postcode.fold({
+    countryCode.toUpperCase match {
+      case "GBR" | "GGY" | "IMN" => postcode.fold({
         Logger.warn(s"[AddressModel][postcodeValidation] - $postcode is required if country code is GBR")
         false
       })(
