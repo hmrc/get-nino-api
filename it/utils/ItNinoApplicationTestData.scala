@@ -33,14 +33,14 @@ object ItNinoApplicationTestData {
     "birthDateVerification" -> "VERIFIED",
     "officeNumber" -> "1234",
     "country" -> 1,
-    "name" -> Json.obj(
+    "names" -> Json.arr(Json.obj(
       "surname" -> "ASurname",
       "startDate" -> writeOrReadDate
-    ),
-    "address" -> Json.obj(
+    )),
+    "addresses" -> Json.arr(Json.obj(
       "line1" -> "4 AStreetName",
       "startDate" -> writeOrReadDate
-    )
+    ))
   )
 
   val faultyRegisterNinoRequestJson: Boolean => JsObject = implicit isWrite => Json.obj(
@@ -51,15 +51,15 @@ object ItNinoApplicationTestData {
     "birthDateVerification" -> "VERIFIED",
     "officeNumber" -> "1234",
     "country" -> 1,
-    "name" -> Json.obj(
+    "names" -> Json.arr(Json.obj(
       "surname" -> "ASurname",
       "nameType" -> "REGISTERED"
-    ),
-    "address" -> Json.obj(
+    )),
+    "addresses" -> Json.arr(Json.obj(
       "line1" -> "4 AStreetName",
       "countryCode" -> "USA",
       "startDate" -> writeOrReadDate
-    )
+    ))
   )
 
   val maxRegisterNinoRequestJson: Boolean => JsObject = implicit isWrite => Json.obj(
@@ -71,7 +71,7 @@ object ItNinoApplicationTestData {
     "officeNumber" -> "1234",
     "contactNumber" -> "1234567890",
     "country" -> 1,
-    "name" -> Json.obj(
+    "names" -> Json.arr(Json.obj(
       "title" -> "MR",
       "forename" -> "AForename",
       "secondForename" -> "NotSure",
@@ -79,7 +79,7 @@ object ItNinoApplicationTestData {
       "startDate" -> writeOrReadDate,
       "endDate" -> writeOrReadDate,
       "nameType" -> "REGISTERED"
-    ),
+    )),
     "historicNames" -> Json.arr(
       Json.obj(
         "title" -> "MRS",
@@ -100,7 +100,7 @@ object ItNinoApplicationTestData {
         "nameType" -> "REGISTERED"
       )
     ),
-    "address" -> Json.obj(
+    "addresses" -> Json.arr(Json.obj(
       "addressType" -> "RESIDENTIAL",
       "line1" -> "4 AStreetName",
       "line2" -> "Some",
@@ -111,7 +111,7 @@ object ItNinoApplicationTestData {
       "countryCode" -> "GBR",
       "startDate" -> writeOrReadDate,
       "endDate" -> writeOrReadDate
-    ),
+    )),
     "historicAddresses" -> Json.arr(
       Json.obj(
         "addressType" -> "RESIDENTIAL",

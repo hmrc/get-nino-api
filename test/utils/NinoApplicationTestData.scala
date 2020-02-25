@@ -26,12 +26,6 @@ object NinoApplicationTestData {
     if (isWrite) "2020-10-10" else "10-10-2020"
   }
 
-  private def nationalityJsObject(implicit isWrite: Boolean): (String, JsValueWrapper) = if (isWrite) {
-    "nationalityCode" -> 1
-  } else {
-    "country" -> 1
-  }
-
   val minRegisterNinoRequestJson: Boolean => JsObject = implicit isWrite => {
     val nameJsObject: (String, JsValueWrapper) = if (isWrite) {
       "applicantNames" -> Json.arr(Json.obj(
@@ -39,10 +33,10 @@ object NinoApplicationTestData {
         "nameType" -> "REGISTERED"
       ))
     } else {
-      "name" -> Json.obj(
+      "names" -> Json.arr(Json.obj(
         "surname" -> "ASurname",
         "nameType" -> "REGISTERED"
-      )
+      ))
     }
 
     val addressJsObject: (String, JsValueWrapper) = if (isWrite) {
@@ -52,11 +46,11 @@ object NinoApplicationTestData {
         "startDate" -> writeOrReadDate
       ))
     } else {
-      "address" -> Json.obj(
+      "addresses" -> Json.arr(Json.obj(
         "line1" -> "4 AStreetName",
         "countryCode" -> "USA",
         "startDate" -> writeOrReadDate
-      )
+      ))
     }
 
     Json.obj(
@@ -83,10 +77,10 @@ object NinoApplicationTestData {
       "surname" -> "ASurname",
       "nameType" -> "REGISTERED"
     ),
-    "address" -> Json.obj(
+    "addresses" -> Json.arr(Json.obj(
       "line1" -> "4 AStreetName",
       "startDate" -> writeOrReadDate
-    ),
+    )),
     "nationalityCode" -> "NOTACODE"
   )
 
@@ -156,9 +150,21 @@ object NinoApplicationTestData {
         "countryCode" -> "GBR",
         "startDate" -> writeOrReadDate,
         "endDate" -> writeOrReadDate
-      ))
+      ),
+        Json.obj(
+          "addressType" -> "RESIDENTIAL",
+          "addressLine1" -> "4 AStreetName",
+          "addressLine2" -> "Some",
+          "addressLine3" -> "New",
+          "addressLine4" -> "Place",
+          "addressLine5" -> "ItsTheFinalLine",
+          "postcode" -> "AA11AA",
+          "countryCode" -> "GBR",
+          "startDate" -> writeOrReadDate,
+          "endDate" -> writeOrReadDate
+        ))
     } else {
-      "address" -> Json.obj(
+      "addresses" -> Json.arr(Json.obj(
         "addressType" -> "RESIDENTIAL",
         "line1" -> "4 AStreetName",
         "line2" -> "Some",
@@ -169,7 +175,19 @@ object NinoApplicationTestData {
         "countryCode" -> "GBR",
         "startDate" -> writeOrReadDate,
         "endDate" -> writeOrReadDate
-      )
+      ),
+        Json.obj(
+          "addressType" -> "RESIDENTIAL",
+          "line1" -> "4 AStreetName",
+          "line2" -> "Some",
+          "line3" -> "New",
+          "line4" -> "Place",
+          "line5" -> "ItsTheFinalLine",
+          "postcode" -> "AA11AA",
+          "countryCode" -> "GBR",
+          "startDate" -> writeOrReadDate,
+          "endDate" -> writeOrReadDate
+        ))
     }
 
     val historicAddressJsObject: (String, JsValueWrapper) = if (isWrite) {
@@ -237,9 +255,18 @@ object NinoApplicationTestData {
         "startDate" -> writeOrReadDate,
         "endDate" -> writeOrReadDate,
         "nameType" -> "REGISTERED"
-      ))
+      ),
+        Json.obj(
+          "title" -> "MR",
+          "firstName" -> "ASeperateForename",
+          "middleName" -> "NotSure",
+          "surname" -> "ASurname",
+          "startDate" -> writeOrReadDate,
+          "endDate" -> writeOrReadDate,
+          "nameType" -> "ALIAS"
+        ))
     } else {
-      "name" -> Json.obj(
+      "names" -> Json.arr(Json.obj(
         "title" -> "MR",
         "forename" -> "AForename",
         "secondForename" -> "NotSure",
@@ -247,7 +274,16 @@ object NinoApplicationTestData {
         "startDate" -> writeOrReadDate,
         "endDate" -> writeOrReadDate,
         "nameType" -> "REGISTERED"
-      )
+      ),
+        Json.obj(
+          "title" -> "MR",
+          "forename" -> "ASeperateForename",
+          "secondForename" -> "NotSure",
+          "surname" -> "ASurname",
+          "startDate" -> writeOrReadDate,
+          "endDate" -> writeOrReadDate,
+          "nameType" -> "ALIAS"
+        ))
     }
 
     Json.obj(
@@ -387,7 +423,16 @@ object NinoApplicationTestData {
         startDate = Some(DateModel(writeOrReadDate)),
         endDate = Some(DateModel(writeOrReadDate)),
         nameType = "REGISTERED"
-      )),
+      ),
+        NameModel(
+          title = Some("MR"),
+          firstName = Some("ASeperateForename"),
+          middleName = Some("NotSure"),
+          surname = "ASurname",
+          startDate = Some(DateModel(writeOrReadDate)),
+          endDate = Some(DateModel(writeOrReadDate)),
+          nameType = "ALIAS"
+        )),
       applicantHistoricNames = Some(Seq(
         NameModel(
           Some("MRS"),
@@ -419,7 +464,19 @@ object NinoApplicationTestData {
         countryCode = "GBR",
         startDate = DateModel(writeOrReadDate),
         endDate = Some(DateModel(writeOrReadDate))
-      )),
+      ),
+        AddressModel(
+          addressType = Some(Residential),
+          addressLine1 = AddressLine("4 AStreetName"),
+          addressLine2 = Some(AddressLine("Some")),
+          addressLine3 = Some(AddressLine("New")),
+          addressLine4 = Some(AddressLine("Place")),
+          addressLine5 = Some(AddressLine("ItsTheFinalLine")),
+          postcode = Some(Postcode("AA11AA")),
+          countryCode = "GBR",
+          startDate = DateModel(writeOrReadDate),
+          endDate = Some(DateModel(writeOrReadDate))
+        )),
       applicantHistoricAddresses = Some(Seq(
         AddressModel(
           Some(Residential),
