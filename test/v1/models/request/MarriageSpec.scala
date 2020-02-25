@@ -24,24 +24,22 @@ class MarriageSpec extends WordSpec with Matchers {
   private lazy val maxMarriageJson: Boolean => JsObject = isReads =>
     if (isReads) {
       Json.obj(
-        "maritalStatus" -> 1,
+        "maritalStatus" -> "DIVORCED",
         "startDate" -> "01-01-1990",
         "endDate" -> "01-01-2000",
         "partnerNino" -> "AA000000B",
         "birthDate" -> "01-01-1970",
         "forename" -> "Testforename",
-        "secondForename" -> "Testsecondforename",
         "surname" -> "Testsurname"
       )
     } else {
       Json.obj(
-        "maritalStatus" -> 1,
+        "maritalStatus" -> "DIVORCED",
         "startDate" -> "1990-01-01",
         "endDate" -> "2000-01-01",
         "partnerNino" -> "AA000000B",
         "spouseDateOfBirth" -> "1970-01-01",
         "spouseFirstName" -> "Testforename",
-        "secondForename" -> "Testsecondforename",
         "spouseSurname" -> "Testsurname"
       )
     }
@@ -60,13 +58,12 @@ class MarriageSpec extends WordSpec with Matchers {
     }
 
   private lazy val maxMarriageModel: Marriage = Marriage(
-    maritalStatus = Some(1),
+    maritalStatus = Some(DIVORCED),
     startDate = Some(DateModel("01-01-1990")),
     endDate = Some(DateModel("01-01-2000")),
     partnerNino = "AA000000B",
     spouseDateOfBirth = DateModel("01-01-1970"),
     spouseFirstName = Some("Testforename"),
-    secondForename = Some("Testsecondforename"),
     spouseSurname = Some("Testsurname")
   )
 
@@ -120,72 +117,6 @@ class MarriageSpec extends WordSpec with Matchers {
       "correctly parse to JSON" in {
 
         Json.toJson(minMarriageModel) shouldBe minMarriageJson(false)
-      }
-    }
-  }
-
-  "Marriage .maritalStatusValidation" when {
-
-    "provided with an optional int" which {
-
-      "is within the valid range" should {
-
-        "return true" in {
-
-          val result = Marriage.maritalStatusValidation(Some(6))
-
-          result shouldBe true
-        }
-      }
-
-      "is on the lower allowed limit" should {
-
-        "return true" in {
-
-          val result = Marriage.maritalStatusValidation(Some(0))
-
-          result shouldBe true
-        }
-      }
-
-      "is on the upper allowed limit" should {
-
-        "return true" in {
-
-          val result = Marriage.maritalStatusValidation(Some(12))
-
-          result shouldBe true
-        }
-      }
-
-      "is below the lower allowed limit" should {
-
-        "return false" in {
-
-          val result = Marriage.maritalStatusValidation(Some(-1))
-
-          result shouldBe false
-        }
-      }
-
-      "is above the upper allowed limit" should {
-
-        "return false" in {
-
-          val result = Marriage.maritalStatusValidation(Some(13))
-
-          result shouldBe false
-        }
-      }
-    }
-
-    "not provided with the optional int" should {
-
-      "return true" in {
-
-        val result = Marriage.maritalStatusValidation(None)
-
-        result shouldBe true
       }
     }
   }

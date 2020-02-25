@@ -45,6 +45,8 @@ object NinoApplication {
   private val nationalityCodeRegex = "^[A-Z]{3}$"
 
   private val historicSeqLength = 5
+  private val marriagesSeqLength = 5
+  private val priorResidencySeqLength = 5
 
   private[models] def validateAgainstRegex(value: String, regex: String): Boolean = {
     value.matches(regex)
@@ -54,11 +56,11 @@ object NinoApplication {
     input >= 0 && input <= 286
   }
 
-  private[models] def sequenceMinMaxValidation[T](seqInput: Seq[T], minLength: Int, maxLength: Int): Boolean = {
+  private[models] def seqMinMaxValidation[T](seqInput: Seq[T], minLength: Int, maxLength: Int): Boolean = {
     seqInput.length >= minLength && seqInput.length <= maxLength
   }
 
-  private[models] def sequenceMinMaxValidation[T](seqInputOptional: Option[Seq[T]], minLength: Int, maxLength: Int): Boolean = {
+  private[models] def seqMinMaxValidation[T](seqInputOptional: Option[Seq[T]], minLength: Int, maxLength: Int): Boolean = {
     seqInputOptional.fold(true)(seqInput => seqInput.length >= minLength && seqInput.length <= maxLength)
   }
 
@@ -97,13 +99,13 @@ object NinoApplication {
       birthDateVerificationPath.readNullable[BirthDateVerification] and
       officeNumberPath.read[String].filter(commonError("office number"))(validateAgainstRegex(_, officeNumberRegex)) and
       contactNumberPath.readNullable[String].filter(commonError("contact number"))(_.fold(true)(validateAgainstRegex(_, contactNumberRegex))) and
-      namesPath.read[Seq[NameModel]].filter(minMaxError("names"))(sequenceMinMaxValidation(_, 1, 2)) and
-      historicalNamesPath.readNullable[Seq[NameModel]].filter(minMaxError("historicNames"))(sequenceMinMaxValidation(_, 1, historicSeqLength)) and
-      addressesPath.read[Seq[AddressModel]].filter(minMaxError("addresses"))(sequenceMinMaxValidation(_, 1, 2)) and
-      historicalAddressesPath.readNullable[Seq[AddressModel]].filter(minMaxError("historicAddresses"))(sequenceMinMaxValidation(_, 1, historicSeqLength)) and
-      applicantMarriagesPath.readNullable[Seq[Marriage]] and
+      namesPath.read[Seq[NameModel]].filter(minMaxError("names"))(seqMinMaxValidation(_, 1, 2)) and
+      historicalNamesPath.readNullable[Seq[NameModel]].filter(minMaxError("historicNames"))(seqMinMaxValidation(_, 1, historicSeqLength)) and
+      addressesPath.read[Seq[AddressModel]].filter(minMaxError("addresses"))(seqMinMaxValidation(_, 1, 2)) and
+      historicalAddressesPath.readNullable[Seq[AddressModel]].filter(minMaxError("historicAddresses"))(seqMinMaxValidation(_, 1, historicSeqLength)) and
+      applicantMarriagesPath.readNullable[Seq[Marriage]].filter(minMaxError("marriages"))(seqMinMaxValidation(_, 1, marriagesSeqLength)) and
       originDataPath.readNullable[OriginData] and
-      priorResidencyPath.readNullable[Seq[PriorResidencyModel]] and
+      priorResidencyPath.readNullable[Seq[PriorResidencyModel]].filter(minMaxError("priorResidency"))(seqMinMaxValidation(_, 1, priorResidencySeqLength)) and
       abroadLiabilityPath.readNullable[AbroadLiabilityModel] and
       nationalityCodePath.readNullable[String].filter(
         commonError("nationality code"))(nationalityCode => nationalityCode.fold(true)(validateAgainstRegex(_, nationalityCodeRegex)))
