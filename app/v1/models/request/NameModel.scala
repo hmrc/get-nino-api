@@ -16,11 +16,10 @@
 
 package v1.models.request
 
-import java.time.{LocalDate, LocalDateTime, ZoneId}
 import java.time.format.DateTimeFormatter
+import java.time.{LocalDate, ZoneId}
 
 import play.api.Logger
-import play.api.libs.functional.syntax._
 import play.api.libs.json._
 
 case class NameModel(
@@ -52,7 +51,10 @@ object NameModel {
 
   private def dateNonPriorError: JsonValidationError = JsonValidationError("The date provided is after today. The date must be before.")
 
-  private def startDateAfterEndDateError: JsonValidationError = JsonValidationError("The given start date is after the given end date.")
+  private def startDateAfterEndDateError: JsonValidationError = {
+    Logger.warn("[NameModel][validateDateAsPriorDate] The provided earlierDate is after the laterDate.")
+    JsonValidationError("The given start date is after the given end date.")
+  }
 
   private val validTitles = Seq(
     "NOT KNOWN",
@@ -109,13 +111,12 @@ object NameModel {
     }
   }
 
-  private[models] def validateDateAsPriorDate(earlierDate: Option[DateModel], laterDate: Option[DateModel]) = {
+  private[models] def validateDateAsPriorDate(earlierDate: Option[DateModel], laterDate: Option[DateModel], canBeEqual: Boolean = true) = {
     (earlierDate, laterDate) match {
       case (Some(earlierDateModel), Some(laterDateModel)) =>
         val earlierModelAsDate = LocalDate.parse(earlierDateModel.dateString, DateTimeFormatter.ofPattern("dd-MM-yyyy"))
         val laterModelAsDate = LocalDate.parse(laterDateModel.dateString, DateTimeFormatter.ofPattern("dd-MM-yyyy"))
-        Logger.warn("[NameModel][validateDateAsPriorDate] The provided earlierDate is after the laterDate.")
-        earlierModelAsDate.isBefore(laterModelAsDate) || earlierModelAsDate.isEqual(laterModelAsDate)
+        earlierModelAsDate.isBefore(laterModelAsDate) || (canBeEqual && earlierModelAsDate.isEqual(laterModelAsDate))
       case _ => true
     }
 
@@ -131,7 +132,7 @@ object NameModel {
     startDate <- startDatePath.readNullable[DateModel].filter(dateNonPriorError)(validateDateAsPriorDate(_, todayDateAsDateModel))
     endDate <- endDatePath.readNullable[DateModel]
             .filter(dateNonPriorError)(validateDateAsPriorDate(_, todayDateAsDateModel))
-            .filter(startDateAfterEndDateError)(validateDateAsPriorDate(startDate, _))
+            .filter(startDateAfterEndDateError)(validateDateAsPriorDate(startDate, _, canBeEqual = false))
     nameType <- typePath.read[String].filter(typeValidationError)(validateType)
   } yield {
     NameModel(

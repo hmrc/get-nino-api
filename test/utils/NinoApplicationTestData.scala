@@ -22,8 +22,8 @@ import v1.models.request._
 
 object NinoApplicationTestData {
 
-  private def writeOrReadDate(implicit isWrite: Boolean): String = {
-    if (isWrite) "2000-10-10" else "10-10-2000"
+  private def writeOrReadDate(writeDate: String = "2000-10-10", readDate: String = "10-10-2000")(implicit isWrite: Boolean): String = {
+    if (isWrite) writeDate else readDate
   }
 
   private def writeOrReadBirthDate(implicit isWrite: Boolean): String = {
@@ -47,20 +47,20 @@ object NinoApplicationTestData {
       "applicantAddresses" -> Json.arr(Json.obj(
         "addressLine1" -> "4 AStreetName",
         "countryCode" -> "USA",
-        "startDate" -> writeOrReadDate
+        "startDate" -> writeOrReadDate()
       ))
     } else {
       "addresses" -> Json.arr(Json.obj(
         "line1" -> "4 AStreetName",
         "countryCode" -> "USA",
-        "startDate" -> writeOrReadDate
+        "startDate" -> writeOrReadDate()
       ))
     }
 
     Json.obj(
       "nino" -> "TC452994B",
       "gender" -> "MALE",
-      "entryDate" -> writeOrReadDate,
+      "entryDate" -> writeOrReadDate(),
       "birthDate" -> writeOrReadBirthDate,
       "officeNumber" -> "1234",
       nameJsObject,
@@ -72,7 +72,7 @@ object NinoApplicationTestData {
   val faultyRegisterNinoRequestJson: Boolean => JsObject = implicit isWrite => Json.obj(
     "nino" -> "TC452994BAAAAAAAAA",
     "gender" -> "MALE",
-    "entryDate" -> writeOrReadDate,
+    "entryDate" -> writeOrReadDate(),
     "birthDate" -> writeOrReadBirthDate,
     "birthDateVerification" -> "VERIFIED",
     "officeNumber" -> "1234KJAHSDKJHA*SHDH£HA{DA:SLLFJKALSJF",
@@ -83,7 +83,7 @@ object NinoApplicationTestData {
     ),
     "addresses" -> Json.arr(Json.obj(
       "line1" -> "4 AStreetName",
-      "startDate" -> writeOrReadDate
+      "startDate" -> writeOrReadDate()
     )),
     "nationalityCode" -> "NOTACODE"
   )
@@ -102,18 +102,18 @@ object NinoApplicationTestData {
       "applicantMarriages" -> Json.arr(
         Json.obj(
           "maritalStatus" -> "DIVORCED",
-          "startDate" -> writeOrReadDate,
-          "endDate" -> writeOrReadDate,
+          "startDate" -> writeOrReadDate("1990-10-10", "10-10-1990"),
+          "endDate" -> writeOrReadDate(),
           "partnerNino" -> "AA000000B",
-          "spouseDateOfBirth" -> writeOrReadDate,
+          "spouseDateOfBirth" -> writeOrReadDate(),
           "spouseFirstName" -> "Testforename",
           "spouseSurname" -> "Testsurname"),
         Json.obj(
           "maritalStatus" -> "DIVORCED",
-          "startDate" -> writeOrReadDate,
-          "endDate" -> writeOrReadDate,
+          "startDate" -> writeOrReadDate("1990-10-10", "10-10-1990"),
+          "endDate" -> writeOrReadDate(),
           "partnerNino" -> "AA000000C",
-          "spouseDateOfBirth" -> writeOrReadDate,
+          "spouseDateOfBirth" -> writeOrReadDate(),
           "spouseFirstName" -> "Othertestforename",
           "spouseSurname" -> "Testsurname")
       )
@@ -121,18 +121,18 @@ object NinoApplicationTestData {
       "marriages" -> Json.arr(
         Json.obj(
           "maritalStatus" -> "DIVORCED",
-          "startDate" -> writeOrReadDate,
-          "endDate" -> writeOrReadDate,
+          "startDate" -> writeOrReadDate("1990-10-10", "10-10-1990"),
+          "endDate" -> writeOrReadDate(),
           "partnerNino" -> "AA000000B",
-          "birthDate" -> writeOrReadDate,
+          "birthDate" -> writeOrReadDate(),
           "forename" -> "Testforename",
           "surname" -> "Testsurname"),
         Json.obj(
           "maritalStatus" -> "DIVORCED",
-          "startDate" -> writeOrReadDate,
-          "endDate" -> writeOrReadDate,
+          "startDate" -> writeOrReadDate("1990-10-10", "10-10-1990"),
+          "endDate" -> writeOrReadDate(),
           "partnerNino" -> "AA000000C",
-          "birthDate" -> writeOrReadDate,
+          "birthDate" -> writeOrReadDate(),
           "forename" -> "Othertestforename",
           "surname" -> "Testsurname")
       )
@@ -148,8 +148,8 @@ object NinoApplicationTestData {
         "addressLine5" -> "ItsTheFinalLine",
         "postcode" -> "AA11AA",
         "countryCode" -> "GBR",
-        "startDate" -> writeOrReadDate,
-        "endDate" -> writeOrReadDate
+        "startDate" -> writeOrReadDate("1990-10-10", "10-10-1990"),
+        "endDate" -> writeOrReadDate()
       ),
         Json.obj(
           "addressType" -> "RESIDENTIAL",
@@ -160,8 +160,8 @@ object NinoApplicationTestData {
           "addressLine5" -> "ItsTheFinalLine",
           "postcode" -> "AA11AA",
           "countryCode" -> "GBR",
-          "startDate" -> writeOrReadDate,
-          "endDate" -> writeOrReadDate
+          "startDate" -> writeOrReadDate("1990-10-10", "10-10-1990"),
+          "endDate" -> writeOrReadDate()
         ))
     } else {
       "addresses" -> Json.arr(Json.obj(
@@ -173,8 +173,8 @@ object NinoApplicationTestData {
         "line5" -> "ItsTheFinalLine",
         "postcode" -> "AA11AA",
         "countryCode" -> "GBR",
-        "startDate" -> writeOrReadDate,
-        "endDate" -> writeOrReadDate
+        "startDate" -> writeOrReadDate("1990-10-10", "10-10-1990"),
+        "endDate" -> writeOrReadDate()
       ),
         Json.obj(
           "addressType" -> "RESIDENTIAL",
@@ -185,8 +185,8 @@ object NinoApplicationTestData {
           "line5" -> "ItsTheFinalLine",
           "postcode" -> "AA11AA",
           "countryCode" -> "GBR",
-          "startDate" -> writeOrReadDate,
-          "endDate" -> writeOrReadDate
+          "startDate" -> writeOrReadDate("1990-10-10", "10-10-1990"),
+          "endDate" -> writeOrReadDate()
         ))
     }
 
@@ -201,8 +201,8 @@ object NinoApplicationTestData {
           addressLinePrefix(5) -> "ItsTheFinalLine",
           "postcode" -> "AA11AA",
           "countryCode" -> "GBR",
-          "startDate" -> writeOrReadDate,
-          "endDate" -> writeOrReadDate
+          "startDate" -> writeOrReadDate("1990-10-10", "10-10-1990"),
+          "endDate" -> writeOrReadDate()
         ),
         Json.obj(
           "addressType" -> "RESIDENTIAL",
@@ -213,8 +213,8 @@ object NinoApplicationTestData {
           "addressLine5" -> "ItsTheFinalLine",
           "postcode" -> "AA11AA",
           "countryCode" -> "GBR",
-          "startDate" -> writeOrReadDate,
-          "endDate" -> writeOrReadDate
+          "startDate" -> writeOrReadDate("1990-10-10", "10-10-1990"),
+          "endDate" -> writeOrReadDate()
         )
       )
     } else {
@@ -228,8 +228,8 @@ object NinoApplicationTestData {
           "line5" -> "ItsTheFinalLine",
           "postcode" -> "AA11AA",
           "countryCode" -> "GBR",
-          "startDate" -> writeOrReadDate,
-          "endDate" -> writeOrReadDate
+          "startDate" -> writeOrReadDate("1990-10-10", "10-10-1990"),
+          "endDate" -> writeOrReadDate()
         ),
         Json.obj(
           "addressType" -> "RESIDENTIAL",
@@ -240,8 +240,8 @@ object NinoApplicationTestData {
           "line5" -> "ItsTheFinalLine",
           "postcode" -> "AA11AA",
           "countryCode" -> "GBR",
-          "startDate" -> writeOrReadDate,
-          "endDate" -> writeOrReadDate
+          "startDate" -> writeOrReadDate("1990-10-10", "10-10-1990"),
+          "endDate" -> writeOrReadDate()
         )
       )
     }
@@ -252,8 +252,8 @@ object NinoApplicationTestData {
         "firstName" -> "AForename",
         "middleName" -> "NotSure",
         "surname" -> "ASurname",
-        "startDate" -> writeOrReadDate,
-        "endDate" -> writeOrReadDate,
+        "startDate" -> writeOrReadDate("1990-10-10", "10-10-1990"),
+        "endDate" -> writeOrReadDate(),
         "nameType" -> "REGISTERED"
       ),
         Json.obj(
@@ -261,8 +261,8 @@ object NinoApplicationTestData {
           "firstName" -> "ASeperateForename",
           "middleName" -> "NotSure",
           "surname" -> "ASurname",
-          "startDate" -> writeOrReadDate,
-          "endDate" -> writeOrReadDate,
+          "startDate" -> writeOrReadDate("1990-10-10", "10-10-1990"),
+          "endDate" -> writeOrReadDate(),
           "nameType" -> "ALIAS"
         ))
     } else {
@@ -271,8 +271,8 @@ object NinoApplicationTestData {
         "forename" -> "AForename",
         "secondForename" -> "NotSure",
         "surname" -> "ASurname",
-        "startDate" -> writeOrReadDate,
-        "endDate" -> writeOrReadDate,
+        "startDate" -> writeOrReadDate("1990-10-10", "10-10-1990"),
+        "endDate" -> writeOrReadDate(),
         "nameType" -> "REGISTERED"
       ),
         Json.obj(
@@ -280,8 +280,8 @@ object NinoApplicationTestData {
           "forename" -> "ASeperateForename",
           "secondForename" -> "NotSure",
           "surname" -> "ASurname",
-          "startDate" -> writeOrReadDate,
-          "endDate" -> writeOrReadDate,
+          "startDate" -> writeOrReadDate("1990-10-10", "10-10-1990"),
+          "endDate" -> writeOrReadDate(),
           "nameType" -> "ALIAS"
         ))
     }
@@ -289,7 +289,7 @@ object NinoApplicationTestData {
     Json.obj(
       "nino" -> "TC452994B",
       "gender" -> "MALE",
-      "entryDate" -> writeOrReadDate,
+      "entryDate" -> writeOrReadDate(),
       "birthDate" -> writeOrReadBirthDate,
       "birthDateVerification" -> "VERIFIED",
       "officeNumber" -> "1234",
@@ -301,8 +301,8 @@ object NinoApplicationTestData {
           firstNamePath -> "AForename",
           middleNamePath -> "NotSure",
           "surname" -> "ASurname",
-          "startDate" -> writeOrReadDate,
-          "endDate" -> writeOrReadDate,
+          "startDate" -> writeOrReadDate("1990-10-10", "10-10-1990"),
+          "endDate" -> writeOrReadDate(),
           "nameType" -> "REGISTERED"
         ),
         Json.obj(
@@ -310,8 +310,8 @@ object NinoApplicationTestData {
           firstNamePath -> "AForename",
           middleNamePath -> "NotSure",
           "surname" -> "ASurname",
-          "startDate" -> writeOrReadDate,
-          "endDate" -> writeOrReadDate,
+          "startDate" -> writeOrReadDate("1990-10-10", "10-10-1990"),
+          "endDate" -> writeOrReadDate(),
           "nameType" -> "REGISTERED"
         )
       ),
@@ -337,10 +337,10 @@ object NinoApplicationTestData {
         )
       ),
       priorResidencyPath -> Json.arr(
-        Json.obj(priorStartDatePath -> writeOrReadDate, priorEndDatePath -> writeOrReadDate),
-        Json.obj(priorStartDatePath -> writeOrReadDate, priorEndDatePath -> writeOrReadDate)
+        Json.obj(priorStartDatePath -> writeOrReadDate("1990-10-10", "10-10-1990"), priorEndDatePath -> writeOrReadDate()),
+        Json.obj(priorStartDatePath -> writeOrReadDate("1990-10-10", "10-10-1990"), priorEndDatePath -> writeOrReadDate())
       ),
-      "abroadLiability" -> Json.obj("liabilityStartDate" -> writeOrReadDate, "liabilityEndDate" -> writeOrReadDate),
+      "abroadLiability" -> Json.obj("liabilityStartDate" -> writeOrReadDate("1990-10-10", "10-10-1990"), "liabilityEndDate" -> writeOrReadDate()),
       "nationalityCode" -> "GBR"
     )
   }
@@ -350,7 +350,7 @@ object NinoApplicationTestData {
     NinoApplication(
       nino = "TC452994B",
       gender = Male,
-      entryDate = DateModel(writeOrReadDate),
+      entryDate = DateModel(writeOrReadDate()),
       birthDate = DateModel(writeOrReadBirthDate),
       birthDateVerification = None,
       officeNumber = "1234",
@@ -364,7 +364,7 @@ object NinoApplicationTestData {
         None,
         AddressLine("4 AStreetName"),
         None, None, None, None, None, "USA",
-        DateModel(writeOrReadDate), None
+        DateModel(writeOrReadDate()), None
       )),
       applicantHistoricAddresses = None,
       applicantMarriages = None,
@@ -380,7 +380,7 @@ object NinoApplicationTestData {
     NinoApplication(
       nino = "TC452994BAAAAAAAAA",
       gender = Male,
-      entryDate = DateModel(writeOrReadDate),
+      entryDate = DateModel(writeOrReadDate()),
       birthDate = DateModel(writeOrReadBirthDate),
       birthDateVerification = Some(Verified),
       officeNumber = "1234",
@@ -394,7 +394,7 @@ object NinoApplicationTestData {
         None,
         AddressLine("4 AStreetName"),
         None, None, None, None, None, "GBR",
-        DateModel(writeOrReadDate), None
+        DateModel(writeOrReadDate()), None
       )),
       applicantHistoricAddresses = None,
       applicantMarriages = None,
@@ -410,7 +410,7 @@ object NinoApplicationTestData {
     NinoApplication(
       nino = "TC452994B",
       gender = Male,
-      entryDate = DateModel(writeOrReadDate),
+      entryDate = DateModel(writeOrReadDate()),
       birthDate = DateModel(writeOrReadBirthDate),
       birthDateVerification = Some(Verified),
       officeNumber = "1234",
@@ -420,8 +420,8 @@ object NinoApplicationTestData {
         firstName = Some("AForename"),
         middleName = Some("NotSure"),
         surname = "ASurname",
-        startDate = Some(DateModel(writeOrReadDate)),
-        endDate = Some(DateModel(writeOrReadDate)),
+        startDate = Some(DateModel(writeOrReadDate("1990-10-10", "10-10-1990"))),
+        endDate = Some(DateModel(writeOrReadDate())),
         nameType = "REGISTERED"
       ),
         NameModel(
@@ -429,8 +429,8 @@ object NinoApplicationTestData {
           firstName = Some("ASeperateForename"),
           middleName = Some("NotSure"),
           surname = "ASurname",
-          startDate = Some(DateModel(writeOrReadDate)),
-          endDate = Some(DateModel(writeOrReadDate)),
+          startDate = Some(DateModel(writeOrReadDate("1990-10-10", "10-10-1990"))),
+          endDate = Some(DateModel(writeOrReadDate())),
           nameType = "ALIAS"
         )),
       applicantHistoricNames = Some(Seq(
@@ -439,8 +439,8 @@ object NinoApplicationTestData {
           Some("AForename"),
           Some("NotSure"),
           "ASurname",
-          Some(DateModel(writeOrReadDate)),
-          Some(DateModel(writeOrReadDate)),
+          Some(DateModel(writeOrReadDate("1990-10-10", "10-10-1990"))),
+          Some(DateModel(writeOrReadDate())),
           nameType = "REGISTERED"
         ),
         NameModel(
@@ -448,8 +448,8 @@ object NinoApplicationTestData {
           Some("AForename"),
           Some("NotSure"),
           "ASurname",
-          Some(DateModel(writeOrReadDate)),
-          Some(DateModel(writeOrReadDate)),
+          Some(DateModel(writeOrReadDate("1990-10-10", "10-10-1990"))),
+          Some(DateModel(writeOrReadDate())),
           nameType = "REGISTERED"
         )
       )),
@@ -462,8 +462,8 @@ object NinoApplicationTestData {
         addressLine5 = Some(AddressLine("ItsTheFinalLine")),
         postcode = Some(Postcode("AA11AA")),
         countryCode = "GBR",
-        startDate = DateModel(writeOrReadDate),
-        endDate = Some(DateModel(writeOrReadDate))
+        startDate = DateModel(writeOrReadDate("1990-10-10", "10-10-1990")),
+        endDate = Some(DateModel(writeOrReadDate()))
       ),
         AddressModel(
           addressType = Some(Residential),
@@ -474,8 +474,8 @@ object NinoApplicationTestData {
           addressLine5 = Some(AddressLine("ItsTheFinalLine")),
           postcode = Some(Postcode("AA11AA")),
           countryCode = "GBR",
-          startDate = DateModel(writeOrReadDate),
-          endDate = Some(DateModel(writeOrReadDate))
+          startDate = DateModel(writeOrReadDate("1990-10-10", "10-10-1990")),
+          endDate = Some(DateModel(writeOrReadDate()))
         )),
       applicantHistoricAddresses = Some(Seq(
         AddressModel(
@@ -487,8 +487,8 @@ object NinoApplicationTestData {
           Some(AddressLine("ItsTheFinalLine")),
           Some(Postcode("AA11AA")),
           "GBR",
-          DateModel(writeOrReadDate),
-          Some(DateModel(writeOrReadDate))
+          DateModel(writeOrReadDate("1990-10-10", "10-10-1990")),
+          Some(DateModel(writeOrReadDate()))
         ),
         AddressModel(
           Some(Residential),
@@ -499,26 +499,26 @@ object NinoApplicationTestData {
           Some(AddressLine("ItsTheFinalLine")),
           Some(Postcode("AA11AA")),
           "GBR",
-          DateModel(writeOrReadDate),
-          Some(DateModel(writeOrReadDate))
+          DateModel(writeOrReadDate("1990-10-10", "10-10-1990")),
+          Some(DateModel(writeOrReadDate()))
         )
       )),
       applicantMarriages = Some(Seq(
         Marriage(
           maritalStatus = Some(DIVORCED),
-          startDate = Some(DateModel(writeOrReadDate)),
-          endDate = Some(DateModel(writeOrReadDate)),
+          startDate = Some(DateModel(writeOrReadDate("1990-10-10", "10-10-1990"))),
+          endDate = Some(DateModel(writeOrReadDate())),
           partnerNino = "AA000000B",
-          spouseDateOfBirth = DateModel(writeOrReadDate),
+          spouseDateOfBirth = DateModel(writeOrReadDate()),
           spouseFirstName = Some("Testforename"),
           spouseSurname = Some("Testsurname")
         ),
         Marriage(
           maritalStatus = Some(DIVORCED),
-          startDate = Some(DateModel(writeOrReadDate)),
-          endDate = Some(DateModel(writeOrReadDate)),
+          startDate = Some(DateModel(writeOrReadDate("1990-10-10", "10-10-1990"))),
+          endDate = Some(DateModel(writeOrReadDate())),
           partnerNino = "AA000000C",
-          spouseDateOfBirth = DateModel(writeOrReadDate),
+          spouseDateOfBirth = DateModel(writeOrReadDate()),
           spouseFirstName = Some("Othertestforename"),
           spouseSurname = Some("Testsurname")
         )
@@ -535,11 +535,11 @@ object NinoApplicationTestData {
             Some(AddressLine("ItsTheFinalLine"))
           )))),
       applicantPriorResidency = Some(Seq(
-        PriorResidencyModel(Some(DateModel(writeOrReadDate)), Some(DateModel(writeOrReadDate))),
-        PriorResidencyModel(Some(DateModel(writeOrReadDate)), Some(DateModel(writeOrReadDate)))
+        PriorResidencyModel(Some(DateModel(writeOrReadDate("1990-10-10", "10-10-1990"))), Some(DateModel(writeOrReadDate()))),
+        PriorResidencyModel(Some(DateModel(writeOrReadDate("1990-10-10", "10-10-1990"))), Some(DateModel(writeOrReadDate())))
       )),
       abroadLiability = Some(
-        AbroadLiabilityModel(Some(DateModel(writeOrReadDate)), Some(DateModel(writeOrReadDate)))
+        AbroadLiabilityModel(Some(DateModel(writeOrReadDate("1990-10-10", "10-10-1990"))), Some(DateModel(writeOrReadDate())))
       ),
       nationalityCode = Some("GBR")
     )

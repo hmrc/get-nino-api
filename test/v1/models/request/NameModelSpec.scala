@@ -24,8 +24,8 @@ import support.UnitSpec
 
 class NameModelSpec extends UnitSpec {
 
-  private def readWriteDate(isWrite: Boolean): String = {
-    if (isWrite) "2000-10-10" else "10-10-2000"
+  private def readWriteDate(isWrite: Boolean, writeDate: String = "2000-10-10", readDate: String = "10-10-2000"): String = {
+    if (isWrite) writeDate else readDate
   }
 
   val minJson: Boolean => JsObject = isWrite =>
@@ -43,7 +43,7 @@ class NameModelSpec extends UnitSpec {
       firstNamePath -> "First",
       middleNamePath -> "Middle",
       "surname" -> "Last",
-      "startDate" -> readWriteDate(isWrite),
+      "startDate" -> readWriteDate(isWrite, "1990-10-10", "10-10-1990"),
       "endDate" -> readWriteDate(isWrite),
       "nameType" -> "REGISTERED"
     )
@@ -73,7 +73,7 @@ class NameModelSpec extends UnitSpec {
     Some("First"),
     Some("Middle"),
     "Last",
-    Some(DateModel("10-10-2000")),
+    Some(DateModel("10-10-1990")),
     Some(DateModel("10-10-2000")),
     nameType = "REGISTERED"
   )
@@ -240,7 +240,7 @@ class NameModelSpec extends UnitSpec {
           NameModel.validateDateAsPriorDate(Some(validDate), currentDate) shouldBe true
         }
 
-        "the provided dates are equal" in {
+        "the provided dates are equal if canBeEqual is set to true" in {
           val validDate = DateModel(
             LocalDate.now(ZoneId.of("UTC")).format(DateTimeFormatter.ofPattern("dd-MM-yyyy"))
           )
@@ -265,6 +265,14 @@ class NameModelSpec extends UnitSpec {
           )
 
           NameModel.validateDateAsPriorDate(Some(invalidDate), currentDate) shouldBe false
+        }
+
+        "the provided dates are equal if canBeEqual is set to false" in {
+          val validDate = DateModel(
+            LocalDate.now(ZoneId.of("UTC")).format(DateTimeFormatter.ofPattern("dd-MM-yyyy"))
+          )
+
+          NameModel.validateDateAsPriorDate(Some(validDate), Some(validDate), canBeEqual = false) shouldBe false
         }
       }
     }
