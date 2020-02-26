@@ -20,13 +20,13 @@ import com.github.tomakehurst.wiremock.client.WireMock._
 import com.github.tomakehurst.wiremock.stubbing.StubMapping
 import config.AppConfig
 import play.api.http.Status
-import play.api.libs.json.Json
 import support.IntegrationBaseSpec
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.bootstrap.http.HttpClient
 import utils.ItNinoApplicationTestData._
 import v1.connectors.httpParsers.HttpResponseTypes.HttpPostResponse
 import v1.models.errors.Error
+import v1.stubs.AuditStub
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
@@ -38,7 +38,8 @@ class DesConnectorISpec extends IntegrationBaseSpec {
 
   lazy val connector = new DesConnector(http, appConfig)
 
-  trait Test {
+  private trait Test {
+
     def stubSuccess(url: String): StubMapping = {
       stubFor(post(url)
         .willReturn(
@@ -62,10 +63,26 @@ class DesConnectorISpec extends IntegrationBaseSpec {
 
     "the feature switch is on" should {
 
+      "send an Environment header in the request" in new Test {
+
+        AuditStub.audit()
+        stubSuccess("/register")
+
+        val response: HttpPostResponse[Boolean] = {
+          appConfig.features.useDesStub(true)
+          await(connector.sendRegisterRequest(maxRegisterNinoRequestModel))
+        }
+
+        verify(postRequestedFor(urlEqualTo("/register")).withHeader("Environment", equalTo("local")))
+
+      }
+
       "return a DesResponse model" when {
 
         "the request is successful" in new Test {
           stubSuccess("/register")
+
+          AuditStub.audit()
 
           val response: HttpPostResponse[Boolean] = {
             appConfig.features.useDesStub(true)
@@ -79,6 +96,8 @@ class DesConnectorISpec extends IntegrationBaseSpec {
 
         "the request is unsuccessful" in new Test {
           stubFailure("/register")
+
+          AuditStub.audit()
 
           val response: HttpPostResponse[Boolean] = {
             appConfig.features.useDesStub(true)
@@ -97,6 +116,9 @@ class DesConnectorISpec extends IntegrationBaseSpec {
         "the request is successful" in new Test {
           stubSuccess("/desContext")
 
+          AuditStub.audit()
+
+
           val response: HttpPostResponse[Boolean] = {
             appConfig.features.useDesStub(false)
             await(connector.sendRegisterRequest(maxRegisterNinoRequestModel))
@@ -109,6 +131,9 @@ class DesConnectorISpec extends IntegrationBaseSpec {
 
         "the request is unsuccessful" in new Test {
           stubFailure("/desContext")
+
+          AuditStub.audit()
+
 
           val response: HttpPostResponse[Boolean] = {
             appConfig.features.useDesStub(false)

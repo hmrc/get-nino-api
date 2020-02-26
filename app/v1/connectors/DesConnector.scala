@@ -42,7 +42,9 @@ class DesConnector @Inject()(
       s"${appConfig.desBaseUrl()}/${appConfig.desContext()}"
     }
 
-    http.POST(url, Json.toJson(request))(implicitly, RegisterNinoResponseReads, hc, ec)
+    val requestWithEnvironmentHeader = hc.withExtraHeaders(("Environment", appConfig.environmentHeader))
+
+    http.POST(url, Json.toJson(request))(implicitly, RegisterNinoResponseReads, requestWithEnvironmentHeader, ec)
   }
 
 }
