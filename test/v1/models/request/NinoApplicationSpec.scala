@@ -248,7 +248,6 @@ class NinoApplicationSpec extends UnitSpec {
 
       "the provided age is above 15 years and 8 months" in {
         val today = LocalDateTime.now()
-        //noinspection ScalaStyle
         val validAge = today.minusYears(15).minusMonths(8).minusDays(1)
         val validAgeAsDateModel = DateModel(validAge.format(DateTimeFormatter.ofPattern("dd-MM-yyyy")))
 
@@ -260,7 +259,6 @@ class NinoApplicationSpec extends UnitSpec {
 
       "the provided age is exactly 15 years and 8 months" in {
         val today = LocalDateTime.now()
-        //noinspection ScalaStyle
         val invalidAge = today.minusYears(15).minusMonths(8)
         val invalidAgeAsDateModel = DateModel(invalidAge.format(DateTimeFormatter.ofPattern("dd-MM-yyyy")))
 
@@ -269,7 +267,6 @@ class NinoApplicationSpec extends UnitSpec {
 
       "the provided age is less than 15 years and 8 months" in {
         val today = LocalDateTime.now()
-        //noinspection ScalaStyle
         val invalidAge = today.minusYears(15).minusMonths(8).plusDays(1)
         val invalidAgeAsDateModel = DateModel(invalidAge.format(DateTimeFormatter.ofPattern("dd-MM-yyyy")))
 
