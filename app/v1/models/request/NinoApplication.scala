@@ -16,6 +16,10 @@
 
 package v1.models.request
 
+import java.time.format.DateTimeFormatter
+import java.time.temporal.ChronoUnit
+import java.time.{LocalDate, LocalDateTime, ZoneId}
+
 import play.api.libs.functional.syntax._
 import play.api.libs.json._
 
@@ -64,6 +68,17 @@ object NinoApplication {
     seqInputOptional.fold(true)(seqInput => seqInput.length >= minLength && seqInput.length <= maxLength)
   }
 
+  private[models] def validateAge(birthDate: DateModel) = {
+    val allowedYears: Int = 15
+    val allowedMonths: Int = 8
+
+    val minimumDaysOfAge: Long = ChronoUnit.DAYS.between(LocalDateTime.now().minusYears(allowedYears).minusMonths(allowedMonths), LocalDateTime.now())
+
+    val dateOfBirth: LocalDate = LocalDate.parse(birthDate.dateString, DateTimeFormatter.ofPattern("dd-MM-yyyy"))
+
+    ChronoUnit.DAYS.between(dateOfBirth, LocalDate.now(ZoneId.of("UTC"))) > minimumDaysOfAge
+  }
+
   implicit val writes: Writes[NinoApplication] = Json.writes[NinoApplication]
 
   private val ninoPath = __ \ "nino"
@@ -91,11 +106,15 @@ object NinoApplication {
     JsonValidationError(s"The $fieldName sequence has an incorrect number of elements. Please check the validation rules.")
   }
 
+  private def tooYoungError = {
+    JsonValidationError("The applicant needs to be over 15 years and 8 months old.")
+  }
+
   implicit val reads: Reads[NinoApplication] = (
     ninoPath.read[String].filter(commonError("nino"))(validateAgainstRegex(_, ninoRegex)) and
       genderPath.read[Gender] and
       entryDatePath.read[DateModel] and
-      birthDatePath.read[DateModel] and
+      birthDatePath.read[DateModel].filter(tooYoungError)(validateAge) and
       birthDateVerificationPath.readNullable[BirthDateVerification] and
       officeNumberPath.read[String].filter(commonError("office number"))(validateAgainstRegex(_, officeNumberRegex)) and
       contactNumberPath.readNullable[String].filter(commonError("contact number"))(_.fold(true)(validateAgainstRegex(_, contactNumberRegex))) and

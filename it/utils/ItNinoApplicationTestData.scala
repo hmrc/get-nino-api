@@ -25,11 +25,15 @@ object ItNinoApplicationTestData {
     if (isWrite) "2020-10-10" else "10-10-2020"
   }
 
+  private def writeOrReadBirthDate(implicit isWrite: Boolean): String = {
+    if (isWrite) "2000-10-10" else "10-10-2000"
+  }
+
   val minRegisterNinoRequestJson: Boolean => JsObject = implicit isWrite => Json.obj(
     "nino" -> "TC452994B",
     "gender" -> "MALE",
     "entryDate" -> writeOrReadDate,
-    "birthDate" -> writeOrReadDate,
+    "birthDate" -> writeOrReadBirthDate,
     "birthDateVerification" -> "VERIFIED",
     "officeNumber" -> "1234",
     "country" -> 1,
@@ -47,7 +51,7 @@ object ItNinoApplicationTestData {
     "nino" -> "TC452994B",
     "gender" -> "INVALID",
     "entryDate" -> writeOrReadDate,
-    "birthDate" -> writeOrReadDate,
+    "birthDate" -> writeOrReadBirthDate,
     "birthDateVerification" -> "VERIFIED",
     "officeNumber" -> "1234",
     "country" -> 1,
@@ -66,7 +70,7 @@ object ItNinoApplicationTestData {
     "nino" -> "TC452994B",
     "gender" -> "MALE",
     "entryDate" -> writeOrReadDate,
-    "birthDate" -> writeOrReadDate,
+    "birthDate" -> writeOrReadBirthDate,
     "birthDateVerification" -> "VERIFIED",
     "officeNumber" -> "1234",
     "contactNumber" -> "1234567890",
@@ -187,7 +191,7 @@ object ItNinoApplicationTestData {
       nino = "TC452994B",
       gender = Male,
       entryDate = DateModel(writeOrReadDate),
-      birthDate = DateModel(writeOrReadDate),
+      birthDate = DateModel(writeOrReadBirthDate),
       birthDateVerification = Some(Verified),
       officeNumber = "1234",
       contactNumber = None,
@@ -214,7 +218,7 @@ object ItNinoApplicationTestData {
       nino = "TC452994BAAAAAAAAA",
       gender = Male,
       entryDate = DateModel(writeOrReadDate),
-      birthDate = DateModel(writeOrReadDate),
+      birthDate = DateModel(writeOrReadBirthDate),
       birthDateVerification = Some(Verified),
       officeNumber = "1234",
       contactNumber = None,
@@ -245,7 +249,7 @@ object ItNinoApplicationTestData {
       nino = "TC452994B",
       gender = Male,
       entryDate = DateModel(writeOrReadDate),
-      birthDate = DateModel(writeOrReadDate),
+      birthDate = DateModel(writeOrReadBirthDate),
       birthDateVerification = Some(Verified),
       officeNumber = "1234",
       contactNumber = Some("1234567890"),
