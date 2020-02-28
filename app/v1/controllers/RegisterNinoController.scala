@@ -17,14 +17,12 @@
 package v1.controllers
 
 import javax.inject.{Inject, Singleton}
-import org.slf4j.MDC
 import play.api.Logger
 import play.api.libs.json.{JsValue, Json}
 import play.api.mvc._
 import uk.gov.hmrc.http.HeaderCarrier
-import uk.gov.hmrc.http.HeaderNames.{xRequestId, xSessionId}
 import uk.gov.hmrc.play.bootstrap.controller.BackendController
-import v1.controllers.predicates.PrivilegedApplicationPredicate
+import v1.controllers.predicates.{OriginatorIdPredicate, PrivilegedApplicationPredicate}
 import v1.models.errors.{JsonValidationError, Error => NinoError}
 import v1.models.request.NinoApplication
 import v1.services.DesService
@@ -36,12 +34,21 @@ import scala.concurrent.{ExecutionContext, Future}
 class RegisterNinoController @Inject()(
                                         cc: ControllerComponents,
                                         desService: DesService,
-                                        privilegedApplicationPredicate: PrivilegedApplicationPredicate)
+                                        privilegedApplicationPredicate: PrivilegedApplicationPredicate,
+                                        originatorIdPredicate: OriginatorIdPredicate
+                                      )
                                       (implicit val ec: ExecutionContext) extends BackendController(cc) with JsonBodyUtil {
 
-  def register(): Action[AnyContent] = privilegedApplicationPredicate.async { implicit request =>
+  def register(): Action[AnyContent] = (privilegedApplicationPredicate andThen originatorIdPredicate).async { implicit request =>
+
+    val hcWithOriginatorId = request.headers.get("OriginatorId") match {
+      case Some(originatorId) =>
+        hc.withExtraHeaders("OriginatorId" -> originatorId)
+      case _ => hc
+    }
+
     Future(parsedJsonBody[NinoApplication]).flatMap {
-      case Right(ninoModel) => desService.registerNino(ninoModel).map {
+      case Right(ninoModel) => desService.registerNino(ninoModel)(hcWithOriginatorId, ec).map {
         case Right(_) => Accepted
         case Left(errors) => badRequestWithLog(Json.toJson(errors))
       }

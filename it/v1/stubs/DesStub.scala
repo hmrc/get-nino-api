@@ -37,4 +37,16 @@ object DesStub extends WireMockMethods {
 
   }
 
+  def stubCallWithOriginatorId(responseStatus: Int, maybeReturnBody: Option[JsValue], stubbed: Boolean = false): StubMapping = {
+    maybeReturnBody match {
+      case Some(returnBody) =>
+        when(method = POST, uri = if(stubbed) desStubUrl else desUrl, headers = Map("OriginatorId" -> "DA2_DWP_REG"))
+          .thenReturn(responseStatus, returnBody)
+      case None =>
+        when(method = POST, uri = if(stubbed) desStubUrl else desUrl, headers = Map("OriginatorId" -> "DA2_DWP_REG"))
+          .thenReturn(responseStatus)
+    }
+
+  }
+
 }
