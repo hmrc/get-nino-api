@@ -16,8 +16,10 @@
 
 package v1.models.request
 
+import java.time.format.DateTimeFormatter
+import java.time.{LocalDate, ZoneId}
+
 import play.api.Logger
-import play.api.libs.functional.syntax._
 import play.api.libs.json._
 
 case class NameModel(
@@ -25,18 +27,18 @@ case class NameModel(
                       firstName: Option[String] = None,
                       middleName: Option[String] = None,
                       surname: String,
-                      startDate: Option[DateModel] =  None,
+                      startDate: Option[DateModel] = None,
                       endDate: Option[DateModel] = None,
                       nameType: String
                     )
 
 object NameModel {
   private lazy val titlePath = __ \ "title"
-  private lazy val forename = __ \ "forename"
-  private lazy val secondForename = __ \ "secondForename"
-  private lazy val surname = __ \ "surname"
-  private lazy val startDate = __ \ "startDate"
-  private lazy val endDate = __ \ "endDate"
+  private lazy val forenamePath = __ \ "forename"
+  private lazy val secondForenamePath = __ \ "secondForename"
+  private lazy val surnamePath = __ \ "surname"
+  private lazy val startDatePath = __ \ "startDate"
+  private lazy val endDatePath = __ \ "endDate"
   private lazy val typePath = __ \ "nameType"
 
   private val titleValidationError: JsonValidationError = JsonValidationError("Title failed validation. Must be one of: \'NOT KNOWN, MR, " +
@@ -46,6 +48,12 @@ object NameModel {
     s"Ensure it matches the regex.")
 
   private def typeValidationError: JsonValidationError = JsonValidationError("Name Type failed validation. Must be one of: \'REGISTERED, ALIAS\'")
+
+  private def dateNonPriorError: JsonValidationError = JsonValidationError("The date provided is after today. The date must be before.")
+
+  private def startDateAfterEndDateError: JsonValidationError = {
+    JsonValidationError("The given start date is after the given end date.")
+  }
 
   private val validTitles = Seq(
     "NOT KNOWN",
@@ -72,6 +80,7 @@ object NameModel {
     "REGISTERED",
     "ALIAS"
   )
+
   private[models] def validateType: String => Boolean = { inputString =>
     val passedValidation = validTypes.contains(inputString)
     if (!passedValidation) {
@@ -101,15 +110,42 @@ object NameModel {
     }
   }
 
-  implicit val reads: Reads[NameModel] = (
-    titlePath.readNullable[String].filter(titleValidationError)(validateTitle) and
-      forename.readNullable[String].filter(nameValidationError("forename"))(validateName(_, "forename")) and
-      secondForename.readNullable[String].filter(nameValidationError("second forename"))(validateName(_, "secondForename")) and
-      surname.read[String].filter(nameValidationError("surname"))(validateName(_, "surname")) and
-      startDate.readNullable[DateModel] and
-      endDate.readNullable[DateModel] and
-      typePath.read[String].filter(typeValidationError)(validateType)
-    ) (NameModel.apply _)
+  private[models] def validateDateAsPriorDate(earlierDate: Option[DateModel], laterDate: Option[DateModel], canBeEqual: Boolean = true) = {
+    (earlierDate, laterDate) match {
+      case (Some(earlierDateModel), Some(laterDateModel)) =>
+        val earlierModelAsDate = LocalDate.parse(earlierDateModel.dateString, DateTimeFormatter.ofPattern("dd-MM-yyyy"))
+        val laterModelAsDate = LocalDate.parse(laterDateModel.dateString, DateTimeFormatter.ofPattern("dd-MM-yyyy"))
+        val passedValidation = earlierModelAsDate.isBefore(laterModelAsDate) || (canBeEqual && earlierModelAsDate.isEqual(laterModelAsDate))
+        if(!passedValidation) Logger.warn("[NameModel][validateDateAsPriorDate] The provided earlierDate is after the laterDate.")
+        passedValidation
+      case _ => true
+    }
+
+  }
+
+  private def todayDateAsDateModel = Some(DateModel(LocalDate.now(ZoneId.of("UTC")).format(DateTimeFormatter.ofPattern("dd-MM-yyyy"))))
+
+  implicit val reads: Reads[NameModel] = for {
+    title <- titlePath.readNullable[String].filter(titleValidationError)(validateTitle)
+    foreName <- forenamePath.readNullable[String].filter(nameValidationError("forename"))(validateName(_, "forename"))
+    secondForename <- secondForenamePath.readNullable[String].filter(nameValidationError("second forename"))(validateName(_, "secondForename"))
+    surname <- surnamePath.read[String].filter(nameValidationError("surname"))(validateName(_, "surname"))
+    startDate <- startDatePath.readNullable[DateModel].filter(dateNonPriorError)(validateDateAsPriorDate(_, todayDateAsDateModel))
+    endDate <- endDatePath.readNullable[DateModel]
+            .filter(dateNonPriorError)(validateDateAsPriorDate(_, todayDateAsDateModel))
+            .filter(startDateAfterEndDateError)(validateDateAsPriorDate(startDate, _, canBeEqual = false))
+    nameType <- typePath.read[String].filter(typeValidationError)(validateType)
+  } yield {
+    NameModel(
+      title,
+      foreName,
+      secondForename,
+      surname,
+      startDate,
+      endDate,
+      nameType
+    )
+  }
 
   implicit val writes: Writes[NameModel] = Json.writes[NameModel]
 }

@@ -16,13 +16,16 @@
 
 package v1.models.request
 
+import java.time.format.DateTimeFormatter
+import java.time.{LocalDate, ZoneId}
+
 import play.api.libs.json._
 import support.UnitSpec
 
 class NameModelSpec extends UnitSpec {
 
-  private def readWriteDate(isWrite: Boolean): String = {
-    if (isWrite) "2020-10-10" else "10-10-2020"
+  private def readWriteDate(isWrite: Boolean, writeDate: String = "2000-10-10", readDate: String = "10-10-2000"): String = {
+    if (isWrite) writeDate else readDate
   }
 
   val minJson: Boolean => JsObject = isWrite =>
@@ -40,19 +43,38 @@ class NameModelSpec extends UnitSpec {
       firstNamePath -> "First",
       middleNamePath -> "Middle",
       "surname" -> "Last",
-      "startDate" -> readWriteDate(isWrite),
+      "startDate" -> readWriteDate(isWrite, "1990-10-10", "10-10-1990"),
       "endDate" -> readWriteDate(isWrite),
       "nameType" -> "REGISTERED"
     )
   }
+
+  val faultyStartDateModelJson: JsObject = Json.obj(
+    "surname" -> "Miles",
+    "nameType" -> "REGISTERED",
+    "startDate" -> LocalDate.now().plusDays(1).format(DateTimeFormatter.ofPattern("dd-MM-yyyy"))
+  )
+
+  val faultyEndDateModelJson: JsObject = Json.obj(
+    "surname" -> "Miles",
+    "nameType" -> "REGISTERED",
+    "endDate" -> LocalDate.now().plusDays(1).format(DateTimeFormatter.ofPattern("dd-MM-yyyy"))
+  )
+
+  val beforeDateAfterEndDateModel: JsObject = Json.obj(
+    "surname" -> "Miles",
+    "nameType" -> "REGISTERED",
+    "startDate" -> LocalDate.now().minusDays(1).format(DateTimeFormatter.ofPattern("dd-MM-yyyy")),
+    "endDate" -> LocalDate.now().minusDays(2).format(DateTimeFormatter.ofPattern("dd-MM-yyyy"))
+  )
 
   val maxModel = NameModel(
     Some("MR"),
     Some("First"),
     Some("Middle"),
     "Last",
-    Some(DateModel("10-10-2020")),
-    Some(DateModel("10-10-2020")),
+    Some(DateModel("10-10-1990")),
+    Some(DateModel("10-10-2000")),
     nameType = "REGISTERED"
   )
 
@@ -79,6 +101,36 @@ class NameModelSpec extends UnitSpec {
 
       "no optional fields are present" in {
         minJson(false).as[NameModel] shouldBe minModel
+      }
+    }
+
+    "fail to parse from json" when {
+
+      "the start date given is after the current date" in {
+        val result: JsResultException = intercept[JsResultException] {
+          faultyStartDateModelJson.as[NameModel]
+        }
+
+        result.getMessage should include ("startDate")
+        result.getMessage should include ("The date provided is after today. The date must be before.")
+      }
+
+      "the end date given is after the current date" in {
+        val result: JsResultException = intercept[JsResultException] {
+          faultyEndDateModelJson.as[NameModel]
+        }
+
+        result.getMessage should include ("endDate")
+        result.getMessage should include ("The date provided is after today. The date must be before.")
+      }
+
+      "the start date given is after the end date given" in {
+        val result: JsResultException = intercept[JsResultException] {
+          beforeDateAfterEndDateModel.as[NameModel]
+        }
+
+        result.getMessage should include ("endDate")
+        result.getMessage should include ("The given start date is after the given end date.")
       }
     }
 
@@ -172,6 +224,55 @@ class NameModelSpec extends UnitSpec {
 
         "a value is entered that is not a String, or an Optional String (including None)" in {
           runValidation(123, "SomeNameType") shouldBe false
+        }
+      }
+    }
+
+    ".validateDateAsPriorDate" should {
+
+      val currentDate = Some(DateModel(LocalDate.now(ZoneId.of("UTC")).format(DateTimeFormatter.ofPattern("dd-MM-yyyy"))))
+
+      "return true" when {
+
+        "the first date provided is before the second" in {
+          val validDate = DateModel("01-01-2000")
+
+          NameModel.validateDateAsPriorDate(Some(validDate), currentDate) shouldBe true
+        }
+
+        "the provided dates are equal if canBeEqual is set to true" in {
+          val validDate = DateModel(
+            LocalDate.now(ZoneId.of("UTC")).format(DateTimeFormatter.ofPattern("dd-MM-yyyy"))
+          )
+
+          NameModel.validateDateAsPriorDate(Some(validDate), Some(validDate)) shouldBe true
+        }
+
+        "only an earlier date is provided" in {
+          NameModel.validateDateAsPriorDate(currentDate, None) shouldBe true
+        }
+
+        "only a later date is provided" in {
+          NameModel.validateDateAsPriorDate(None, currentDate) shouldBe true
+        }
+      }
+
+      "return false" when {
+
+        "the first date provided is after the second" in {
+          val invalidDate = DateModel(
+            LocalDate.now(ZoneId.of("UTC")).plusDays(1).format(DateTimeFormatter.ofPattern("dd-MM-yyyy"))
+          )
+
+          NameModel.validateDateAsPriorDate(Some(invalidDate), currentDate) shouldBe false
+        }
+
+        "the provided dates are equal if canBeEqual is set to false" in {
+          val validDate = DateModel(
+            LocalDate.now(ZoneId.of("UTC")).format(DateTimeFormatter.ofPattern("dd-MM-yyyy"))
+          )
+
+          NameModel.validateDateAsPriorDate(Some(validDate), Some(validDate), canBeEqual = false) shouldBe false
         }
       }
     }
