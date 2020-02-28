@@ -17,12 +17,10 @@
 package v1.controllers
 
 import javax.inject.{Inject, Singleton}
-import org.slf4j.MDC
 import play.api.Logger
 import play.api.libs.json.{JsValue, Json}
 import play.api.mvc._
 import uk.gov.hmrc.http.HeaderCarrier
-import uk.gov.hmrc.http.HeaderNames.{xRequestId, xSessionId}
 import uk.gov.hmrc.play.bootstrap.controller.BackendController
 import v1.controllers.predicates.PrivilegedApplicationPredicate
 import v1.models.errors.{JsonValidationError, Error => NinoError}
