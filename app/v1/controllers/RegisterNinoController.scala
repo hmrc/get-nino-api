@@ -22,7 +22,7 @@ import play.api.libs.json.{JsValue, Json}
 import play.api.mvc._
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.bootstrap.controller.BackendController
-import v1.controllers.predicates.{OriginatorIdPredicate, PrivilegedApplicationPredicate}
+import v1.controllers.predicates.{CorrelationIdPredicate, OriginatorIdPredicate, PrivilegedApplicationPredicate}
 import v1.models.errors.{JsonValidationError, Error => NinoError}
 import v1.models.request.NinoApplication
 import v1.services.DesService
@@ -35,11 +35,12 @@ class RegisterNinoController @Inject()(
                                         cc: ControllerComponents,
                                         desService: DesService,
                                         privilegedApplicationPredicate: PrivilegedApplicationPredicate,
+                                        correlationIdPredicate: CorrelationIdPredicate,
                                         originatorIdPredicate: OriginatorIdPredicate
                                       )
                                       (implicit val ec: ExecutionContext) extends BackendController(cc) with JsonBodyUtil {
 
-  def register(): Action[AnyContent] = (privilegedApplicationPredicate andThen originatorIdPredicate).async { implicit request =>
+  def register(): Action[AnyContent] = (privilegedApplicationPredicate andThen originatorIdPredicate andThen correlationIdPredicate).async { implicit request =>
 
     val hcWithOriginatorId = request.headers.get("OriginatorId") match {
       case Some(originatorId) =>
