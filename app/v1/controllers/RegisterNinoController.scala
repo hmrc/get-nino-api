@@ -42,14 +42,18 @@ class RegisterNinoController @Inject()(
 
   def register(): Action[AnyContent] = (privilegedApplicationPredicate andThen originatorIdPredicate andThen correlationIdPredicate).async { implicit request =>
 
-    val hcWithOriginatorId = request.headers.get("OriginatorId") match {
-      case Some(originatorId) =>
-        hc.withExtraHeaders("OriginatorId" -> originatorId)
+    val optionalOriginatorId = request.headers.get("OriginatorId")
+    val optionalCorrelationId = request.headers.get("CorrelationId")
+
+
+    val hcWithOriginatorIdAndCorrelationId = (optionalOriginatorId, optionalCorrelationId) match {
+      case (Some(originatorId), Some(correlationId)) =>
+        hc.withExtraHeaders("OriginatorId" -> originatorId, "CorrelationId" -> correlationId)
       case _ => hc
     }
 
     Future(parsedJsonBody[NinoApplication]).flatMap {
-      case Right(ninoModel) => desService.registerNino(ninoModel)(hcWithOriginatorId, ec).map {
+      case Right(ninoModel) => desService.registerNino(ninoModel)(hcWithOriginatorIdAndCorrelationId, ec).map {
         case Right(_) => Accepted
         case Left(errors) => badRequestWithLog(Json.toJson(errors))
       }

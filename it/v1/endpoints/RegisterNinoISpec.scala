@@ -65,13 +65,12 @@ class RegisterNinoISpec extends IntegrationBaseSpec {
           response.status shouldBe Status.ACCEPTED
         }
 
-
         "contain a correlation ID in the outbound request and return 202" in new Test {
           appConfig.features.useDesStub(true)
 
           override def setupStubs(): StubMapping = {
             AuditStub.audit()
-            DesStub.stubCallWithOriginatorId(Status.ACCEPTED, None, stubbed = true)
+            DesStub.stubCallWithOriginatorIdAndCorrelationId(Status.ACCEPTED, None, stubbed = true)
             AuthStub.authorised()
           }
 
@@ -258,7 +257,7 @@ class RegisterNinoISpec extends IntegrationBaseSpec {
               .withHttpHeaders(
                 (ACCEPT, "application/vnd.hmrc.1.0+json"),
                 ("CorrelationId", "DBABB1dB-7DED-b5Dd-19ce-5168C9E8fff9"),
-                  ("OriginatorId", "NOT-CORRECT")
+                ("OriginatorId", "NOT-CORRECT")
               )
           }
 

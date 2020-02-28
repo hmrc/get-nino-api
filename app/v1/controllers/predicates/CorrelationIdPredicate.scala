@@ -17,9 +17,9 @@
 package v1.controllers.predicates
 
 import javax.inject.Inject
-import play.api.libs.json.{JsValue, Json}
+import play.api.libs.json.Json
 import play.api.mvc._
-import v1.models.errors.{CorrelationIdIncorrectError, CorrelationIdMissingError, Error}
+import v1.models.errors.{CorrelationIdIncorrectError, CorrelationIdMissingError}
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -36,7 +36,7 @@ class CorrelationIdPredicate @Inject()(
     val correlationId = request.headers.get(CORRELATION_ID)
 
     correlationId match {
-      case Some(id) => if(id.matches(correlationIdRegex)) {
+      case Some(id) => if (id.matches(correlationIdRegex)) {
         Future.successful(None)
       } else {
         Future.successful(Some(BadRequest(Json.toJson(CorrelationIdIncorrectError))))
