@@ -52,7 +52,6 @@ object NameModel {
   private def dateNonPriorError: JsonValidationError = JsonValidationError("The date provided is after today. The date must be before.")
 
   private def startDateAfterEndDateError: JsonValidationError = {
-    Logger.warn("[NameModel][validateDateAsPriorDate] The provided earlierDate is after the laterDate.")
     JsonValidationError("The given start date is after the given end date.")
   }
 
@@ -116,7 +115,9 @@ object NameModel {
       case (Some(earlierDateModel), Some(laterDateModel)) =>
         val earlierModelAsDate = LocalDate.parse(earlierDateModel.dateString, DateTimeFormatter.ofPattern("dd-MM-yyyy"))
         val laterModelAsDate = LocalDate.parse(laterDateModel.dateString, DateTimeFormatter.ofPattern("dd-MM-yyyy"))
-        earlierModelAsDate.isBefore(laterModelAsDate) || (canBeEqual && earlierModelAsDate.isEqual(laterModelAsDate))
+        val passedValidation = earlierModelAsDate.isBefore(laterModelAsDate) || (canBeEqual && earlierModelAsDate.isEqual(laterModelAsDate))
+        if(!passedValidation) Logger.warn("[NameModel][validateDateAsPriorDate] The provided earlierDate is after the laterDate.")
+        passedValidation
       case _ => true
     }
 
