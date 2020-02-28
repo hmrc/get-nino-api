@@ -29,6 +29,14 @@ object ItNinoApplicationTestData {
     if (isWrite) "2000-10-10" else "10-10-2000"
   }
 
+  private def earlierWriteOrReadDate(implicit isWrite: Boolean): String = {
+    if (isWrite) "1990-10-10" else "10-10-1990"
+  }
+
+  private def laterWriteOrReadDate(implicit isWrite: Boolean): String = {
+    if (isWrite) "2000-10-10" else "10-10-2000"
+  }
+
   val minRegisterNinoRequestJson: Boolean => JsObject = implicit isWrite => Json.obj(
     "nino" -> "TC452994B",
     "gender" -> "MALE",
@@ -42,8 +50,9 @@ object ItNinoApplicationTestData {
       "startDate" -> writeOrReadDate()
     )),
     "addresses" -> Json.arr(Json.obj(
+      "addressType" -> "RESIDENTIAL",
       "line1" -> "4 AStreetName",
-      "startDate" -> writeOrReadDate()
+      "startDate" -> earlierWriteOrReadDate
     ))
   )
 
@@ -60,9 +69,10 @@ object ItNinoApplicationTestData {
       "nameType" -> "REGISTERED"
     )),
     "addresses" -> Json.arr(Json.obj(
+      "addressType" -> "RESIDENTIAL",
       "line1" -> "4 AStreetName",
       "countryCode" -> "USA",
-      "startDate" -> writeOrReadDate()
+      "startDate" -> earlierWriteOrReadDate
     ))
   )
 
@@ -113,8 +123,8 @@ object ItNinoApplicationTestData {
       "line5" -> "ItsTheFinalLine",
       "postcode" -> "AA11AA",
       "countryCode" -> "GBR",
-      "startDate" -> writeOrReadDate("1990-10-10", "10-10-1990"),
-      "endDate" -> writeOrReadDate()
+      "startDate" -> earlierWriteOrReadDate,
+      "endDate" -> laterWriteOrReadDate
     )),
     "historicAddresses" -> Json.arr(
       Json.obj(
@@ -126,8 +136,8 @@ object ItNinoApplicationTestData {
         "line5" -> "ItsTheFinalLine",
         "postcode" -> "AA11AA",
         "countryCode" -> "GBR",
-        "startDate" -> writeOrReadDate("1990-10-10", "10-10-1990"),
-        "endDate" -> writeOrReadDate()
+        "startDate" -> earlierWriteOrReadDate,
+        "endDate" -> laterWriteOrReadDate
       ),
       Json.obj(
         "addressType" -> "RESIDENTIAL",
@@ -138,8 +148,8 @@ object ItNinoApplicationTestData {
         "line5" -> "ItsTheFinalLine",
         "postcode" -> "AA11AA",
         "countryCode" -> "GBR",
-        "startDate" -> writeOrReadDate("1990-10-10", "10-10-1990"),
-        "endDate" -> writeOrReadDate()
+        "startDate" -> earlierWriteOrReadDate,
+        "endDate" -> laterWriteOrReadDate
       )
     ),
     "marriages" -> Json.arr(
@@ -198,10 +208,10 @@ object ItNinoApplicationTestData {
       applicantNames = Seq(NameModel(surname = "ASurname", nameType = "REGISTERED")),
       applicantHistoricNames = None,
       applicantAddresses = Seq(AddressModel(
-        None,
+        Some(Residential),
         AddressLine("4 AStreetName"),
         None, None, None, None, None, "NGA",
-        DateModel(writeOrReadDate()), None
+        DateModel(earlierWriteOrReadDate), None
       )),
       applicantHistoricAddresses = None,
       applicantMarriages = None,
@@ -228,10 +238,10 @@ object ItNinoApplicationTestData {
       )),
       applicantHistoricNames = None,
       applicantAddresses = Seq(AddressModel(
-        None,
+        Some(Residential),
         AddressLine("4 AStreetName"),
         None, None, None, None, None, "NGA",
-        DateModel(writeOrReadDate()), None
+        DateModel(earlierWriteOrReadDate), None
       )),
       applicantHistoricAddresses = None,
       applicantMarriages = None,
@@ -291,33 +301,33 @@ object ItNinoApplicationTestData {
         addressLine5 = Some(AddressLine("ItsTheFinalLine")),
         postcode = Some(Postcode("AA11AA")),
         countryCode = "GBR",
-        startDate = DateModel(writeOrReadDate("1990-10-10", "10-10-1990")),
-        endDate = Some(DateModel(writeOrReadDate()))
+        startDate = DateModel(earlierWriteOrReadDate),
+        endDate = Some(DateModel(laterWriteOrReadDate))
       )),
       applicantHistoricAddresses = Some(Seq(
         AddressModel(
-          addressType = Some(Residential),
-          addressLine1 = AddressLine("1 AStreetName"),
-          addressLine2 = Some(AddressLine("Some")),
-          addressLine3 = Some(AddressLine("Old")),
-          addressLine4 = Some(AddressLine("Place")),
-          addressLine5 = Some(AddressLine("ItsTheFinalLine")),
-          postcode = Some(Postcode("AA11AA")),
-          countryCode = "GBR",
-          startDate = DateModel(writeOrReadDate("1990-10-10", "10-10-1990")),
-          endDate = Some(DateModel(writeOrReadDate()))
+          Some(Residential),
+          AddressLine("1 AStreetName"),
+          Some(AddressLine("Some")),
+          Some(AddressLine("Old")),
+          Some(AddressLine("Place")),
+          Some(AddressLine("ItsTheFinalLine")),
+          Some(Postcode("AA11AA")),
+          "GBR",
+          DateModel(earlierWriteOrReadDate),
+          Some(DateModel(laterWriteOrReadDate))
         ),
         AddressModel(
-          addressType = Some(Residential),
-          addressLine1 = AddressLine("4 AStreetName"),
-          addressLine2 = Some(AddressLine("Some")),
-          addressLine3 = Some(AddressLine("Old")),
-          addressLine4 = Some(AddressLine("Place")),
-          addressLine5 = Some(AddressLine("ItsTheFinalLine")),
-          postcode = Some(Postcode("AA11AA")),
-          countryCode = "GBR",
-          startDate = DateModel(writeOrReadDate("1990-10-10", "10-10-1990")),
-          endDate = Some(DateModel(writeOrReadDate()))
+          Some(Residential),
+          AddressLine("4 AStreetName"),
+          Some(AddressLine("Some")),
+          Some(AddressLine("Old")),
+          Some(AddressLine("Place")),
+          Some(AddressLine("ItsTheFinalLine")),
+          Some(Postcode("AA11AA")),
+          "GBR",
+          DateModel(earlierWriteOrReadDate),
+          Some(DateModel(laterWriteOrReadDate))
         )
       )),
       applicantMarriages = Some(Seq(

@@ -16,6 +16,9 @@
 
 package v1.models.request
 
+import java.time.{LocalDate, ZoneId}
+import java.time.format.DateTimeFormatter
+
 import org.scalatest.{Matchers, WordSpec}
 import play.api.libs.json.{JsValue, Json}
 
@@ -238,5 +241,51 @@ class AddressModelSpec extends WordSpec with Matchers {
         }
       }
     }
+  }
+
+  ".validateDateAsPriorDate" should {
+
+    val currentDate = DateModel(LocalDate.now(ZoneId.of("UTC")).format(DateTimeFormatter.ofPattern("dd-MM-yyyy")))
+
+    "return true" when {
+
+      "the first date provided is before the second" in {
+        val validDate = DateModel("01-01-2000")
+
+        AddressModel.validateDateAsPriorDate(validDate, Some(currentDate)) shouldBe true
+      }
+
+      "the provided dates are equal and canBeEqual is true" in {
+        val validDate = DateModel(
+          LocalDate.now(ZoneId.of("UTC")).format(DateTimeFormatter.ofPattern("dd-MM-yyyy"))
+        )
+
+        AddressModel.validateDateAsPriorDate(validDate, Some(validDate)) shouldBe true
+      }
+
+      "only an earlier date is provided" in {
+        AddressModel.validateDateAsPriorDate(currentDate, None) shouldBe true
+      }
+    }
+
+    "return false" when {
+
+      "the first date provided is after the second" in {
+        val invalidDate = DateModel(
+          LocalDate.now(ZoneId.of("UTC")).plusDays(1).format(DateTimeFormatter.ofPattern("dd-MM-yyyy"))
+        )
+
+        AddressModel.validateDateAsPriorDate(invalidDate, Some(currentDate)) shouldBe false
+      }
+
+      "the provided dates are equal and canBeEqual is false" in {
+        val validDate = DateModel(
+          LocalDate.now(ZoneId.of("UTC")).format(DateTimeFormatter.ofPattern("dd-MM-yyyy"))
+        )
+
+        AddressModel.validateDateAsPriorDate(validDate, Some(validDate), canBeEqual = false) shouldBe false
+      }
+    }
+
   }
 }

@@ -30,6 +30,14 @@ object NinoApplicationTestData {
     if (isWrite) "2000-10-10" else "10-10-2000"
   }
 
+  private def earlierDateForAddresses(implicit isWrite: Boolean): String = {
+    if (isWrite) "1990-10-10" else "10-10-1990"
+  }
+
+  private def laterDateForAddresses(implicit isWrite: Boolean): String = {
+    if (isWrite) "2000-10-10" else "10-10-2000"
+  }
+
   val minRegisterNinoRequestJson: Boolean => JsObject = implicit isWrite => {
     val nameJsObject: (String, JsValueWrapper) = if (isWrite) {
       "applicantNames" -> Json.arr(Json.obj(
@@ -45,15 +53,17 @@ object NinoApplicationTestData {
 
     val addressJsObject: (String, JsValueWrapper) = if (isWrite) {
       "applicantAddresses" -> Json.arr(Json.obj(
+        "addressType" -> "RESIDENTIAL",
         "addressLine1" -> "4 AStreetName",
         "countryCode" -> "USA",
-        "startDate" -> writeOrReadDate()
+        "startDate" -> earlierDateForAddresses
       ))
     } else {
       "addresses" -> Json.arr(Json.obj(
+        "addressType" -> "RESIDENTIAL",
         "line1" -> "4 AStreetName",
         "countryCode" -> "USA",
-        "startDate" -> writeOrReadDate()
+        "startDate" -> earlierDateForAddresses
       ))
     }
 
@@ -82,6 +92,7 @@ object NinoApplicationTestData {
       "nameType" -> "REGISTERED"
     ),
     "addresses" -> Json.arr(Json.obj(
+      "addressType" -> "RESIDENTIAL",
       "line1" -> "4 AStreetName",
       "startDate" -> writeOrReadDate()
     )),
@@ -148,8 +159,8 @@ object NinoApplicationTestData {
         "addressLine5" -> "ItsTheFinalLine",
         "postcode" -> "AA11AA",
         "countryCode" -> "GBR",
-        "startDate" -> writeOrReadDate(),
-        "endDate" -> writeOrReadDate()
+        "startDate" -> earlierDateForAddresses,
+        "endDate" -> laterDateForAddresses
       ),
         Json.obj(
           "addressType" -> "RESIDENTIAL",
@@ -160,8 +171,8 @@ object NinoApplicationTestData {
           "addressLine5" -> "ItsTheFinalLine",
           "postcode" -> "AA11AA",
           "countryCode" -> "GBR",
-          "startDate" -> writeOrReadDate(),
-          "endDate" -> writeOrReadDate()
+          "startDate" -> earlierDateForAddresses,
+          "endDate" -> laterDateForAddresses
         ))
     } else {
       "addresses" -> Json.arr(Json.obj(
@@ -173,8 +184,8 @@ object NinoApplicationTestData {
         "line5" -> "ItsTheFinalLine",
         "postcode" -> "AA11AA",
         "countryCode" -> "GBR",
-        "startDate" -> writeOrReadDate(),
-        "endDate" -> writeOrReadDate()
+        "startDate" -> earlierDateForAddresses,
+        "endDate" -> laterDateForAddresses
       ),
         Json.obj(
           "addressType" -> "RESIDENTIAL",
@@ -185,8 +196,8 @@ object NinoApplicationTestData {
           "line5" -> "ItsTheFinalLine",
           "postcode" -> "AA11AA",
           "countryCode" -> "GBR",
-          "startDate" -> writeOrReadDate(),
-          "endDate" -> writeOrReadDate()
+          "startDate" -> earlierDateForAddresses,
+          "endDate" -> laterDateForAddresses
         ))
     }
 
@@ -201,8 +212,8 @@ object NinoApplicationTestData {
           addressLinePrefix(5) -> "ItsTheFinalLine",
           "postcode" -> "AA11AA",
           "countryCode" -> "GBR",
-          "startDate" -> writeOrReadDate(),
-          "endDate" -> writeOrReadDate()
+          "startDate" -> earlierDateForAddresses,
+          "endDate" -> laterDateForAddresses
         ),
         Json.obj(
           "addressType" -> "RESIDENTIAL",
@@ -213,8 +224,8 @@ object NinoApplicationTestData {
           "addressLine5" -> "ItsTheFinalLine",
           "postcode" -> "AA11AA",
           "countryCode" -> "GBR",
-          "startDate" -> writeOrReadDate(),
-          "endDate" -> writeOrReadDate()
+          "startDate" -> earlierDateForAddresses,
+          "endDate" -> laterDateForAddresses
         )
       )
     } else {
@@ -228,8 +239,8 @@ object NinoApplicationTestData {
           "line5" -> "ItsTheFinalLine",
           "postcode" -> "AA11AA",
           "countryCode" -> "GBR",
-          "startDate" -> writeOrReadDate(),
-          "endDate" -> writeOrReadDate()
+          "startDate" -> earlierDateForAddresses,
+          "endDate" -> laterDateForAddresses
         ),
         Json.obj(
           "addressType" -> "RESIDENTIAL",
@@ -240,8 +251,8 @@ object NinoApplicationTestData {
           "line5" -> "ItsTheFinalLine",
           "postcode" -> "AA11AA",
           "countryCode" -> "GBR",
-          "startDate" -> writeOrReadDate(),
-          "endDate" -> writeOrReadDate()
+          "startDate" -> earlierDateForAddresses,
+          "endDate" -> laterDateForAddresses
         )
       )
     }
@@ -361,10 +372,10 @@ object NinoApplicationTestData {
       )),
       applicantHistoricNames = None,
       applicantAddresses = Seq(AddressModel(
-        None,
+        Some(Residential),
         AddressLine("4 AStreetName"),
         None, None, None, None, None, "USA",
-        DateModel(writeOrReadDate()), None
+        DateModel(earlierDateForAddresses), None
       )),
       applicantHistoricAddresses = None,
       applicantMarriages = None,
@@ -462,8 +473,8 @@ object NinoApplicationTestData {
         addressLine5 = Some(AddressLine("ItsTheFinalLine")),
         postcode = Some(Postcode("AA11AA")),
         countryCode = "GBR",
-        startDate = DateModel(writeOrReadDate()),
-        endDate = Some(DateModel(writeOrReadDate()))
+        startDate = DateModel(earlierDateForAddresses),
+        endDate = Some(DateModel(laterDateForAddresses))
       ),
         AddressModel(
           addressType = Some(Residential),
@@ -474,8 +485,8 @@ object NinoApplicationTestData {
           addressLine5 = Some(AddressLine("ItsTheFinalLine")),
           postcode = Some(Postcode("AA11AA")),
           countryCode = "GBR",
-          startDate = DateModel(writeOrReadDate()),
-          endDate = Some(DateModel(writeOrReadDate()))
+          startDate = DateModel(earlierDateForAddresses),
+          endDate = Some(DateModel(laterDateForAddresses))
         )),
       applicantHistoricAddresses = Some(Seq(
         AddressModel(
@@ -487,8 +498,8 @@ object NinoApplicationTestData {
           Some(AddressLine("ItsTheFinalLine")),
           Some(Postcode("AA11AA")),
           "GBR",
-          DateModel(writeOrReadDate()),
-          Some(DateModel(writeOrReadDate()))
+          DateModel(earlierDateForAddresses),
+          Some(DateModel(laterDateForAddresses))
         ),
         AddressModel(
           Some(Residential),
@@ -499,8 +510,8 @@ object NinoApplicationTestData {
           Some(AddressLine("ItsTheFinalLine")),
           Some(Postcode("AA11AA")),
           "GBR",
-          DateModel(writeOrReadDate()),
-          Some(DateModel(writeOrReadDate()))
+          DateModel(earlierDateForAddresses),
+          Some(DateModel(laterDateForAddresses))
         )
       )),
       applicantMarriages = Some(Seq(
