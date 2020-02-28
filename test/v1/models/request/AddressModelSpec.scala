@@ -189,6 +189,32 @@ class AddressModelSpec extends WordSpec with Matchers {
         }
       }
 
+      "the country code is ggy" when {
+
+        "a postcode is supplied" should {
+
+          "return true" in {
+
+            val result = AddressModel.checkPostcodeMandated(Some(Postcode("TF3 4NT")), "ggy")
+
+            result shouldBe true
+          }
+        }
+      }
+
+      "the country code is imn" when {
+
+        "a postcode is supplied" should {
+
+          "return true" in {
+
+            val result = AddressModel.checkPostcodeMandated(Some(Postcode("TF3 4NT")), "imn")
+
+            result shouldBe true
+          }
+        }
+      }
+
       "the country code is not GBR" when {
 
         "a postcode is supplied" should {
