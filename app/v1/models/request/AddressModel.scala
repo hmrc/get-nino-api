@@ -63,23 +63,15 @@ object AddressModel {
     optionalLaterDate.fold(true){ laterDate =>
       val earlierModelAsDate = LocalDate.parse(earlierDate.dateString, DateTimeFormatter.ofPattern("dd-MM-yyyy"))
       val laterModelAsDate = LocalDate.parse(laterDate.dateString, DateTimeFormatter.ofPattern("dd-MM-yyyy"))
-      earlierModelAsDate.isBefore(laterModelAsDate) || (canBeEqual && earlierModelAsDate.isEqual(laterModelAsDate))
+      val passedValidation = earlierModelAsDate.isBefore(laterModelAsDate) || (canBeEqual && earlierModelAsDate.isEqual(laterModelAsDate))
+      if(!passedValidation) Logger.warn("[AddressModel][validateDateAsPriorDate] The provided earlierDate is after the laterDate.")
+      passedValidation
     }
   }
 
-  private def commonError(fieldName: String) = {
-    JsonValidationError(s"There has been an error parsing the $fieldName field. Please check against the regex.")
-  }
+  private def commonError(fieldName: String) = JsonValidationError(s"There has been an error parsing the $fieldName field. Please check against the regex.")
 
-  private def startDateAfterEndDateError = {
-    Logger.warn("[NameModel][validateDateAsPriorDate] The provided earlierDate is after the laterDate.")
-    JsonValidationError("The given start date is after the given end date.")
-  }
-
-  private def dateAfterCurrentError = {
-    Logger.warn("[NameModel][validateDateAsPriorDate] The provided earlierDate is after the laterDate.")
-    JsonValidationError("The given start date is after the given end date.")
-  }
+  private def startDateAfterEndDateError = JsonValidationError("The given start date is after the given end date.")
 
   private def currentDate = Some(DateModel(LocalDate.now(ZoneId.of("UTC")).format(DateTimeFormatter.ofPattern("dd-MM-yyyy"))))
 
@@ -92,12 +84,12 @@ object AddressModel {
     line5 <- line5Path.readNullable[AddressLine]
     countryCode <- countryCodePath.read[String]
     postcode <- postcodePath.readNullable[Postcode].filter(commonError("Post code"))(checkPostcodeMandated(_, countryCode))
-    startDate <- startDatePath.read[DateModel].filter(dateAfterCurrentError) { nonOptionalStartDate =>
+    startDate <- startDatePath.read[DateModel].filter(startDateAfterEndDateError) { nonOptionalStartDate =>
       validateDateAsPriorDate(nonOptionalStartDate, Some(DateModel(LocalDate.now(ZoneId.of("UTC")).format(DateTimeFormatter.ofPattern("dd-MM-yyyy")))))
     }
     endDate <- endDatePath.readNullable[DateModel]
       .filter(startDateAfterEndDateError)(validateDateAsPriorDate(startDate, _, canBeEqual = false))
-      .filter(dateAfterCurrentError)(_.fold(true)(validateDateAsPriorDate(_, currentDate)))
+      .filter(startDateAfterEndDateError)(_.fold(true)(validateDateAsPriorDate(_, currentDate)))
   } yield {
     AddressModel(addressType, line1, line2, line3, line4, line5, postcode, countryCode, startDate, endDate)
   }
