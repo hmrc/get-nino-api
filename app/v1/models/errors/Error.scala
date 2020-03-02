@@ -59,6 +59,10 @@ object UnsupportedAuthProvider extends Error("UNAUTHORISED", "The credentials us
 
 object AuthDownError extends Error("BAD_GATEWAY", "Auth is currently down.")
 
+object OriginatorIdMissingError extends Error("BAD_REQUEST", "Originator ID is missing from the request headers.")
+
+object OriginatorIdIncorrectError extends Error("BAD_REQUEST", "Originator ID is incorrect.")
+
 class JsonValidationError(jsErrors: JsError)
   extends Error("JSON_VALIDATION_ERROR", "The provided JSON was unable to be validated as the selected model.") {
     val getErrors: JsValue = Json.toJson(jsErrors.errors.flatMap {

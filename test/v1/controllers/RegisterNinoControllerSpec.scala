@@ -26,7 +26,7 @@ import uk.gov.hmrc.auth.core.retrieve.Retrieval
 import uk.gov.hmrc.auth.core.{AuthConnector, InvalidBearerToken}
 import uk.gov.hmrc.http.{HeaderCarrier, HeaderNames}
 import utils.NinoApplicationTestData.{maxRegisterNinoRequestJson, maxRegisterNinoRequestModel}
-import v1.controllers.predicates.PrivilegedApplicationPredicate
+import v1.controllers.predicates.{OriginatorIdPredicate, PrivilegedApplicationPredicate}
 import v1.models.errors.{BadRequestError, InvalidBodyTypeError, Error => NinoError, JsonValidationError => NinoJsonValidationError}
 import v1.models.request.NinoApplication
 import v1.services.DesService
@@ -48,7 +48,9 @@ class RegisterNinoControllerSpec extends ControllerBaseSpec {
     ec
   )
 
-  val controller: RegisterNinoController = new RegisterNinoController(stubControllerComponents(), mockService, mockPredicate)
+  val mockOriginatorPredicate = new OriginatorIdPredicate(ec, stubControllerComponents())
+
+  val controller: RegisterNinoController = new RegisterNinoController(stubControllerComponents(), mockService, mockPredicate, mockOriginatorPredicate)
 
   "Calling the register action" when {
 
@@ -67,17 +69,23 @@ class RegisterNinoControllerSpec extends ControllerBaseSpec {
             .returns(Future.successful(Right(true)))
 
           val request = fakeRequest
-            .withHeaders("Accept" -> "application/vnd.hmrc.1.0+json", HeaderNames.xRequestId -> "1234567890", HeaderNames.xSessionId -> "0987654321")
+            .withHeaders(
+              "Accept" -> "application/vnd.hmrc.1.0+json",
+              "OriginatorId" -> "DA2_DWP_REG",
+              HeaderNames.xRequestId -> "1234567890",
+              HeaderNames.xSessionId -> "0987654321"
+            )
             .withMethod("POST")
             .withJsonBody(maxRegisterNinoRequestJson(false))
 
           val result = controller.register()(request)
 
-        status(result) shouldBe Status.ACCEPTED
+          status(result) shouldBe Status.ACCEPTED
 
-    MDC.get(HeaderNames.xRequestId) shouldBe "1234567890"
+          MDC.get(HeaderNames.xRequestId) shouldBe "1234567890"
           MDC.get(HeaderNames.xSessionId) shouldBe "0987654321"
-        }}
+        }
+      }
 
       "the request body is not json" should {
 
@@ -88,7 +96,7 @@ class RegisterNinoControllerSpec extends ControllerBaseSpec {
             .returning(Future.successful((): Unit))
 
           val request = fakeRequest
-            .withHeaders("Accept" -> "application/vnd.hmrc.1.0+json")
+            .withHeaders("Accept" -> "application/vnd.hmrc.1.0+json", "OriginatorId" -> "DA2_DWP_REG")
             .withMethod("POST")
 
           val result = controller.register()(request)
@@ -106,7 +114,7 @@ class RegisterNinoControllerSpec extends ControllerBaseSpec {
             .returning(Future.successful((): Unit))
 
           val request = fakeRequest
-            .withHeaders("Accept" -> "application/vnd.hmrc.1.0+json")
+            .withHeaders("Accept" -> "application/vnd.hmrc.1.0+json", "OriginatorId" -> "DA2_DWP_REG")
             .withMethod("POST")
             .withJsonBody(Json.obj(
               "aField" -> "aValue"
