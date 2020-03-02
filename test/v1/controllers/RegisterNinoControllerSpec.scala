@@ -26,7 +26,7 @@ import uk.gov.hmrc.auth.core.retrieve.Retrieval
 import uk.gov.hmrc.auth.core.{AuthConnector, InvalidBearerToken}
 import uk.gov.hmrc.http.{HeaderCarrier, HeaderNames}
 import utils.NinoApplicationTestData.{maxRegisterNinoRequestJson, maxRegisterNinoRequestModel}
-import v1.controllers.predicates.{OriginatorIdPredicate, PrivilegedApplicationPredicate}
+import v1.controllers.predicates.{CorrelationIdPredicate, OriginatorIdPredicate, PrivilegedApplicationPredicate}
 import v1.models.errors.{BadRequestError, InvalidBodyTypeError, Error => NinoError, JsonValidationError => NinoJsonValidationError}
 import v1.models.request.NinoApplication
 import v1.services.DesService
@@ -41,16 +41,30 @@ class RegisterNinoControllerSpec extends ControllerBaseSpec {
 
   val mockService: DesService = mock[DesService]
 
-  val mockPredicate = new PrivilegedApplicationPredicate(
+  val mockPrivilegedPredicate: PrivilegedApplicationPredicate = new PrivilegedApplicationPredicate(
     mockAuth,
     stubControllerComponents(),
     mockAppConfig,
     ec
   )
 
-  val mockOriginatorPredicate = new OriginatorIdPredicate(ec, stubControllerComponents())
+  val mockOriginatorPredicate: OriginatorIdPredicate = new OriginatorIdPredicate(
+    ec,
+    stubControllerComponents()
+  )
 
-  val controller: RegisterNinoController = new RegisterNinoController(stubControllerComponents(), mockService, mockPredicate, mockOriginatorPredicate)
+  val mockCorrelationPredicate: CorrelationIdPredicate = new CorrelationIdPredicate(
+    ec,
+    stubControllerComponents()
+  )
+
+  val controller: RegisterNinoController = new RegisterNinoController(
+    stubControllerComponents(),
+    mockService,
+    mockPrivilegedPredicate,
+    mockCorrelationPredicate,
+    mockOriginatorPredicate
+  )
 
   "Calling the register action" when {
 
@@ -72,6 +86,7 @@ class RegisterNinoControllerSpec extends ControllerBaseSpec {
             .withHeaders(
               "Accept" -> "application/vnd.hmrc.1.0+json",
               "OriginatorId" -> "DA2_DWP_REG",
+              "CorrelationId" -> "DBABB1dB-7DED-b5Dd-19ce-5168C9E8fff9",
               HeaderNames.xRequestId -> "1234567890",
               HeaderNames.xSessionId -> "0987654321"
             )
@@ -96,7 +111,11 @@ class RegisterNinoControllerSpec extends ControllerBaseSpec {
             .returning(Future.successful((): Unit))
 
           val request = fakeRequest
-            .withHeaders("Accept" -> "application/vnd.hmrc.1.0+json", "OriginatorId" -> "DA2_DWP_REG")
+            .withHeaders(
+              "Accept" -> "application/vnd.hmrc.1.0+json",
+              "CorrelationId" -> "DBABB1dB-7DED-b5Dd-19ce-5168C9E8fff9",
+              "OriginatorId" -> "DA2_DWP_REG"
+            )
             .withMethod("POST")
 
           val result = controller.register()(request)
@@ -114,7 +133,11 @@ class RegisterNinoControllerSpec extends ControllerBaseSpec {
             .returning(Future.successful((): Unit))
 
           val request = fakeRequest
-            .withHeaders("Accept" -> "application/vnd.hmrc.1.0+json", "OriginatorId" -> "DA2_DWP_REG")
+            .withHeaders(
+              "Accept" -> "application/vnd.hmrc.1.0+json",
+              "CorrelationId" -> "DBABB1dB-7DED-b5Dd-19ce-5168C9E8fff9",
+              "OriginatorId" -> "DA2_DWP_REG"
+            )
             .withMethod("POST")
             .withJsonBody(Json.obj(
               "aField" -> "aValue"

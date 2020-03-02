@@ -24,7 +24,7 @@ import play.api.libs.json.{JsValue, Json}
 import play.api.libs.ws.{WSRequest, WSResponse}
 import support.IntegrationBaseSpec
 import utils.ItNinoApplicationTestData.{faultyRegisterNinoRequestJson, maxRegisterNinoRequestJson}
-import v1.models.errors.{OriginatorIdIncorrectError, OriginatorIdMissingError}
+import v1.models.errors.{CorrelationIdIncorrectError, CorrelationIdMissingError, OriginatorIdIncorrectError, OriginatorIdMissingError}
 import v1.stubs.{AuditStub, AuthStub, DesStub}
 
 class RegisterNinoISpec extends IntegrationBaseSpec {
@@ -40,7 +40,8 @@ class RegisterNinoISpec extends IntegrationBaseSpec {
       buildRequest("/process-nino")
         .withHttpHeaders(
           (ACCEPT, "application/vnd.hmrc.1.0+json"),
-          ("OriginatorId", "DA2_DWP_REG")
+          ("OriginatorId", "DA2_DWP_REG"),
+          ("CorrelationId", "DBABB1dB-7DED-b5Dd-19ce-5168C9E8fff9")
         )
     }
   }
@@ -64,13 +65,12 @@ class RegisterNinoISpec extends IntegrationBaseSpec {
           response.status shouldBe Status.ACCEPTED
         }
 
-
         "contain a correlation ID in the outbound request and return 202" in new Test {
           appConfig.features.useDesStub(true)
 
           override def setupStubs(): StubMapping = {
             AuditStub.audit()
-            DesStub.stubCallWithOriginatorId(Status.ACCEPTED, None, stubbed = true)
+            DesStub.stubCallWithOriginatorIdAndCorrelationId(Status.ACCEPTED, None, stubbed = true)
             AuthStub.authorised()
           }
 
@@ -256,6 +256,7 @@ class RegisterNinoISpec extends IntegrationBaseSpec {
             buildRequest("/process-nino")
               .withHttpHeaders(
                 (ACCEPT, "application/vnd.hmrc.1.0+json"),
+                ("CorrelationId", "DBABB1dB-7DED-b5Dd-19ce-5168C9E8fff9"),
                 ("OriginatorId", "NOT-CORRECT")
               )
           }
@@ -265,7 +266,7 @@ class RegisterNinoISpec extends IntegrationBaseSpec {
         }
       }
 
-      "a request is made with a missing correlation id" should {
+      "a request is made with a missing originator id" should {
 
         "return a OriginatorIdMissingError" in new Test {
           appConfig.features.useDesStub(true)
@@ -279,12 +280,66 @@ class RegisterNinoISpec extends IntegrationBaseSpec {
           def requestWithMissingOriginatorId(): WSRequest = {
             setupStubs()
             buildRequest("/process-nino")
-              .withHttpHeaders((ACCEPT, "application/vnd.hmrc.1.0+json"))
+              .withHttpHeaders(
+                (ACCEPT, "application/vnd.hmrc.1.0+json"),
+                ("CorrelationId", "DBABB1dB-7DED-b5Dd-19ce-5168C9E8fff9")
+              )
           }
 
           lazy val result: WSResponse = await(requestWithMissingOriginatorId().post(maxRegisterNinoRequestJson(false)))
           result.json shouldBe Json.toJson(OriginatorIdMissingError)
         }
+      }
+    }
+
+    "a request is made with an invalid correlation id" should {
+
+      "return a CorrelationIdIncorrectError" in new Test {
+        appConfig.features.useDesStub(true)
+
+        override def setupStubs(): StubMapping = {
+          AuditStub.audit()
+          DesStub.stubCall(Status.ACCEPTED, None, stubbed = true)
+          AuthStub.authorised()
+        }
+
+        def requestWithIncorrectCorrelationId(): WSRequest = {
+          setupStubs()
+          buildRequest("/process-nino")
+            .withHttpHeaders(
+              (ACCEPT, "application/vnd.hmrc.1.0+json"),
+              ("OriginatorId", "DA2_DWP_REG"),
+              ("CorrelationId", "12234567-0987654321-b5Dd-19ce-5168C9E8fff9")
+            )
+        }
+
+        lazy val result: WSResponse = await(requestWithIncorrectCorrelationId().post(maxRegisterNinoRequestJson(false)))
+        result.json shouldBe Json.toJson(CorrelationIdIncorrectError)
+      }
+    }
+
+    "a request is made with a missing correlation id" should {
+
+      "return a CorrelationIdMissingError" in new Test {
+        appConfig.features.useDesStub(true)
+
+        override def setupStubs(): StubMapping = {
+          AuditStub.audit()
+          DesStub.stubCall(Status.ACCEPTED, None, stubbed = true)
+          AuthStub.authorised()
+        }
+
+        def requestWithMissingCorrelationId(): WSRequest = {
+          setupStubs()
+          buildRequest("/process-nino")
+            .withHttpHeaders(
+              (ACCEPT, "application/vnd.hmrc.1.0+json"),
+              ("OriginatorId", "DA2_DWP_REG")
+            )
+        }
+
+        lazy val result: WSResponse = await(requestWithMissingCorrelationId().post(maxRegisterNinoRequestJson(false)))
+        result.json shouldBe Json.toJson(CorrelationIdMissingError)
       }
     }
 

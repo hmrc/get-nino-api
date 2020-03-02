@@ -28,25 +28,25 @@ object DesStub extends WireMockMethods {
   def stubCall(responseStatus: Int, maybeReturnBody: Option[JsValue], stubbed: Boolean = false): StubMapping = {
     maybeReturnBody match {
       case Some(returnBody) =>
-        when(method = POST, uri = if(stubbed) desStubUrl else desUrl)
+        when(method = POST, uri = if (stubbed) desStubUrl else desUrl)
           .thenReturn(responseStatus, returnBody)
       case None =>
-        when(method = POST, uri = if(stubbed) desStubUrl else desUrl)
+        when(method = POST, uri = if (stubbed) desStubUrl else desUrl)
           .thenReturn(responseStatus)
     }
 
   }
 
-  def stubCallWithOriginatorId(responseStatus: Int, maybeReturnBody: Option[JsValue], stubbed: Boolean = false): StubMapping = {
+  def stubCallWithOriginatorIdAndCorrelationId(responseStatus: Int, maybeReturnBody: Option[JsValue], stubbed: Boolean = false): StubMapping = {
     maybeReturnBody match {
       case Some(returnBody) =>
-        when(method = POST, uri = if(stubbed) desStubUrl else desUrl, headers = Map("OriginatorId" -> "DA2_DWP_REG"))
+        when(method = POST, uri = if (stubbed) desStubUrl else desUrl,
+          headers = Map("OriginatorId" -> "DA2_DWP_REG", "CorrelationId" -> "DBABB1dB-7DED-b5Dd-19ce-5168C9E8fff9"))
           .thenReturn(responseStatus, returnBody)
       case None =>
-        when(method = POST, uri = if(stubbed) desStubUrl else desUrl, headers = Map("OriginatorId" -> "DA2_DWP_REG"))
+        when(method = POST, uri = if (stubbed) desStubUrl else desUrl,
+          headers = Map("OriginatorId" -> "DA2_DWP_REG", "CorrelationId" -> "DBABB1dB-7DED-b5Dd-19ce-5168C9E8fff9"))
           .thenReturn(responseStatus)
     }
-
   }
-
 }
