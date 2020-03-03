@@ -22,7 +22,7 @@ import support.WireMockMethods
 
 object DesStub extends WireMockMethods {
 
-  private val desUrl = "/desContext"
+  private val desUrl = "/individuals/create"
   private val desStubUrl = "/register"
 
   def stubCall(responseStatus: Int, maybeReturnBody: Option[JsValue], stubbed: Boolean = false): StubMapping = {

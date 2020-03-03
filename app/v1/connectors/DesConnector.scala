@@ -20,6 +20,7 @@ import config.AppConfig
 import javax.inject.{Inject, Singleton}
 import play.api.libs.json.Json
 import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.http.logging.Authorization
 import uk.gov.hmrc.play.bootstrap.http.HttpClient
 import v1.connectors.httpParsers.HttpResponseTypes.HttpPostResponse
 import v1.connectors.httpParsers.RegisterNinoResponseHttpParser.RegisterNinoResponseReads
@@ -39,10 +40,12 @@ class DesConnector @Inject()(
     val url = if(appConfig.features.useDesStub()) {
       s"${appConfig.desStubUrl}/${appConfig.desStubContext}"
     } else {
-      s"${appConfig.desBaseUrl()}/${appConfig.desContext()}"
+      s"${appConfig.desBaseUrl()}${appConfig.desContext()}"
     }
 
-    val requestWithEnvironmentHeader = hc.withExtraHeaders(("Environment", appConfig.environmentHeader))
+    val requestWithEnvironmentHeader: HeaderCarrier =
+      hc.copy(authorization = Some(Authorization(s"Bearer ${appConfig.desToken()}")))
+        .withExtraHeaders(("Environment", appConfig.desEnvironment()))
 
     http.POST(url, Json.toJson(request))(implicitly, RegisterNinoResponseReads, requestWithEnvironmentHeader, ec)
   }

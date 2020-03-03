@@ -23,9 +23,6 @@ import v1.config.featureSwitch.Features
 import config.ConfigKeys._
 
 trait AppConfig {
-
-  val environmentHeader: String
-
   def desBaseUrl(): String
 
   def desEnvironment(): String
@@ -57,6 +54,5 @@ class AppConfigImpl @Inject()(implicit val configuration: ServicesConfig, config
   override lazy val desContext: String = configuration.getString(s"$desServicePrefix.context")
   override lazy val desStubUrl: String = configuration.baseUrl("desStub")
   override lazy val desStubContext: String = configuration.getString(desStubContextKey)
-  override lazy val environmentHeader: String = configuration.getString(s"$desServicePrefix.header")
   override lazy val features: Features = new Features
 }
