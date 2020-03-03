@@ -114,7 +114,7 @@ class DesConnectorISpec extends IntegrationBaseSpec {
       "return a DesResponse model" when {
 
         "the request is successful" in new Test {
-          stubSuccess("/desContext")
+          stubSuccess("/individuals/create")
 
           AuditStub.audit()
 
@@ -130,7 +130,7 @@ class DesConnectorISpec extends IntegrationBaseSpec {
       "return an Error model" when {
 
         "the request is unsuccessful" in new Test {
-          stubFailure("/desContext")
+          stubFailure("/individuals/create")
 
           AuditStub.audit()
 
