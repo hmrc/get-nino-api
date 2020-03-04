@@ -22,6 +22,7 @@ val appName = "get-nino-api"
 
 lazy val microservice = Project(appName, file("."))
   .enablePlugins(play.sbt.PlayScala, SbtAutoBuildPlugin, SbtGitVersioning, SbtDistributablesPlugin, SbtArtifactory)
+  .disablePlugins(JUnitXmlReportPlugin)
   .settings(
     majorVersion := 0,
     libraryDependencies ++= AppDependencies.compile ++ AppDependencies.test,
@@ -33,5 +34,5 @@ lazy val microservice = Project(appName, file("."))
   .settings(integrationTestSettings(): _*)
   .settings(resolvers += Resolver.jcenterRepo)
   .settings(CodeCoverageSettings.settings: _*)
-  .settings(scalaVersion := "2.11.12")
+  .settings(scalaVersion := "2.12.10")
   .settings(resourceDirectory in IntegrationTest := (baseDirectory apply { baseDir: File => baseDir / "it/resources" }).value)
