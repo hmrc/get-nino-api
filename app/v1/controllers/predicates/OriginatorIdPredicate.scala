@@ -17,6 +17,7 @@
 package v1.controllers.predicates
 
 import javax.inject.Inject
+import play.api.Logger
 import play.api.libs.json.Json
 import play.api.mvc._
 import v1.models.errors.{OriginatorIdIncorrectError, OriginatorIdMissingError}
@@ -30,12 +31,16 @@ class OriginatorIdPredicate @Inject()(
 
   override protected def filter[A](request: Request[A]): Future[Option[Result]] = {
     request.headers.get("OriginatorId") match {
-      case Some(originatorId) => if(originatorId == "DA2_DWP_REG") {
+      case Some(originatorId) => if (originatorId == "DA2_DWP_REG") {
         Future.successful(None)
       } else {
+        Logger.warn("[OriginatorIdPredicate][Filter] - OriginatorId does not match regex")
         Future.successful(Some(BadRequest(Json.toJson(OriginatorIdIncorrectError))))
       }
-      case None => Future.successful(Some(BadRequest(Json.toJson(OriginatorIdMissingError))))
+
+      case None =>
+        Logger.warn("[OriginatorIdPredicate][Filter] - OriginatorId is missing")
+        Future.successful(Some(BadRequest(Json.toJson(OriginatorIdMissingError))))
     }
   }
 
