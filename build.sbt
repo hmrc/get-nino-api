@@ -36,3 +36,7 @@ lazy val microservice = Project(appName, file("."))
   .settings(CodeCoverageSettings.settings: _*)
   .settings(scalaVersion := "2.12.10")
   .settings(resourceDirectory in IntegrationTest := (baseDirectory apply { baseDir: File => baseDir / "it/resources" }).value)
+
+//Not needed for this service
+dependencyUpdatesFilter -= moduleFilter(organization = "org.scala-lang")
+
