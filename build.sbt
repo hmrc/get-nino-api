@@ -39,4 +39,7 @@ lazy val microservice = Project(appName, file("."))
 
 //Not needed for this service
 dependencyUpdatesFilter -= moduleFilter(organization = "org.scala-lang")
+dependencyUpdatesFilter -= moduleFilter(organization = "com.typesafe.play", revision = "2.7.*")
+dependencyUpdatesFilter -= moduleFilter(organization = "com.typesafe.play", name = "twirl-api")
+dependencyUpdatesFilter -= moduleFilter(organization = "org.scalatestplus.play", revision = "4.*")
 
