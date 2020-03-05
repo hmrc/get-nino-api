@@ -20,24 +20,24 @@ import sbt._
 object AppDependencies {
 
   val compile: Seq[ModuleID] = Seq(
-    "uk.gov.hmrc" %% "bootstrap-play-26" % "1.3.0",
+    "uk.gov.hmrc" %% "bootstrap-play-26" % "1.5.0",
     "uk.gov.hmrc" %% "play-hmrc-api" % "4.1.0-play-26"
 
   )
 
   val test: Seq[ModuleID] = Seq(
     "com.typesafe.play" %% "play-test" % current % "test",
-    "org.scalatest" %% "scalatest" % "3.0.8" % "test",
+    "org.scalatest" %% "scalatest" % "3.1.1" % "test",
     "org.scalamock" %% "scalamock" % "4.4.0" % "test",
-    "org.scalatestplus.play" %% "scalatestplus-play" % "3.1.2" % "test, it",
+    "org.scalatestplus.play" %% "scalatestplus-play" % "3.1.3" % "test, it",
     "org.pegdown" % "pegdown" % "1.6.0" % "test, it",
-    "com.github.tomakehurst" % "wiremock" % "2.25.1" % "test, it"
+    "com.github.tomakehurst" % "wiremock" % "2.26.2" % "test, it"
   )
 
   // Fixes a transitive dependency clash between wiremock and scalatestplus-play
-  val overrides: Set[ModuleID] = {
+  val overrides: Seq[ModuleID] = {
     val jettyFromWiremockVersion = "9.2.24.v20180105"
-    Set(
+    Seq(
       "org.eclipse.jetty" % "jetty-client" % jettyFromWiremockVersion,
       "org.eclipse.jetty" % "jetty-continuation" % jettyFromWiremockVersion,
       "org.eclipse.jetty" % "jetty-http" % jettyFromWiremockVersion,
