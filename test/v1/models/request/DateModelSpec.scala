@@ -46,6 +46,18 @@ class DateModelSpec extends UnitSpec {
       "all fields are present" in {
         jsonForRead.as[DateModel] shouldBe validModel
       }
+
+      "regardless of the month" which {
+
+        (1 to 12).map (number => s"20-${("0" + number.toString).takeRight(2)}-2000").foreach { stringDate =>
+          s"for the following string: $stringDate" in {
+            val expectedModel = DateModel(stringDate)
+
+            JsString(stringDate).as[DateModel] shouldBe expectedModel
+          }
+        }
+
+      }
     }
 
     "correctly parse to Json" when {
