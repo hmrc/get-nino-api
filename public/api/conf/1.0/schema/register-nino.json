@@ -45,7 +45,7 @@
       "description": "Individuals contact number",
       "$ref": "#/definitions/contactNumber"
     },
-    "country": {
+    "nationalityCode": {
       "description": "Individuals country",
       "$ref": "#/definitions/countryCode"
     },
