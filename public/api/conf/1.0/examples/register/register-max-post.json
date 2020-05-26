@@ -6,7 +6,7 @@
   "birthDateVerification": "VERIFIED",
   "officeNumber": "1234",
   "contactNumber": "1234567890",
-  "country": "GBR",
+  "nationalityCode": "GBR",
   "names": [
     {
       "nameType": "REGISTERED",
