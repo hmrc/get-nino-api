@@ -23,7 +23,7 @@ import play.api.libs.json._
 case class OriginData(
                        birthTown: Option[String] = None,
                        birthProvince: Option[String] = None,
-                       birthCountryCode: Option[Int] = None,
+                       birthCountryCode: Option[String] = None,
                        birthSurname: Option[String] = None,
                        maternalForename: Option[String] = None,
                        maternalSurname: Option[String] = None,
@@ -71,8 +71,8 @@ object OriginData {
       .filter(JsonValidationError("Birth town does not match regex"))(stringValidation(_, "birth town")) and
       birthProvincePath.readNullable[String]
         .filter(JsonValidationError("Birth province does not match regex"))(stringValidation(_, "birth town")) and
-      birthCountryCodePath.readNullable[Int]
-        .filter(JsonValidationError("Country code is not valid"))(countryCodeValidation) and
+      birthCountryCodePath.readNullable[String]
+        .filter(JsonValidationError("Birth province does not match regex"))(stringValidation(_, "birth town")) and
       birthSurnamePath.readNullable[String]
         .filter(JsonValidationError("Birth surname does not match regex"))(stringValidation(_, "birth surname")) and
       maternalForenamePath.readNullable[String]

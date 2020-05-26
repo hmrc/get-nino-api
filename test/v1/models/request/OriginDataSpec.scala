@@ -28,7 +28,7 @@ class OriginDataSpec extends WordSpec with Matchers {
     Json.obj(
     "birthTown" -> "Birth town value",
     "birthProvince" -> "Birth province value",
-    "birthCountryCode" -> 129,
+    "birthCountryCode" -> "FR",
     "birthSurname" -> "Birth surname value",
     "maternalForename" -> "Maternal forename value",
     "maternalSurname" -> "Maternal surname value",
@@ -47,7 +47,7 @@ class OriginDataSpec extends WordSpec with Matchers {
   val maxOriginDataModel = OriginData(
     birthTown = Some("Birth town value"),
     birthProvince = Some("Birth province value"),
-    birthCountryCode = Some(129),
+    birthCountryCode = Some("FR"),
 
     birthSurname = Some("Birth surname value"),
     maternalForename = Some("Maternal forename value"),

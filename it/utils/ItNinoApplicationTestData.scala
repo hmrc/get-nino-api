@@ -157,7 +157,7 @@ object ItNinoApplicationTestData {
         "maritalStatus" -> "DIVORCED",
         "startDate" -> writeOrReadDate("1990-10-10", "10-10-1990"),
         "endDate" -> writeOrReadDate(),
-        "partnerNino" -> "AA000000B",
+        "spouseNino" -> "AA000000B",
         "birthDate" -> writeOrReadDate(),
         "forename" -> "Testforename",
         "surname" -> "Testsurname"),
@@ -165,7 +165,7 @@ object ItNinoApplicationTestData {
         "maritalStatus" -> "DIVORCED",
         "startDate" -> writeOrReadDate("1990-10-10", "10-10-1990"),
         "endDate" -> writeOrReadDate(),
-        "partnerNino" -> "AA000000C",
+        "spouseNino" -> "AA000000C",
         "birthDate" -> writeOrReadDate(),
         "forename" -> "Othertestforename",
         "surname" -> "Testsurname")
@@ -173,7 +173,7 @@ object ItNinoApplicationTestData {
     "originData" -> Json.obj(
       "birthTown" -> "ATown",
       "birthProvince" -> "SomeProvince",
-      "birthCountryCode" -> 200,
+      "birthCountryCode" -> "FR",
       "birthSurname" -> "ASurname",
       "maternalForename" -> "MotherForename",
       "maternalSurname" -> "AnotherSurname",
@@ -299,7 +299,7 @@ object ItNinoApplicationTestData {
         addressLine3 = Some(AddressLine("Old")),
         addressLine4 = Some(AddressLine("Place")),
         addressLine5 = Some(AddressLine("ItsTheFinalLine")),
-        postcode = Some(Postcode("AA11AA")),
+        postCode = Some(Postcode("AA11AA")),
         countryCode = "GBR",
         startDate = DateModel(earlierWriteOrReadDate),
         endDate = Some(DateModel(laterWriteOrReadDate))
@@ -335,7 +335,7 @@ object ItNinoApplicationTestData {
           maritalStatus = Some(DIVORCED),
           startDate = Some(DateModel(writeOrReadDate("1990-10-10", "10-10-1990"))),
           endDate = Some(DateModel(writeOrReadDate())),
-          partnerNino = "AA000000B",
+          spouseNino = "AA000000B",
           spouseDateOfBirth = DateModel(writeOrReadDate()),
           spouseFirstName = Some("Testforename"),
           spouseSurname = Some("Testsurname")
@@ -344,7 +344,7 @@ object ItNinoApplicationTestData {
           maritalStatus = Some(DIVORCED),
           startDate = Some(DateModel(writeOrReadDate("1990-10-10", "10-10-1990"))),
           endDate = Some(DateModel(writeOrReadDate())),
-          partnerNino = "AA000000C",
+          spouseNino = "AA000000C",
           spouseDateOfBirth = DateModel(writeOrReadDate()),
           spouseFirstName = Some("Othertestforename"),
           spouseSurname = Some("Testsurname")
@@ -352,7 +352,7 @@ object ItNinoApplicationTestData {
       )),
       applicantOrigin = Some(
         OriginData(
-          birthTown = Some("ATown"), birthProvince = Some("SomeProvince"), birthCountryCode = Some(200),
+          birthTown = Some("ATown"), birthProvince = Some("SomeProvince"), birthCountryCode = Some("FR"),
           birthSurname = Some("ASurname"), maternalForename = Some("MotherForename"), maternalSurname = Some("AnotherSurname"),
           paternalForename = Some("AForename"), paternalSurname = Some("ASurname"), foreignSocialSecurity = Some("SomeSocialSecurityNumber"),
           lastEUAddress = Some(LastEUAddress(

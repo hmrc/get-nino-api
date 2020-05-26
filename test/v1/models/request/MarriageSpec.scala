@@ -37,7 +37,7 @@ class MarriageSpec extends WordSpec with Matchers {
         "maritalStatus" -> "DIVORCED",
         "startDate" -> "1990-01-01",
         "endDate" -> "2000-01-01",
-        "partnerNino" -> "AA000000B",
+        "spouseNino" -> "AA000000B",
         "spouseDateOfBirth" -> "1970-01-01",
         "spouseFirstName" -> "Testforename",
         "spouseSurname" -> "Testsurname"
@@ -52,7 +52,7 @@ class MarriageSpec extends WordSpec with Matchers {
       )
     } else {
       Json.obj(
-        "partnerNino" -> "AA000000B",
+        "spouseNino" -> "AA000000B",
         "spouseDateOfBirth" -> "1970-01-01"
       )
     }
@@ -61,14 +61,14 @@ class MarriageSpec extends WordSpec with Matchers {
     maritalStatus = Some(DIVORCED),
     startDate = Some(DateModel("01-01-1990")),
     endDate = Some(DateModel("01-01-2000")),
-    partnerNino = "AA000000B",
+    spouseNino = "AA000000B",
     spouseDateOfBirth = DateModel("01-01-1970"),
     spouseFirstName = Some("Testforename"),
     spouseSurname = Some("Testsurname")
   )
 
   private lazy val minMarriageModel: Marriage = Marriage(
-    partnerNino = "AA000000B",
+    spouseNino = "AA000000B",
     spouseDateOfBirth = DateModel("01-01-1970")
   )
 

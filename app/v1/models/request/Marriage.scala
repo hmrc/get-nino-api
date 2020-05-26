@@ -24,7 +24,7 @@ case class Marriage(
                      maritalStatus: Option[MaritalStatus] = None,
                      startDate: Option[DateModel] = None,
                      endDate: Option[DateModel] = None,
-                     partnerNino: String,
+                     spouseNino: String,
                      spouseDateOfBirth: DateModel,
                      spouseFirstName: Option[String] = None,
                      spouseSurname: Option[String] = None
