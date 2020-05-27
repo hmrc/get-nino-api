@@ -535,7 +535,7 @@ object NinoApplicationTestData {
         )
       )),
       applicantOrigin = Some(
-        OriginData(birthTown = Some("ATown"), birthProvince = Some("SomeProvince"), birthCountryCode = Some("FR"),
+        OriginData(birthTown = Some("ATown"), birthProvince = Some("SomeProvince"), birthCountryCode = Some("GBR"),
           birthSurname = Some("ASurname"), maternalForename = Some("MotherForename"),
           maternalSurname = Some("AnotherSurname"), paternalForename = Some("AForename"), paternalSurname = Some("ASurname"),
           foreignSocialSecurity = Some("SomeSocialSecurityNumber"), lastEUAddress = Some(LastEUAddress(
