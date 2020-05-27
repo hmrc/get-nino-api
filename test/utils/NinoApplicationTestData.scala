@@ -332,7 +332,7 @@ object NinoApplicationTestData {
       originDataPath -> Json.obj(
         "birthTown" -> "ATown",
         "birthProvince" -> "SomeProvince",
-        "birthCountryCode" -> "FR",
+        "birthCountryCode" -> "GBR",
         "birthSurname" -> "ASurname",
         "maternalForename" -> "MotherForename",
         "maternalSurname" -> "AnotherSurname",
