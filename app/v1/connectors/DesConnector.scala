@@ -46,7 +46,6 @@ class DesConnector @Inject()(
     val requestWithEnvironmentHeader: HeaderCarrier =
       hc.copy(authorization = Some(Authorization(s"Bearer ${appConfig.desToken()}")))
         .withExtraHeaders(("Environment", appConfig.desEnvironment()))
-
     http.POST(url, Json.toJson(request))(implicitly, RegisterNinoResponseReads, requestWithEnvironmentHeader, ec)
   }
 

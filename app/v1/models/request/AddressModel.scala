@@ -28,7 +28,7 @@ case class AddressModel(addressType: Option[AddressType],
                         addressLine3: Option[AddressLine],
                         addressLine4: Option[AddressLine],
                         addressLine5: Option[AddressLine],
-                        postcode: Option[Postcode],
+                        postCode: Option[Postcode],
                         countryCode: String,
                         startDate: DateModel,
                         endDate: Option[DateModel])

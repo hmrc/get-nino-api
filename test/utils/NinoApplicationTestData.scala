@@ -115,7 +115,7 @@ object NinoApplicationTestData {
           "maritalStatus" -> "DIVORCED",
           "startDate" -> writeOrReadDate(),
           "endDate" -> writeOrReadDate(),
-          "partnerNino" -> "AA000000B",
+          "spouseNino" -> "AA000000B",
           "spouseDateOfBirth" -> writeOrReadDate(),
           "spouseFirstName" -> "Testforename",
           "spouseSurname" -> "Testsurname"),
@@ -123,7 +123,7 @@ object NinoApplicationTestData {
           "maritalStatus" -> "DIVORCED",
           "startDate" -> writeOrReadDate(),
           "endDate" -> writeOrReadDate(),
-          "partnerNino" -> "AA000000C",
+          "spouseNino" -> "AA000000C",
           "spouseDateOfBirth" -> writeOrReadDate(),
           "spouseFirstName" -> "Othertestforename",
           "spouseSurname" -> "Testsurname")
@@ -157,7 +157,7 @@ object NinoApplicationTestData {
         "addressLine3" -> "Old",
         "addressLine4" -> "Place",
         "addressLine5" -> "ItsTheFinalLine",
-        "postcode" -> "AA11AA",
+        "postCode" -> "AA11AA",
         "countryCode" -> "GBR",
         "startDate" -> earlierDateForAddresses,
         "endDate" -> laterDateForAddresses
@@ -169,7 +169,7 @@ object NinoApplicationTestData {
           "addressLine3" -> "New",
           "addressLine4" -> "Place",
           "addressLine5" -> "ItsTheFinalLine",
-          "postcode" -> "AA11AA",
+          "postCode" -> "AA11AA",
           "countryCode" -> "GBR",
           "startDate" -> earlierDateForAddresses,
           "endDate" -> laterDateForAddresses
@@ -210,7 +210,7 @@ object NinoApplicationTestData {
           addressLinePrefix(3) -> "Old",
           addressLinePrefix(4) -> "Place",
           addressLinePrefix(5) -> "ItsTheFinalLine",
-          "postcode" -> "AA11AA",
+          "postCode" -> "AA11AA",
           "countryCode" -> "GBR",
           "startDate" -> earlierDateForAddresses,
           "endDate" -> laterDateForAddresses
@@ -222,7 +222,7 @@ object NinoApplicationTestData {
           "addressLine3" -> "Old",
           "addressLine4" -> "Place",
           "addressLine5" -> "ItsTheFinalLine",
-          "postcode" -> "AA11AA",
+          "postCode" -> "AA11AA",
           "countryCode" -> "GBR",
           "startDate" -> earlierDateForAddresses,
           "endDate" -> laterDateForAddresses
@@ -332,7 +332,7 @@ object NinoApplicationTestData {
       originDataPath -> Json.obj(
         "birthTown" -> "ATown",
         "birthProvince" -> "SomeProvince",
-        "birthCountryCode" -> 200,
+        "birthCountryCode" -> "GBR",
         "birthSurname" -> "ASurname",
         "maternalForename" -> "MotherForename",
         "maternalSurname" -> "AnotherSurname",
@@ -471,7 +471,7 @@ object NinoApplicationTestData {
         addressLine3 = Some(AddressLine("Old")),
         addressLine4 = Some(AddressLine("Place")),
         addressLine5 = Some(AddressLine("ItsTheFinalLine")),
-        postcode = Some(Postcode("AA11AA")),
+        postCode = Some(Postcode("AA11AA")),
         countryCode = "GBR",
         startDate = DateModel(earlierDateForAddresses),
         endDate = Some(DateModel(laterDateForAddresses))
@@ -483,7 +483,7 @@ object NinoApplicationTestData {
           addressLine3 = Some(AddressLine("New")),
           addressLine4 = Some(AddressLine("Place")),
           addressLine5 = Some(AddressLine("ItsTheFinalLine")),
-          postcode = Some(Postcode("AA11AA")),
+          postCode = Some(Postcode("AA11AA")),
           countryCode = "GBR",
           startDate = DateModel(earlierDateForAddresses),
           endDate = Some(DateModel(laterDateForAddresses))
@@ -519,7 +519,7 @@ object NinoApplicationTestData {
           maritalStatus = Some(DIVORCED),
           startDate = Some(DateModel(writeOrReadDate())),
           endDate = Some(DateModel(writeOrReadDate())),
-          partnerNino = "AA000000B",
+          spouseNino = "AA000000B",
           spouseDateOfBirth = DateModel(writeOrReadDate()),
           spouseFirstName = Some("Testforename"),
           spouseSurname = Some("Testsurname")
@@ -528,14 +528,14 @@ object NinoApplicationTestData {
           maritalStatus = Some(DIVORCED),
           startDate = Some(DateModel(writeOrReadDate())),
           endDate = Some(DateModel(writeOrReadDate())),
-          partnerNino = "AA000000C",
+          spouseNino = "AA000000C",
           spouseDateOfBirth = DateModel(writeOrReadDate()),
           spouseFirstName = Some("Othertestforename"),
           spouseSurname = Some("Testsurname")
         )
       )),
       applicantOrigin = Some(
-        OriginData(birthTown = Some("ATown"), birthProvince = Some("SomeProvince"), birthCountryCode = Some(200),
+        OriginData(birthTown = Some("ATown"), birthProvince = Some("SomeProvince"), birthCountryCode = Some("GBR"),
           birthSurname = Some("ASurname"), maternalForename = Some("MotherForename"),
           maternalSurname = Some("AnotherSurname"), paternalForename = Some("AForename"), paternalSurname = Some("ASurname"),
           foreignSocialSecurity = Some("SomeSocialSecurityNumber"), lastEUAddress = Some(LastEUAddress(
