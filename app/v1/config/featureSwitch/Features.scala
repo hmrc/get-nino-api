@@ -18,11 +18,13 @@ package v1.config.featureSwitch
 
 import javax.inject.{Inject, Singleton}
 import play.api.Configuration
-import config.ConfigKeys.useDesStubKey
+import config.ConfigKeys.{useDesStubKey, logDesJsonKey}
 
 @Singleton
 class Features @Inject()(implicit config: Configuration) extends BaseFeature {
 
   lazy val useDesStub = new Feature(useDesStubKey)
+
+  lazy val logDesJson = new Feature(logDesJsonKey)
 
 }
