@@ -30,12 +30,7 @@ class AddressModelSpec extends WordSpec with Matchers {
 
     Json.obj(
       line1Path -> "1234 Test Avenue",
-      "countryCode" -> "USA",
-      if (isReads) {
-        "startDate" -> "01-01-2019"
-      } else {
-        "startDate" -> "2019-01-01"
-      }
+      "countryCode" -> "USA"
     )
   }
 
@@ -76,7 +71,7 @@ class AddressModelSpec extends WordSpec with Matchers {
       addressLine5 = None,
       postCode = None,
       countryCode = "USA",
-      startDate = DateModel("01-01-2019"),
+      startDate = None,
       endDate = None
     )
 
@@ -90,7 +85,7 @@ class AddressModelSpec extends WordSpec with Matchers {
       addressLine5 = Some(AddressLine("Test Line 5")),
       postCode = Some(Postcode("TE5 5LN")),
       countryCode = "GBR",
-      startDate = DateModel("01-01-2019"),
+      startDate = Some(DateModel("01-01-2019")),
       endDate = Some(DateModel("31-12-2019"))
     )
 
@@ -250,10 +245,16 @@ class AddressModelSpec extends WordSpec with Matchers {
 
     "return true" when {
 
+      "only one or neither date is provided" in {
+        AddressModel.validateDateAsPriorDate(Some(currentDate), None) shouldBe true
+        AddressModel.validateDateAsPriorDate(None, Some(currentDate)) shouldBe true
+        AddressModel.validateDateAsPriorDate(None, None) shouldBe true
+      }
+
       "the first date provided is before the second" in {
         val validDate = DateModel("01-01-2000")
 
-        AddressModel.validateDateAsPriorDate(validDate, Some(currentDate)) shouldBe true
+        AddressModel.validateDateAsPriorDate(Some(validDate), Some(currentDate)) shouldBe true
       }
 
       "the provided dates are equal and canBeEqual is true" in {
@@ -261,11 +262,7 @@ class AddressModelSpec extends WordSpec with Matchers {
           LocalDate.now(ZoneId.of("UTC")).format(DateTimeFormatter.ofPattern("dd-MM-yyyy"))
         )
 
-        AddressModel.validateDateAsPriorDate(validDate, Some(validDate)) shouldBe true
-      }
-
-      "only an earlier date is provided" in {
-        AddressModel.validateDateAsPriorDate(currentDate, None) shouldBe true
+        AddressModel.validateDateAsPriorDate(Some(validDate), Some(validDate)) shouldBe true
       }
     }
 
@@ -276,7 +273,7 @@ class AddressModelSpec extends WordSpec with Matchers {
           LocalDate.now(ZoneId.of("UTC")).plusDays(1).format(DateTimeFormatter.ofPattern("dd-MM-yyyy"))
         )
 
-        AddressModel.validateDateAsPriorDate(invalidDate, Some(currentDate)) shouldBe false
+        AddressModel.validateDateAsPriorDate(Some(invalidDate), Some(currentDate)) shouldBe false
       }
 
       "the provided dates are equal and canBeEqual is false" in {
@@ -284,7 +281,7 @@ class AddressModelSpec extends WordSpec with Matchers {
           LocalDate.now(ZoneId.of("UTC")).format(DateTimeFormatter.ofPattern("dd-MM-yyyy"))
         )
 
-        AddressModel.validateDateAsPriorDate(validDate, Some(validDate), canBeEqual = false) shouldBe false
+        AddressModel.validateDateAsPriorDate(Some(validDate), Some(validDate), canBeEqual = false) shouldBe false
       }
     }
 

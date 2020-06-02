@@ -67,7 +67,7 @@ object CorrelationIdMissingError extends Error("BAD_REQUEST", "The correlation I
 
 object CorrelationIdIncorrectError extends Error("BAD_REQUEST", "The correlation ID does not match the expected regex.")
 
-class JsonValidationError(jsErrors: JsError)
+final class JsonValidationError(jsErrors: JsError)
   extends Error("JSON_VALIDATION_ERROR", "The provided JSON was unable to be validated as the selected model.") {
     val getErrors: JsValue = Json.toJson(jsErrors.errors.flatMap {
     case (path, pathErrors) =>

@@ -30,7 +30,7 @@ case class AddressModel(addressType: Option[AddressType],
                         addressLine5: Option[AddressLine],
                         postCode: Option[Postcode],
                         countryCode: String,
-                        startDate: DateModel,
+                        startDate: Option[DateModel],
                         endDate: Option[DateModel])
 
 object AddressModel {
@@ -59,15 +59,14 @@ object AddressModel {
 
   }
 
-  private[models] def validateDateAsPriorDate(earlierDate: DateModel, optionalLaterDate: Option[DateModel] = None, canBeEqual: Boolean = true): Boolean = {
-    optionalLaterDate.fold(true){ laterDate =>
-      val earlierModelAsDate = LocalDate.parse(earlierDate.dateString, DateTimeFormatter.ofPattern("dd-MM-yyyy"))
-      val laterModelAsDate = LocalDate.parse(laterDate.dateString, DateTimeFormatter.ofPattern("dd-MM-yyyy"))
-      val passedValidation = earlierModelAsDate.isBefore(laterModelAsDate) || (canBeEqual && earlierModelAsDate.isEqual(laterModelAsDate))
-      if(!passedValidation) Logger.warn("[AddressModel][validateDateAsPriorDate] The provided earlierDate is after the laterDate.")
-      passedValidation
+  private[models] def validateDateAsPriorDate(maybeEarlierDate: Option[DateModel], maybeLaterDate: Option[DateModel], canBeEqual: Boolean = true): Boolean =
+    (maybeEarlierDate.map(_.asLocalDate), maybeLaterDate.map(_.asLocalDate)) match {
+      case (Some(earlierDate), Some(laterDate)) =>
+        val passedValidation = earlierDate.isBefore(laterDate) || (canBeEqual && earlierDate.isEqual(laterDate))
+        if(!passedValidation) Logger.warn("[AddressModel][validateDateAsPriorDate] The provided earlierDate is after the laterDate.")
+        passedValidation
+      case _ => true
     }
-  }
 
   private def commonError(fieldName: String) = JsonValidationError(s"There has been an error parsing the $fieldName field. Please check against the regex.")
 
@@ -84,12 +83,12 @@ object AddressModel {
     line5 <- line5Path.readNullable[AddressLine]
     countryCode <- countryCodePath.read[String]
     postcode <- postcodePath.readNullable[Postcode].filter(commonError("Post code"))(checkPostcodeMandated(_, countryCode))
-    startDate <- startDatePath.read[DateModel].filter(startDateAfterEndDateError) { nonOptionalStartDate =>
-      validateDateAsPriorDate(nonOptionalStartDate, Some(DateModel(LocalDate.now(ZoneId.of("UTC")).format(DateTimeFormatter.ofPattern("dd-MM-yyyy")))))
+    startDate <- startDatePath.readNullable[DateModel].filter(startDateAfterEndDateError) { startDate =>
+      validateDateAsPriorDate(startDate, Some(DateModel(LocalDate.now(ZoneId.of("UTC")).format(DateTimeFormatter.ofPattern("dd-MM-yyyy")))))
     }
     endDate <- endDatePath.readNullable[DateModel]
       .filter(startDateAfterEndDateError)(validateDateAsPriorDate(startDate, _, canBeEqual = false))
-      .filter(startDateAfterEndDateError)(_.fold(true)(validateDateAsPriorDate(_, currentDate)))
+      .filter(startDateAfterEndDateError)(_.fold(true)(date => validateDateAsPriorDate(Some(date), currentDate)))
   } yield {
     AddressModel(addressType, line1, line2, line3, line4, line5, postcode, countryCode, startDate, endDate)
   }

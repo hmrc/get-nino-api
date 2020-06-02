@@ -56,14 +56,12 @@ object NinoApplicationTestData {
         "addressType" -> "RESIDENTIAL",
         "addressLine1" -> "4 AStreetName",
         "countryCode" -> "USA",
-        "startDate" -> earlierDateForAddresses
       ))
     } else {
       "addresses" -> Json.arr(Json.obj(
         "addressType" -> "RESIDENTIAL",
         "line1" -> "4 AStreetName",
         "countryCode" -> "USA",
-        "startDate" -> earlierDateForAddresses
       ))
     }
 
@@ -374,8 +372,7 @@ object NinoApplicationTestData {
       applicantAddresses = Seq(AddressModel(
         Some(Residential),
         AddressLine("4 AStreetName"),
-        None, None, None, None, None, "USA",
-        DateModel(earlierDateForAddresses), None
+        None, None, None, None, None, "USA", None, None
       )),
       applicantHistoricAddresses = None,
       applicantMarriages = None,
@@ -405,7 +402,7 @@ object NinoApplicationTestData {
         None,
         AddressLine("4 AStreetName"),
         None, None, None, None, None, "GBR",
-        DateModel(writeOrReadDate()), None
+        Some(DateModel(writeOrReadDate())), None
       )),
       applicantHistoricAddresses = None,
       applicantMarriages = None,
@@ -473,7 +470,7 @@ object NinoApplicationTestData {
         addressLine5 = Some(AddressLine("ItsTheFinalLine")),
         postCode = Some(Postcode("AA11AA")),
         countryCode = "GBR",
-        startDate = DateModel(earlierDateForAddresses),
+        startDate = Some(DateModel(earlierDateForAddresses)),
         endDate = Some(DateModel(laterDateForAddresses))
       ),
         AddressModel(
@@ -485,7 +482,7 @@ object NinoApplicationTestData {
           addressLine5 = Some(AddressLine("ItsTheFinalLine")),
           postCode = Some(Postcode("AA11AA")),
           countryCode = "GBR",
-          startDate = DateModel(earlierDateForAddresses),
+          startDate = Some(DateModel(earlierDateForAddresses)),
           endDate = Some(DateModel(laterDateForAddresses))
         )),
       applicantHistoricAddresses = Some(Seq(
@@ -498,7 +495,7 @@ object NinoApplicationTestData {
           Some(AddressLine("ItsTheFinalLine")),
           Some(Postcode("AA11AA")),
           "GBR",
-          DateModel(earlierDateForAddresses),
+          Some(DateModel(earlierDateForAddresses)),
           Some(DateModel(laterDateForAddresses))
         ),
         AddressModel(
@@ -510,7 +507,7 @@ object NinoApplicationTestData {
           Some(AddressLine("ItsTheFinalLine")),
           Some(Postcode("AA11AA")),
           "GBR",
-          DateModel(earlierDateForAddresses),
+          Some(DateModel(earlierDateForAddresses)),
           Some(DateModel(laterDateForAddresses))
         )
       )),
