@@ -1,3 +1,3 @@
 #!/usr/bin/env bash
 
-sbt run -Dapplication.router=testOnly.Routes
+sbt run -Dplay.http.router=testOnly.Routes
