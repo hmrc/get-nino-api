@@ -231,7 +231,7 @@
           "$ref": "#/definitions/postcode"
         },
         "countryCode": {
-          "description": "The address Country Code",
+          "description": "The address country code",
           "$ref": "#/definitions/countryCode"
         },
         "startDate": {
