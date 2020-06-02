@@ -351,7 +351,7 @@ object ItNinoApplicationTestData {
         Some(Residential),
         AddressLine("4 AStreetName"),
         None, None, None, None, None, "NGA",
-        DateModel(earlierWriteOrReadDate), None
+        None, None
       )),
       applicantHistoricAddresses = None,
       applicantMarriages = None,
@@ -382,7 +382,7 @@ object ItNinoApplicationTestData {
         Some(Residential),
         AddressLine("4 AStreetName"),
         None, None, None, None, None, "NGA",
-        DateModel(earlierWriteOrReadDate), None
+        Some(DateModel(earlierWriteOrReadDate)), None
       )),
       applicantHistoricAddresses = None,
       applicantMarriages = None,
@@ -442,7 +442,7 @@ object ItNinoApplicationTestData {
         addressLine5 = Some(AddressLine("ItsTheFinalLine")),
         postCode = Some(Postcode("AA11AA")),
         countryCode = "GBR",
-        startDate = DateModel(earlierWriteOrReadDate),
+        startDate = Some(DateModel(earlierWriteOrReadDate)),
         endDate = Some(DateModel(laterWriteOrReadDate))
       )),
       applicantHistoricAddresses = Some(Seq(
@@ -455,7 +455,7 @@ object ItNinoApplicationTestData {
           Some(AddressLine("ItsTheFinalLine")),
           Some(Postcode("AA11AA")),
           "GBR",
-          DateModel(earlierWriteOrReadDate),
+          Some(DateModel(earlierWriteOrReadDate)),
           Some(DateModel(laterWriteOrReadDate))
         ),
         AddressModel(
@@ -467,7 +467,7 @@ object ItNinoApplicationTestData {
           Some(AddressLine("ItsTheFinalLine")),
           Some(Postcode("AA11AA")),
           "GBR",
-          DateModel(earlierWriteOrReadDate),
+          Some(DateModel(earlierWriteOrReadDate)),
           Some(DateModel(laterWriteOrReadDate))
         )
       )),

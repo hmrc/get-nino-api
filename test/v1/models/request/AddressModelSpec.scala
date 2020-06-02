@@ -284,6 +284,5 @@ class AddressModelSpec extends WordSpec with Matchers {
         AddressModel.validateDateAsPriorDate(Some(validDate), Some(validDate), canBeEqual = false) shouldBe false
       }
     }
-
   }
 }
