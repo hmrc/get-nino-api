@@ -18,6 +18,7 @@ package v1.connectors
 
 import config.AppConfig
 import javax.inject.{Inject, Singleton}
+import play.api.Logger
 import play.api.libs.json.Json
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.http.logging.Authorization
@@ -43,10 +44,15 @@ class DesConnector @Inject()(
       s"${appConfig.desBaseUrl()}${appConfig.desContext()}"
     }
 
-    val requestWithEnvironmentHeader: HeaderCarrier =
+    val headerCarrierWithEnvironmentHeader: HeaderCarrier =
       hc.copy(authorization = Some(Authorization(s"Bearer ${appConfig.desToken()}")))
         .withExtraHeaders(("Environment", appConfig.desEnvironment()))
-    http.POST(url, Json.toJson(request))(implicitly, RegisterNinoResponseReads, requestWithEnvironmentHeader, ec)
+
+    val requestBody = Json.toJson(request)
+
+    if (appConfig.features.logDesJson()) Logger.info(s"Logging JSON body of DES request: $requestBody")
+
+    http.POST(url, requestBody)(implicitly, RegisterNinoResponseReads, headerCarrierWithEnvironmentHeader, ec)
   }
 
 }
