@@ -245,7 +245,7 @@ class AddressModelSpec extends WordSpec with Matchers {
 
     "return true" when {
 
-      "only one or neither date is present" in {
+      "only one or neither date is provided" in {
         AddressModel.validateDateAsPriorDate(Some(currentDate), None) shouldBe true
         AddressModel.validateDateAsPriorDate(None, Some(currentDate)) shouldBe true
         AddressModel.validateDateAsPriorDate(None, None) shouldBe true
@@ -263,10 +263,6 @@ class AddressModelSpec extends WordSpec with Matchers {
         )
 
         AddressModel.validateDateAsPriorDate(Some(validDate), Some(validDate)) shouldBe true
-      }
-
-      "only an earlier date is provided" in {
-        AddressModel.validateDateAsPriorDate(Some(currentDate), None) shouldBe true
       }
     }
 
