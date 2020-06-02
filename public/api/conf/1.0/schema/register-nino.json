@@ -6,11 +6,11 @@
   "additionalProperties": false,
   "properties": {
     "nino": {
-      "description": "Primary identifier for the account creation request with suffix",
+      "description": "The primary identifier for the account creation request with suffix",
       "$ref": "#/definitions/nino"
     },
     "gender": {
-      "description": "Individuals Gender",
+      "description": "The individual's gender",
       "type": "string",
       "enum": [
         "MALE",
@@ -19,15 +19,15 @@
       ]
     },
     "entryDate": {
-      "description": "Date of Entry into the account registration process",
+      "description": "The date of entry into the account registration process",
       "$ref": "#/definitions/date"
     },
     "birthDate": {
-      "description": "Individuals date of birth",
+      "description": "The individual's date of birth",
       "$ref": "#/definitions/date"
     },
     "birthDateVerification": {
-      "description": "Verification level relating to individuals date of birth",
+      "description": "The verification level relating to individual's date of birth",
       "type": "string",
       "enum": [
         "UNVERIFIED",
@@ -42,21 +42,21 @@
       "pattern": "^([0-9]{1,4})$"
     },
     "contactNumber": {
-      "description": "Individuals contact number",
+      "description": "The individual's contact number",
       "$ref": "#/definitions/contactNumber"
     },
     "nationalityCode": {
-      "description": "Individuals country",
+      "description": "The individual's nationality",
       "$ref": "#/definitions/countryCode"
     },
     "names": {
-      "description": "Details of the individuals current valid names",
+      "description": "Details of the individual's current valid names",
       "type": "array",
       "minItems": 1,
       "maxItems": 2,
       "uniqueItems": true,
       "items": {
-        "description": "One of an individuals currently valid names.",
+        "description": "One of an individual's currently valid names.",
         "$ref": "#/definitions/name"
       }
     },
@@ -67,18 +67,18 @@
       "additionalItems": false,
       "uniqueItems": true,
       "items": {
-        "description": "List of historic name details",
+        "description": "A list of historic name details for the individual",
         "$ref": "#/definitions/name"
       }
     },
     "addresses": {
-      "description": "Details of the individuals currently valid addresses",
+      "description": "Details of the individual's currently valid addresses",
       "type": "array",
       "minItems": 1,
       "maxItems": 2,
       "uniqueItems": true,
       "items": {
-        "description": "One of an individuals current valid address details",
+        "description": "Details of one of an individual's current valid addresses",
         "$ref": "#/definitions/address"
       }
     },
@@ -89,7 +89,7 @@
       "additionalItems": false,
       "uniqueItems": true,
       "items": {
-        "description": "List of historic address details",
+        "description": "A list of historic address details for the individual",
         "$ref": "#/definitions/address"
       }
     },
@@ -100,12 +100,12 @@
       "additionalItems": false,
       "uniqueItems": true,
       "items": {
-        "description": "List of marriage details",
+        "description": "A list of marriage details for the individual",
         "$ref": "#/definitions/marriage"
       }
     },
     "originData": {
-      "description": "Individuals origin details",
+      "description": "The individual's origin details",
       "$ref": "#/definitions/origins"
     },
     "priorResidency": {
@@ -115,16 +115,16 @@
       "additionalItems": false,
       "uniqueItems": true,
       "items": {
-        "description": "List of prior UK residency periods (longer than 30 days)",
+        "description": "A list of prior UK residency periods (longer than 30 days)",
         "type": "object",
         "additionalProperties": false,
         "properties": {
           "priorStartDate": {
-            "description": "Prior UK residency period start date",
+            "description": "The prior UK residency period start date",
             "$ref": "#/definitions/date"
           },
           "priorEndDate": {
-            "description": "Prior UK residency period end date",
+            "description": "The prior UK residency period end date",
             "$ref": "#/definitions/date"
           }
         }
@@ -168,23 +168,23 @@
           ]
         },
         "forename": {
-          "description": "Individuals primary forename string",
+          "description": "The individual's primary forename string",
           "$ref": "#/definitions/nameElement"
         },
         "secondForename": {
-          "description": "Individuals secondary forename string",
+          "description": "The individual's secondary forename string",
           "$ref": "#/definitions/nameElement"
         },
         "surname": {
-          "description": "Individuals surname string",
+          "description": "The individual's surname string",
           "$ref": "#/definitions/nameElement"
         },
         "startDate": {
-          "description": "Individuals name record start date",
+          "description": "The individual's name record start date",
           "$ref": "#/definitions/date"
         },
         "endDate": {
-          "description": "Individuals name record end date",
+          "description": "The individual's name record end date",
           "$ref": "#/definitions/date"
         }
       },
@@ -199,7 +199,7 @@
       "additionalProperties": false,
       "properties": {
         "addressType": {
-          "description": "Type of address provided",
+          "description": "The type of address provided",
           "type": "string",
           "enum": [
             "RESIDENTIAL",
@@ -207,39 +207,39 @@
           ]
         },
         "line1": {
-          "description": "First address line",
+          "description": "The first line of the address",
           "$ref": "#/definitions/addressLine"
         },
         "line2": {
-          "description": "Second address line",
+          "description": "The second line of the address",
           "$ref": "#/definitions/addressLine"
         },
         "line3": {
-          "description": "Third address line",
+          "description": "The third line of the address",
           "$ref": "#/definitions/addressLine"
         },
         "line4": {
-          "description": "Fourth address line",
+          "description": "The fourth line of the address",
           "$ref": "#/definitions/addressLine"
         },
         "line5": {
-          "description": "Fifth address line",
+          "description": "The fifth line of the address",
           "$ref": "#/definitions/addressLine"
         },
         "postcode": {
-          "description": "Address postcode",
+          "description": "The address postcode - this will be mandatory if the countryCode field has the value 'GBR', and optional otherwise",
           "$ref": "#/definitions/postcode"
         },
         "countryCode": {
-          "description": "Address Country Code",
+          "description": "The address Country Code",
           "$ref": "#/definitions/countryCode"
         },
         "startDate": {
-          "description": "Individuals address record start date",
+          "description": "The individual's address record start date",
           "$ref": "#/definitions/date"
         },
         "endDate": {
-          "description": "Individuals address record end date",
+          "description": "The individual's address record end date",
           "$ref": "#/definitions/date"
         }
       },
@@ -273,27 +273,27 @@
           ]
         },
         "startDate": {
-          "description": "Marriage record start date",
+          "description": "The marriage record start date",
           "$ref": "#/definitions/date"
         },
         "endDate": {
-          "description": "Marriage record end date",
+          "description": "The marriage record end date",
           "$ref": "#/definitions/date"
         },
         "partnerNino": {
-          "description": "Spouses primary account identifier",
+          "description": "The spouse's primary account identifier",
           "$ref": "#/definitions/nino"
         },
         "birthDate": {
-          "description": "Spouses date of birth",
+          "description": "The spouse's date of birth",
           "$ref": "#/definitions/date"
         },
         "forename": {
-          "description": "Spouses primary forename string",
+          "description": "The spouse's primary forename string",
           "$ref": "#/definitions/nameElement"
         },
         "surname": {
-          "description": "Spouses surname string",
+          "description": "The spouse's surname string",
           "$ref": "#/definitions/nameElement"
         }
       },
@@ -308,65 +308,65 @@
       "additionalProperties": false,
       "properties": {
         "birthTown": {
-          "description": "Individuals birth town",
+          "description": "The individual's birth town",
           "$ref": "#/definitions/originsElement"
         },
         "birthProvince": {
-          "description": "Individuals birth province",
+          "description": "The individual's birth province",
           "$ref": "#/definitions/originsElement"
         },
         "birthCountryCode": {
-          "description": "Individuals birth country code",
+          "description": "The individual's birth country code",
           "$ref": "#/definitions/countryCode"
         },
         "birthSurname": {
-          "description": "Individuals surname at birth",
+          "description": "The individual's surname at birth",
           "$ref": "#/definitions/nameElement"
         },
         "maternalForename": {
-          "description": "Individuals maternal parent's forename",
+          "description": "The individual's maternal parent's forename",
           "$ref": "#/definitions/nameElement"
         },
         "maternalSurname": {
-          "description": "Individuals maternal parent's surname",
+          "description": "The individual's maternal parent's surname",
           "$ref": "#/definitions/nameElement"
         },
         "paternalForename": {
-          "description": "Individuals paternal parent's forename",
+          "description": "The individual's paternal parent's forename",
           "$ref": "#/definitions/nameElement"
         },
         "paternalSurname": {
-          "description": "Individuals paternal parent's surname",
+          "description": "The individual's paternal parent's surname",
           "$ref": "#/definitions/nameElement"
         },
         "foreignSocialSecurity": {
-          "description": "Individuals previous, non UK social security reference",
+          "description": "The individual's previous, non-UK social security reference",
           "type": "string",
           "pattern": "^(?=.{1,35}$)([A-Z]([-'.&\\/ ]{0,1}[A-Za-z]+)*[A-Za-z]?)$"
         },
         "lastEUAddress": {
-          "description": "Individuals last non UK address details",
+          "description": "The individual's last non-UK address details",
           "type": "object",
           "additionalProperties": false,
           "properties": {
             "line1": {
-              "description": "First address line",
+              "description": "The first line of the address",
               "$ref": "#/definitions/addressLine"
             },
             "line2": {
-              "description": "Second address line",
+              "description": "The second line of the address",
               "$ref": "#/definitions/addressLine"
             },
             "line3": {
-              "description": "Third address line",
+              "description": "The third line of the address",
               "$ref": "#/definitions/addressLine"
             },
             "line4": {
-              "description": "Fourth address line",
+              "description": "The fourth line of the address",
               "$ref": "#/definitions/addressLine"
             },
             "line5": {
-              "description": "Fifth address line",
+              "description": "The fifth line of the address",
               "$ref": "#/definitions/addressLine"
             }
           }
