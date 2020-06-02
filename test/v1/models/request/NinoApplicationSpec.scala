@@ -315,14 +315,14 @@ class NinoApplicationSpec extends UnitSpec {
               AddressLine("Some address"),
               None, None, None, None, None,
               "GBR",
-              DateModel("01-01-2000"), None
+              Some(DateModel("01-01-2000")), None
             ),
             AddressModel(
               None,
               AddressLine("Some address"),
               None, None, None, None, None,
               "GBR",
-              DateModel("01-01-2000"), None
+              Some(DateModel("01-01-2000")), None
             )
           )
         ) shouldBe true
@@ -339,14 +339,14 @@ class NinoApplicationSpec extends UnitSpec {
               AddressLine("Some address"),
               None, None, None, None, None,
               "GBR",
-              DateModel("01-01-2000"), None
+              Some(DateModel("01-01-2000")), None
             ),
             AddressModel(
               None,
               AddressLine("Some address"),
               None, None, None, None, None,
               "GBR",
-              DateModel("01-01-2000"), None
+              Some(DateModel("01-01-2000")), None
             )
           )
         ) shouldBe false

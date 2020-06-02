@@ -16,12 +16,17 @@
 
 package v1.models.request
 
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
+
 import play.api.Logger
 import play.api.libs.json._
 
-case class DateModel(
+final case class DateModel(
                       dateString: String
-                    )
+                    ) {
+  def asLocalDate: LocalDate = LocalDate.parse(dateString, DateTimeFormatter.ofPattern("dd-MM-yyyy"))
+}
 
 object DateModel {
 
