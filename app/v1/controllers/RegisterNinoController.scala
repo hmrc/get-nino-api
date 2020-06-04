@@ -55,11 +55,17 @@ class RegisterNinoController @Inject()(
     Future(parsedJsonBody[NinoApplication]).flatMap {
       case Right(ninoModel) => desService.registerNino(ninoModel)(hcWithOriginatorIdAndCorrelationId, ec).map {
         case Right(_) => Accepted
-        case Left(errors) => badRequestWithLog(Json.toJson(errors))
+        case Left(errors) => badGatewayWithLog(Json.toJson(errors))
       }
       case Left(errors) => Future.successful(badRequestWithLog(convertJsErrorsToReadableFormat(errors)))
     }
 
+  }
+
+  private def badGatewayWithLog[T <: JsValue](input: T)(implicit hc: HeaderCarrier): Result = {
+    Logger.debug(s"Header Carrier for failed request: $hc")
+    Logger.warn(Json.prettyPrint(input))
+    BadGateway(input)
   }
 
   private def badRequestWithLog[T <: JsValue](input: T)(implicit hc: HeaderCarrier): Result = {
