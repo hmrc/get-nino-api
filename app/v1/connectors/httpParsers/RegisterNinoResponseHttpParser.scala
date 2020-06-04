@@ -43,7 +43,7 @@ object RegisterNinoResponseHttpParser {
                     s"Couldn't parse error from DES.")
                 }, { error =>
                   Logger.warn(s"[RegisterNinoResponseHttpParser][read] Unexpected $status response returned." +
-                    s"DES error code:${error.code} DES error reason: ${error.reason}")
+                    s"DES error code: ${error.code} DES error reason: ${error.reason}")
                 }
               )
             case Failure(_) =>
