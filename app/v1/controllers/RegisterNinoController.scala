@@ -63,13 +63,13 @@ class RegisterNinoController @Inject()(
   }
 
   private def badGatewayWithLog[T <: JsValue](input: T)(implicit hc: HeaderCarrier): Result = {
-    Logger.debug(s"Header Carrier for failed request: $hc")
+    Logger.debug(s"Header Carrier for failed 502 request: $hc")
     Logger.warn(Json.prettyPrint(input))
     BadGateway(input)
   }
 
   private def badRequestWithLog[T <: JsValue](input: T)(implicit hc: HeaderCarrier): Result = {
-    Logger.debug(s"Header Carrier for failed request: $hc")
+    Logger.debug(s"Header Carrier for failed 400 request: $hc")
     Logger.warn(Json.prettyPrint(input))
     BadRequest(input)
   }
