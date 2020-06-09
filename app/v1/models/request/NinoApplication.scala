@@ -44,7 +44,7 @@ case class NinoApplication(
 
 object NinoApplication {
   private val ninoRegex = "^((?!(BG|GB|KN|NK|NT|TN|ZZ)|(D|F|I|Q|U|V)[A-Z]|[A-Z](D|F|I|O|Q|U|V))[A-Z]{2})[0-9]{6}[A-D]$"
-  private val officeNumberRegex = "^([0-9]{1,4})$"
+  private val officeNumberRegex = "^([0-9]{1,6})$"
   private val contactNumberRegex = "^([+]{0,1}[0-9 ]{1,70}[0-9])$"
   private val nationalityCodeRegex = "^[A-Z]{3}$"
 
