@@ -37,9 +37,9 @@
       ]
     },
     "officeNumber": {
-      "description": "Related HMRC Office Number",
+      "description": "Related DWP Office Number",
       "type": "string",
-      "pattern": "^([0-9]{1,4})$"
+      "pattern": "^([0-9]{1,6})$"
     },
     "contactNumber": {
       "description": "The individual's contact number",
@@ -396,7 +396,7 @@
     "addressLine": {
       "description": "Common Address Line Format",
       "type": "string",
-      "pattern": "^(?=.{1,35}$)([A-Z0-9][A-Za-z0-9-'.& ]+[A-Za-z0-9])$"
+      "pattern": "^(?=.{1,35}$)([A-Za-z0-9]([-'.& ]?[A-Za-z0-9 ]+)*)$"
     },
     "postcode": {
       "description": "Common postal code type including older british forces postal office codes",
