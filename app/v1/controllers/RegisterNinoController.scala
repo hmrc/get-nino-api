@@ -57,7 +57,7 @@ class RegisterNinoController @Inject()(
       case jsonContent: AnyContentAsJson if appConfig.features.logDwpJson() =>
         Logger.info(s"Logging JSON body of incoming request: ${jsonContent.json}")
       case _ =>
-        Logger.warn("Incoming request did not have a JSON nody.")
+        Logger.warn("Incoming request did not have a JSON body.")
     }
 
     Future(parsedJsonBody[NinoApplication]).flatMap {
