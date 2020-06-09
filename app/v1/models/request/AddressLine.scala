@@ -24,7 +24,7 @@ case class AddressLine(addressLine: String)
 
 object AddressLine {
 
-  val regex: String = "^(?=.{1,35}$)([A-Z0-9][A-Za-z0-9-'.& ]+[A-Za-z0-9])$"
+  val regex: String = "^(?=.{1,35}$)([A-Za-z0-9]([-'.& ]?[A-Za-z0-9 ]+)*)$"
 
   def addressLineValidation: String => Boolean = addressInput => {
     val passedValidation = addressInput.matches(regex)
