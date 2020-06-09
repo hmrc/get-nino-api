@@ -24,4 +24,5 @@ object ConfigKeys {
   val desStubContextKey = s"$servicesKey.desStub.context"
 
   val logDesJsonKey = s"$featureSwitchKey.logDesJson"
+  val logDwpJsonKey = s"$featureSwitchKey.logDwpJson"
 }

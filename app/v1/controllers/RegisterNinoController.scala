@@ -16,6 +16,7 @@
 
 package v1.controllers
 
+import config.AppConfig
 import javax.inject.{Inject, Singleton}
 import play.api.Logger
 import play.api.libs.json.{JsValue, Json}
@@ -36,7 +37,8 @@ class RegisterNinoController @Inject()(
                                         desService: DesService,
                                         privilegedApplicationPredicate: PrivilegedApplicationPredicate,
                                         correlationIdPredicate: CorrelationIdPredicate,
-                                        originatorIdPredicate: OriginatorIdPredicate
+                                        originatorIdPredicate: OriginatorIdPredicate,
+                                        appConfig: AppConfig
                                       )
                                       (implicit val ec: ExecutionContext) extends BackendController(cc) with JsonBodyUtil {
 
@@ -45,11 +47,17 @@ class RegisterNinoController @Inject()(
     val optionalOriginatorId = request.headers.get("OriginatorId")
     val optionalCorrelationId = request.headers.get("CorrelationId")
 
-
     val hcWithOriginatorIdAndCorrelationId = (optionalOriginatorId, optionalCorrelationId) match {
       case (Some(originatorId), Some(correlationId)) =>
         hc.withExtraHeaders("OriginatorId" -> originatorId, "CorrelationId" -> correlationId)
       case _ => hc
+    }
+
+    request.body match {
+      case jsonContent: AnyContentAsJson if appConfig.features.logDwpJson() =>
+        Logger.info(s"Logging JSON body of incoming request: ${jsonContent.json}")
+      case _ =>
+        Logger.warn("Incoming request did not have a JSON body.")
     }
 
     Future(parsedJsonBody[NinoApplication]).flatMap {
