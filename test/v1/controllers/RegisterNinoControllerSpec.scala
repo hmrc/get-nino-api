@@ -63,7 +63,8 @@ class RegisterNinoControllerSpec extends ControllerBaseSpec {
     mockService,
     mockPrivilegedPredicate,
     mockCorrelationPredicate,
-    mockOriginatorPredicate
+    mockOriginatorPredicate,
+    mockAppConfig
   )
 
   "Calling the register action" when {

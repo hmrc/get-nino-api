@@ -50,7 +50,7 @@ class DesConnector @Inject()(
 
     val requestBody = Json.toJson(request)
 
-    if (appConfig.features.logDesJson()) Logger.info(s"Logging JSON body of DES request: $requestBody")
+    if (appConfig.features.logDesJson()) Logger.info(s"Logging JSON body of outgoing DES request: $requestBody")
 
     http.POST(url, requestBody)(implicitly, RegisterNinoResponseReads, headerCarrierWithEnvironmentHeader, ec)
   }
