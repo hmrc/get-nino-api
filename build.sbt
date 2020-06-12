@@ -20,12 +20,6 @@ import uk.gov.hmrc.sbtdistributables.SbtDistributablesPlugin.publishingSettings
 
 val appName = "get-nino-api"
 
-lazy val wartRemoverWarning = {
-  val warningWarts = Seq()
-  wartremoverWarnings in(Compile, compile) ++= warningWarts
-}
-
-
 lazy val wartRemoverError = {
 
   val errorWarts = Seq(
@@ -47,14 +41,11 @@ lazy val wartRemoverError = {
     Wart.TryPartial,
     Wart.Var,
     Wart.While,
-    Wart.FinalCaseClass
-
-    //were warnings
-    , Wart.JavaSerializable,
-  Wart.StringPlusAny,
-  Wart.AsInstanceOf,
-  Wart.IsInstanceOf,
-  Wart.Any
+    Wart.FinalCaseClass, Wart.JavaSerializable,
+    Wart.StringPlusAny,
+    Wart.AsInstanceOf,
+    Wart.IsInstanceOf,
+    Wart.Any
   )
   wartremoverErrors in(Compile, compile) ++= errorWarts
 }
@@ -74,7 +65,7 @@ lazy val microservice = Project(appName, file("."))
   .settings(resolvers += Resolver.jcenterRepo)
   .settings(CodeCoverageSettings.settings: _*)
   .settings(scalaVersion := "2.12.10")
-  .settings(wartRemoverError, wartRemoverWarning, wartremoverExcluded ++= routes.in(Compile).value)
+  .settings(wartRemoverError, wartremoverExcluded ++= routes.in(Compile).value)
   .settings(resourceDirectory in IntegrationTest := (baseDirectory apply { baseDir: File => baseDir / "it/resources" }).value)
 
 //Not needed for this service
