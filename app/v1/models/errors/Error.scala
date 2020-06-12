@@ -19,9 +19,15 @@ package v1.models.errors
 import play.api.libs.functional.syntax._
 import play.api.libs.json._
 
-case class Error(code: String, message: String)
+abstract class Error(val code: String, val message: String)
+
+final case class GenericError(code$: String, message$: String) extends Error(code$, message$)
 
 object Error {
+  def apply(code: String, message: String): Error = GenericError(code, message)
+
+  def unapply(arg: Error): Option[(String, String)] = Some((arg.code, arg.message))
+
   implicit val validationWrites: Writes[JsonValidationError] = Writes { model =>
     Json.obj(
       "code" -> model.code,
@@ -67,7 +73,7 @@ object CorrelationIdMissingError extends Error("BAD_REQUEST", "The correlation I
 
 object CorrelationIdIncorrectError extends Error("BAD_REQUEST", "The correlation ID does not match the expected regex.")
 
-final class JsonValidationError(jsErrors: JsError)
+final case class JsonValidationError(jsErrors: JsError)
   extends Error("JSON_VALIDATION_ERROR", "The provided JSON was unable to be validated as the selected model.") {
     val getErrors: JsValue = Json.toJson(jsErrors.errors.flatMap {
     case (path, pathErrors) =>

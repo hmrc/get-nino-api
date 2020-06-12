@@ -21,6 +21,7 @@ resolvers += "HMRC Releases" at "https://dl.bintray.com/hmrc/releases"
 
 resolvers += Resolver.typesafeRepo("releases")
 
+addSbtPlugin("org.wartremover" % "sbt-wartremover" % "2.3.1")
 
 addSbtPlugin("uk.gov.hmrc" % "sbt-auto-build" % "2.5.0")
 

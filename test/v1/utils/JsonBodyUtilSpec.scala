@@ -16,7 +16,7 @@
 
 package v1.utils
 
-import play.api.libs.json.Json
+import play.api.libs.json.{Json, JsonValidationError}
 import play.api.mvc.AnyContentAsJson
 import play.api.test.FakeRequest
 import support.UnitSpec
@@ -54,7 +54,11 @@ class JsonBodyUtilSpec extends UnitSpec {
             "putNotThe" -> "correctJson"
           ))
 
-        testUtil.parsedJsonBody[NinoApplication] shouldBe Left(Error("JSON_VALIDATION_ERROR", "The provided JSON was unable to be validated as the selected model."))
+        val invalidParsedJson: Either[Error, NinoApplication] = testUtil.parsedJsonBody[NinoApplication]
+        invalidParsedJson.isLeft shouldBe true
+
+        invalidParsedJson.left.get.code shouldBe "JSON_VALIDATION_ERROR"
+        invalidParsedJson.left.get.message shouldBe "The provided JSON was unable to be validated as the selected model."
       }
     }
   }

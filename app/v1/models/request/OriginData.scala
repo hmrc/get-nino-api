@@ -20,7 +20,7 @@ import play.api.Logger
 import play.api.libs.functional.syntax._
 import play.api.libs.json._
 
-case class OriginData(
+final case class OriginData(
                        birthTown: Option[String] = None,
                        birthProvince: Option[String] = None,
                        birthCountryCode: Option[String] = None,

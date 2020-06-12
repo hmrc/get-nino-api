@@ -18,7 +18,7 @@ package config
 
 import play.api.{Configuration, Logger}
 
-case class FeatureSwitch(value: Option[Configuration]) {
+final case class FeatureSwitch(value: Option[Configuration]) {
 
   private val versionRegex = """(\d)\.\d""".r
 

@@ -19,7 +19,7 @@ package v1.models.request
 import play.api.libs.functional.syntax._
 import play.api.libs.json.{Json, Reads, _}
 
-case class PriorResidencyModel(
+final case class PriorResidencyModel(
                                 startDate: Option[DateModel] = None,
                                 endDate: Option[DateModel] = None
                               )

@@ -16,20 +16,15 @@
 
 package v1.models.errors
 
-import play.api.libs.json.{JsValue, Json, Writes}
+import play.api.libs.json.{Json, Writes}
 
-case class Errors(errors: Seq[Error])
+final case class Errors(errors: Seq[Error])
 
 object Errors {
   def apply(error: Error): Errors = Errors(Seq(error))
 
-  implicit val writes: Writes[Errors] = new Writes[Errors] {
-    override def writes(data: Errors): JsValue = {
-
-      data.errors.size match {
-        case 1 => Json.toJson(data.errors.head)
-        case _ => Json.obj("errors" -> Json.toJson(data.errors))
-      }
-    }
+  implicit val writes: Writes[Errors] = (data: Errors) => data.errors match {
+    case Seq(onlyItem) => Json.toJson(onlyItem)
+    case _ => Json.obj("errors" -> Json.toJson(data.errors))
   }
 }

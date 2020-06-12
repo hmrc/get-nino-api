@@ -18,7 +18,7 @@ package v1.models.errors
 
 import play.api.libs.json.{Format, Json}
 
-case class DesError(code: String, reason: String)
+final case class DesError(code: String, reason: String)
 
 object DesError {
   implicit val formats: Format[DesError] = Json.format[DesError]

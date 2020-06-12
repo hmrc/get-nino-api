@@ -43,8 +43,8 @@ class PrivilegedApplicationPredicate @Inject()(
   override def invokeBlock[A](request: Request[A], block: Request[A] => Future[Result]): Future[Result] = {
     implicit val hc: HeaderCarrier = HeaderCarrierConverter.fromHeadersAndSession(request.headers, None)
 
-    if (hc.requestId.nonEmpty && Option(MDC.get(xRequestId)).isEmpty) MDC.put(xRequestId, hc.requestId.get.value)
-    if (hc.sessionId.nonEmpty && Option(MDC.get(xSessionId)).isEmpty) MDC.put(xSessionId, hc.sessionId.get.value)
+    hc.requestId.foreach(requestId => if (Option(MDC.get(xRequestId)).isEmpty) MDC.put(xRequestId, requestId.value))
+    hc.sessionId.foreach(sessionId => if (Option(MDC.get(xSessionId)).isEmpty) MDC.put(xSessionId, sessionId.value))
 
     authorised(AuthProviders(PrivilegedApplication)) {
       block(request)
