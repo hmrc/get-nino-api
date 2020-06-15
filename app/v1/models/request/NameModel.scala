@@ -22,7 +22,7 @@ import java.time.{LocalDate, ZoneId}
 import play.api.Logger
 import play.api.libs.json._
 
-case class NameModel(
+final case class NameModel(
                       title: Option[String] = None,
                       firstName: Option[String] = None,
                       middleName: Option[String] = None,

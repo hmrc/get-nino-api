@@ -20,7 +20,7 @@ import play.api.Logger
 import play.api.libs.json._
 
 
-case class AddressLine(addressLine: String)
+final case class AddressLine(addressLine: String)
 
 object AddressLine {
 

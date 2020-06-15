@@ -20,7 +20,7 @@ import play.api.libs.json.{Json, OFormat, Reads}
 import play.api.libs.functional.syntax._
 import play.api.libs.json._
 
-case class LastEUAddress(
+final case class LastEUAddress(
                           addressLine1: Option[AddressLine] = None,
                           addressLine2: Option[AddressLine] = None,
                           addressLine3: Option[AddressLine] = None,

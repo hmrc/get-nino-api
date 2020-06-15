@@ -20,7 +20,7 @@ import play.api.Logger
 import play.api.libs.functional.syntax._
 import play.api.libs.json._
 
-case class Marriage(
+final case class Marriage(
                      maritalStatus: Option[MaritalStatus] = None,
                      startDate: Option[DateModel] = None,
                      endDate: Option[DateModel] = None,
@@ -38,7 +38,6 @@ object Marriage {
   private lazy val partnerNinoPath = __ \ "partnerNino"
   private lazy val spouseDateOfBirthPath = __ \ "birthDate"
   private lazy val spouseFirstNamePath = __ \ "forename"
-  private lazy val secondForenamePath = __ \ "secondForename"
   private lazy val spouseSurnamePath = __ \ "surname"
 
   private val ninoRegex = "^([ACEHJLMOPRSWXY][A-CEGHJ-NPR-TW-Z]|B[A-CEHJ-NPR-TW-Z]|" +

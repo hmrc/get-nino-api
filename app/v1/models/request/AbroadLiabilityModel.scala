@@ -18,7 +18,7 @@ package v1.models.request
 
 import play.api.libs.json.{Format, Json}
 
-case class AbroadLiabilityModel(
+final case class AbroadLiabilityModel(
                                  liabilityStartDate: Option[DateModel] = None,
                                  liabilityEndDate: Option[DateModel] = None
                                )

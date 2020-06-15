@@ -22,7 +22,7 @@ import java.time.format.DateTimeFormatter
 import play.api.Logger
 import play.api.libs.json._
 
-case class AddressModel(addressType: Option[AddressType],
+final case class AddressModel(addressType: Option[AddressType],
                         addressLine1: AddressLine,
                         addressLine2: Option[AddressLine],
                         addressLine3: Option[AddressLine],
