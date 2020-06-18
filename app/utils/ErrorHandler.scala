@@ -45,34 +45,27 @@ class ErrorHandler @Inject()(
       s" $statusCode and message: $message")
 
     statusCode match {
-      case BAD_REQUEST =>
-        Future.successful(BadRequest(Json.toJson(BadRequestError)))
-      case NOT_FOUND =>
-        Future.successful(NotFound(Json.toJson(NotFoundError)))
+      case BAD_REQUEST => Future.successful(BadRequestError.result)
+      case NOT_FOUND => Future.successful(NotFoundError.result)
+      case UNAUTHORIZED => Future.successful(UnauthorisedError(message).result)
+      case METHOD_NOT_ALLOWED => Future.successful(MethodNotAllowedError.result)
+      case UNSUPPORTED_MEDIA_TYPE => Future.successful(InvalidBodyTypeError.result)
       case _ =>
-        val errorCode = statusCode match {
-          case UNAUTHORIZED => UnauthorisedError
-          case UNSUPPORTED_MEDIA_TYPE => InvalidBodyTypeError
-          case _ => Error("INVALID_REQUEST", message)
-        }
-
-        Future.successful(Status(statusCode)(Json.toJson(errorCode)))
+        Logger.warn(s"Unexpected client error with statusCode: $statusCode and message: $message")
+        Future.successful(ServiceUnavailableError.result)
     }
   }
 
   override def onServerError(request: RequestHeader, ex: Throwable): Future[Result] = {
     Logger.warn(s"[ErrorHandler][onServerError] Internal server error in version 1, for (${request.method}) [${request.uri}] -> ", ex)
 
-    val (status, errorCode, _) = ex match {
-      case _: NotFoundException => (NOT_FOUND, NotFoundError, "ResourceNotFound")
-      case _: AuthorisationException => (UNAUTHORIZED, UnauthorisedError, "ClientError")
-      case _: JsValidationException => (BAD_REQUEST, BadRequestError, "ServerValidationError")
-      case e: HttpException => (e.responseCode, BadRequestError, "ServerValidationError")
-      case e: Upstream4xxResponse => (e.reportAs, BadRequestError, "ServerValidationError")
-      case e: Upstream5xxResponse => (e.reportAs, DownstreamError, "ServerInternalError")
-      case _ => (INTERNAL_SERVER_ERROR, DownstreamError, "ServerInternalError")
+    ex match {
+      case _: NotFoundException => Future.successful(NotFoundError.result)
+      case ex: AuthorisationException => Future.successful(UnauthorisedError(ex.reason).result)
+      case _: JsValidationException => Future.successful(BadRequestError.result)
+      case ex =>
+        Logger.warn(s"Server error due to unexpected exception: $ex")
+        Future.successful(ServiceUnavailableError.result)
     }
-
-    Future.successful(Status(status)(Json.toJson(errorCode)))
   }
 }

@@ -18,16 +18,25 @@ package v1.models.errors
 
 import play.api.libs.functional.syntax._
 import play.api.libs.json._
+import play.api.mvc.Result
+import play.api.mvc.Results.Status
+import play.api.http.Status._
 
-abstract class Error(val code: String, val message: String)
+sealed trait Error {
+  def statusCode: Int
+  def code: String
+  def message: String
 
-final case class GenericError(code$: String, message$: String) extends Error(code$, message$)
+  private def convertJsErrorsToReadableFormat: JsValue =
+    this match {
+      case validationError: JsonValidationError => Json.toJson(validationError)(Error.validationWrites)
+      case _ => Json.toJson(this)
+    }
+
+  def result: Result = Status(statusCode)(Json.toJson(convertJsErrorsToReadableFormat))
+}
 
 object Error {
-  def apply(code: String, message: String): Error = GenericError(code, message)
-
-  def unapply(arg: Error): Option[(String, String)] = Some((arg.code, arg.message))
-
   implicit val validationWrites: Writes[JsonValidationError] = Writes { model =>
     Json.obj(
       "code" -> model.code,
@@ -36,50 +45,96 @@ object Error {
     )
   }
 
-  implicit val writes: Writes[Error] = Json.writes[Error]
-  implicit val reads: Reads[Error] = (
-    (__ \ "code").read[String] and
-      (__ \ "reason").read[String]
-    ) (Error.apply _)
+  implicit val writes: Writes[Error] = (o: Error) => JsObject(Seq("code" -> JsString(o.code), "message" -> JsString(o.message)))
+
+
 }
 
-object ServiceUnavailableError extends Error("SERVER_ERROR", "Service unavailable.")
+object ServiceUnavailableError extends Error {
+  val statusCode: Int = SERVICE_UNAVAILABLE
+  val code: String = "SERVER_ERROR"
+  val message: String = "Service unavailable."
+}
 
-object NotFoundError extends Error("MATCHING_RESOURCE_NOT_FOUND", "Matching resource not found")
+object NotFoundError extends Error {
+  val statusCode: Int = NOT_FOUND
+  val code: String = "MATCHING_RESOURCE_NOT_FOUND"
+  val message: String = "Matching resource not found"
+}
 
-object DownstreamError extends Error("INTERNAL_SERVER_ERROR", "An internal server error occurred")
+final case class DownstreamValidationError(code: String, message: String) extends Error {
+  val statusCode: Int = BAD_REQUEST
+}
 
-object BadRequestError extends Error("INVALID_REQUEST", "Invalid request")
+object BadRequestError extends Error {
+  val statusCode: Int = BAD_REQUEST
+  val code: String = "INVALID_REQUEST"
+  val message: String = "Invalid request"
+}
 
-object UnauthorisedError extends Error("CLIENT_OR_AGENT_NOT_AUTHORISED", "The client and/or agent is not authorised")
+final case class UnauthorisedError(message: String) extends Error {
+  val statusCode: Int = UNAUTHORIZED
+  val code: String = "CLIENT_OR_AGENT_NOT_AUTHORISED"
+}
 
-object InvalidBodyTypeError extends Error("INVALID_BODY_TYPE", "Expecting text/json or application/json body")
+object InvalidBodyTypeError extends Error {
+  val statusCode: Int = UNSUPPORTED_MEDIA_TYPE
+  val code: String = "INVALID_BODY_TYPE"
+  val message: String = "Expecting text/json or application/json body"
+}
 
-object InvalidAcceptHeaderError extends Error("ACCEPT_HEADER_INVALID", "The accept header is missing or invalid")
+object InvalidAcceptHeaderError extends Error {
+  val statusCode: Int = NOT_ACCEPTABLE
+  val code: String = "ACCEPT_HEADER_INVALID"
+  val message: String = "The accept header is missing or invalid"
+}
 
-object UnsupportedVersionError extends Error("NOT_FOUND", "The requested resource could not be found")
+object MethodNotAllowedError extends Error {
+  val statusCode: Int = METHOD_NOT_ALLOWED
+  val code: String = "METHOD_NOT_ALLOWED"
+  val message: String = "The HTTP method is not valid on this endpoint"
+}
 
-object InvalidJsonResponseError extends Error("INVALID_JSON", "The Json returned from DES is invalid")
+object UnsupportedVersionError extends Error {
+  val statusCode: Int = UNSUPPORTED_MEDIA_TYPE
+  val code: String = "MATCHING_RESOURCE_NOT_FOUND"
+  val message: String = "Matching resource not found"
+}
 
-object UnsupportedAuthProvider extends Error("UNAUTHORISED", "The credentials used to access the API are invalid.")
+object OriginatorIdMissingError extends Error {
+  val statusCode: Int = BAD_REQUEST
+  val code: String = "BAD_REQUEST"
+  val message: String = "Originator ID is missing from the request headers."
+}
 
-object AuthDownError extends Error("BAD_GATEWAY", "Auth is currently down.")
+object OriginatorIdIncorrectError extends Error {
+  val statusCode: Int = BAD_REQUEST
+  val code: String = "BAD_REQUEST"
+  val message: String = "Originator ID is incorrect."
+}
 
-object OriginatorIdMissingError extends Error("BAD_REQUEST", "Originator ID is missing from the request headers.")
+object CorrelationIdMissingError extends Error {
+  val statusCode: Int = BAD_REQUEST
+  val code: String = "BAD_REQUEST"
+  val message: String = "The correlation ID is missing."
+}
 
-object OriginatorIdIncorrectError extends Error("BAD_REQUEST", "Originator ID is incorrect.")
+object CorrelationIdIncorrectError extends Error {
+  val statusCode: Int = BAD_REQUEST
+  val code: String = "BAD_REQUEST"
+  val message: String = "The correlation ID does not match the expected regex"
+}
 
-object CorrelationIdMissingError extends Error("BAD_REQUEST", "The correlation ID is missing.")
+final case class JsonValidationError(jsErrors: JsError) extends Error {
+  val statusCode: Int = BAD_REQUEST
+  val code: String = "JSON_VALIDATION_ERROR"
+  val message: String = "The provided JSON was unable to be validated as the selected model."
 
-object CorrelationIdIncorrectError extends Error("BAD_REQUEST", "The correlation ID does not match the expected regex.")
-
-final case class JsonValidationError(jsErrors: JsError)
-  extends Error("JSON_VALIDATION_ERROR", "The provided JSON was unable to be validated as the selected model.") {
-    val getErrors: JsValue = Json.toJson(jsErrors.errors.flatMap {
+  val getErrors: JsValue = Json.toJson(jsErrors.errors.flatMap {
     case (path, pathErrors) =>
-      pathErrors.map(
-        validationError => Json.obj("code" -> "BAD_REQUEST", "message" -> validationError.message, "path" -> path.toJsonString.substring(4))
+      val dropObjDot = 4
+      pathErrors.map(validationError =>
+        Json.obj("code" -> "BAD_REQUEST", "message" -> validationError.message, "path" -> path.toJsonString.drop(dropObjDot))
       )
-    }
-  )
+  })
 }

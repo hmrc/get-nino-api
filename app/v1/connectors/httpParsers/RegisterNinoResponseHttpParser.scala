@@ -18,40 +18,37 @@ package v1.connectors.httpParsers
 
 import play.api.Logger
 import play.api.http.Status
+import play.api.libs.json.{JsError, JsSuccess}
 import uk.gov.hmrc.http.{HttpReads, HttpResponse}
 import v1.connectors.httpParsers.HttpResponseTypes.HttpPostResponse
-import v1.models.errors.{DesError, Error}
+import v1.models.errors.{DesError, DownstreamValidationError, ServiceUnavailableError}
 
 import scala.util.{Failure, Success, Try}
 
 object RegisterNinoResponseHttpParser {
 
-  implicit object RegisterNinoResponseReads extends HttpReads[HttpPostResponse[Boolean]] {
-    override def read(method: String, url: String, response: HttpResponse): HttpPostResponse[Boolean] = {
-      response.status match {
-        case Status.ACCEPTED =>
+  implicit object RegisterNinoResponseReads extends HttpReads[HttpPostResponse] {
+    override def read(method: String, url: String, response: HttpResponse): HttpPostResponse = {
+      (response.status, Try(response.json.validate[DesError])) match {
+        case (Status.ACCEPTED, _) =>
           Logger.debug("[RegisterNinoResponseHttpParser][read] Status Accepted")
-          Right(true)
-        case status =>
-          Logger.warn(s"[RegisterNinoResponseHttpParser][read] Unexpected $status response returned")
-          val jsonBody = Try(response.json.validate[DesError])
-          jsonBody match {
-            case Success(value) =>
-              value.fold(
-                { invalid =>
-                  Logger.warn(s"[RegisterNinoResponseHttpParser][read] Unexpected $status response returned." +
-                    s"Couldn't parse error from DES.")
-                }, { error =>
-                  Logger.warn(s"[RegisterNinoResponseHttpParser][read] Unexpected $status response returned." +
-                    s"DES error code: ${error.code} DES error reason: ${error.reason}")
-                }
-              )
-            case Failure(_) =>
-              Logger.warn(s"[RegisterNinoResponseHttpParser][read] Unexpected $status response returned." +
-                s"Error getting body from DES response")
-
-          }
-          Left(Error(s"$status", "Downstream error returned from DES when submitting a NINO register request"))
+          Right(())
+        case (Status.FORBIDDEN, Success(JsSuccess(error, _))) =>
+          Logger.warn(s"[RegisterNinoResponseHttpParser][read] Downstream validation failed producing" +
+            s" Forbidden response returned from DES with error: $error")
+          Left(DownstreamValidationError(error.code, error.reason))
+        case (status, Success(JsSuccess(error, _))) =>
+          Logger.warn(s"[RegisterNinoResponseHttpParser][read] Unexpected $status response returned." +
+            s"DES error code: ${error.code} DES error reason: ${error.reason}")
+          Left(ServiceUnavailableError)
+        case (status, Success(JsError(err))) =>
+          Logger.warn(s"[RegisterNinoResponseHttpParser][read] Unexpected $status response returned." +
+            s"Couldn't parse error JSON from DES. Parsing error: $err")
+          Left(ServiceUnavailableError)
+        case (status, Failure(ex)) =>
+          Logger.warn(s"[RegisterNinoResponseHttpParser][read] Unexpected $status response returned." +
+            s"Exception reading JSON body from DES response: $ex")
+          Left(ServiceUnavailableError)
       }
     }
   }

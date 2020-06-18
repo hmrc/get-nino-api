@@ -16,18 +16,16 @@
 
 package v1.controllers.predicates
 
-import config.AppConfig
 import javax.inject.{Inject, Singleton}
 import org.slf4j.MDC
 import play.api.Logger
-import play.api.libs.json.Json
 import play.api.mvc.{Result, _}
 import uk.gov.hmrc.auth.core.AuthProvider.PrivilegedApplication
 import uk.gov.hmrc.auth.core._
+import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.http.HeaderNames.{xRequestId, xSessionId}
-import uk.gov.hmrc.http.{HeaderCarrier, Upstream5xxResponse}
 import uk.gov.hmrc.play.HeaderCarrierConverter
-import v1.models.errors.{AuthDownError, DownstreamError, Error => APIError}
+import v1.models.errors.{ServiceUnavailableError, UnauthorisedError}
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -35,7 +33,6 @@ import scala.concurrent.{ExecutionContext, Future}
 class PrivilegedApplicationPredicate @Inject()(
                                                 val authConnector: AuthConnector,
                                                 val controllerComponents: ControllerComponents,
-                                                appConfig: AppConfig,
                                                 override implicit val executionContext: ExecutionContext
                                               )
   extends ActionBuilder[Request, AnyContent] with AuthorisedFunctions with BaseController {
@@ -51,9 +48,10 @@ class PrivilegedApplicationPredicate @Inject()(
     } recover {
       case error: AuthorisationException =>
         Logger.debug(s"Authorization failed. Bearer token sent: ${hc.authorization}")
-        Unauthorized(Json.toJson(APIError("UNAUTHORISED", error.reason)))
-      case Upstream5xxResponse(_, BAD_GATEWAY, _) => BadGateway(Json.toJson(AuthDownError))
-      case _ => InternalServerError(Json.toJson(DownstreamError))
+        UnauthorisedError(error.reason).result
+      case ex =>
+        Logger.warn(s"Auth request failed with unexpected exception: $ex")
+        ServiceUnavailableError.result
     }
   }
 

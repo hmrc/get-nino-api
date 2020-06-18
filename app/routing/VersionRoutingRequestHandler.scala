@@ -24,7 +24,7 @@ import play.api.libs.json.Json
 import play.api.mvc.{DefaultActionBuilder, Handler, RequestHeader, Results}
 import play.api.routing.Router
 import utils.ErrorHandler
-import v1.models.errors.Error
+import v1.models.errors.{Error, InvalidAcceptHeaderError, NotFoundError}
 
 @Singleton
 class VersionRoutingRequestHandler @Inject()(versionRoutingMap: VersionRoutingMap,
@@ -37,23 +37,18 @@ class VersionRoutingRequestHandler @Inject()(versionRoutingMap: VersionRoutingMa
 
   private val featureSwitch = FeatureSwitch(config.featureSwitch)
 
-  private val unsupportedVersionAction = action(Results.NotFound(Json.toJson(Error("NOT_FOUND", "The requested resource could not be found"))))
-
-  private val invalidAcceptHeaderError = action(Results.NotAcceptable(Json.toJson(Error("ACCEPT_HEADER_INVALID", "The accept header is missing or invalid"))))
-
   override def routeRequest(request: RequestHeader): Option[Handler] = {
 
-    def documentHandler = routeWith(versionRoutingMap.defaultRouter)(request)
+    def documentHandler: Option[Handler] = routeWith(versionRoutingMap.defaultRouter)(request)
 
-    def apiHandler = Versions.getFromRequest(request) match {
+    def apiHandler: Option[Handler] = Versions.getFromRequest(request) match {
       case Some(version) =>
         versionRoutingMap.versionRouter(version) match {
           case Some(versionRouter) if featureSwitch.isVersionEnabled(version) => routeWith(versionRouter)(request)
-          case Some(_) => Some(unsupportedVersionAction)
-          case None => Some(unsupportedVersionAction)
+          case _ => Some(action(NotFoundError.result))
         }
       case None => {
-        Some(invalidAcceptHeaderError)
+        Some(action(InvalidAcceptHeaderError.result))
       }
     }
 

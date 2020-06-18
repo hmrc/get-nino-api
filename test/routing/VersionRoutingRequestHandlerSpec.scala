@@ -226,5 +226,4 @@ class VersionRoutingRequestHandlerSpec extends UnitSpec with Matchers with MockF
       }
     }
   }
-
 }

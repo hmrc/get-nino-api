@@ -91,8 +91,8 @@ class RegisterNinoISpec extends IntegrationBaseSpec {
 
             lazy val response: WSResponse = await(request().post(maxRegisterNinoRequestJson(false)))
             response.body[JsValue] shouldBe Json.obj(
-              "code" -> s"${Status.BAD_REQUEST}",
-              "message" -> "Downstream error returned from DES when submitting a NINO register request"
+              "code" -> s"SERVER_ERROR",
+              "message" -> "Service unavailable."
             )
           }
         }
@@ -135,7 +135,7 @@ class RegisterNinoISpec extends IntegrationBaseSpec {
 
           lazy val response: WSResponse = await(request().post(maxRegisterNinoRequestJson(true)))
           response.body[JsValue] shouldBe Json.obj(
-            "code" -> "UNAUTHORISED",
+            "code" -> "CLIENT_OR_AGENT_NOT_AUTHORISED",
             "message" -> "someReason"
           )
         }
@@ -143,7 +143,7 @@ class RegisterNinoISpec extends IntegrationBaseSpec {
 
       "auth is down" should {
 
-        "return a BadGateway(AuthDownError)" in new Test {
+        "return Service Unavailable" in new Test {
           appConfig.features.useDesStub(true)
 
           override def setupStubs(): StubMapping = {
@@ -153,15 +153,15 @@ class RegisterNinoISpec extends IntegrationBaseSpec {
 
           lazy val response: WSResponse = await(request().post(maxRegisterNinoRequestJson(true)))
           response.body[JsValue] shouldBe Json.obj(
-            "code" -> "BAD_GATEWAY",
-            "message" -> "Auth is currently down."
+            "code" -> "SERVER_ERROR",
+            "message" -> "Service unavailable."
           )
         }
       }
 
       "any other error code is returned" should {
 
-        "return a InternalServerError(DownstreamError)" in new Test {
+        "return a Service Unavailable" in new Test {
           appConfig.features.useDesStub(true)
 
           override def setupStubs(): StubMapping = {
@@ -171,8 +171,8 @@ class RegisterNinoISpec extends IntegrationBaseSpec {
 
           lazy val response: WSResponse = await(request().post(maxRegisterNinoRequestJson(true)))
           response.body[JsValue] shouldBe Json.obj(
-            "code" -> "INTERNAL_SERVER_ERROR",
-            "message" -> "An internal server error occurred"
+            "code" -> "SERVER_ERROR",
+            "message" -> "Service unavailable."
           )
         }
       }
@@ -208,8 +208,8 @@ class RegisterNinoISpec extends IntegrationBaseSpec {
 
             lazy val response: WSResponse = await(request().post(maxRegisterNinoRequestJson(false)))
             response.body[JsValue] shouldBe Json.obj(
-              "code" -> s"${Status.BAD_REQUEST}",
-              "message" -> "Downstream error returned from DES when submitting a NINO register request"
+              "code" -> "SERVER_ERROR",
+              "message" -> "Service unavailable."
             )
           }
         }

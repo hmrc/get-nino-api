@@ -20,47 +20,18 @@ import play.api.libs.json.{JsResultException, JsValue, Json}
 import support.UnitSpec
 
 class ErrorsSpec extends UnitSpec {
-
-  "Generate an error model from Json" when {
-    "valid Json is provided to parse" in {
-      val validJson = Json.obj(
-        "code" -> "SOME_THING_HAPPENED",
-        "reason" -> "OH NOES"
-      )
-
-      validJson.as[Error] shouldBe Error(
-        "SOME_THING_HAPPENED",
-        "OH NOES"
-      )
-    }
-  }
-
-  "Throw an exception" when {
-    "invalid Json is provided to parse" in {
-      val invalidJson = Json.obj(
-        "asdf" -> "HURGABLURG"
-      )
-
-      val expectedException = intercept[JsResultException] {
-        invalidJson.as[Error]
-      }
-
-      expectedException.getMessage should include("error.path.missing")
-    }
-  }
-
   "Serialising a single error into JSON" should {
     "generate the correct JSON" in {
       val expected = Json.parse(
         """
           |{
-          |  "code": "SOME_CODE",
-          |  "message": "some message"
+          |  "code": "SERVER_ERROR",
+          |  "message": "Service unavailable."
           |}
         """.stripMargin
       )
 
-      val error = Errors(Error("SOME_CODE", "some message"))
+      val error = ServiceUnavailableError
 
       val result = Json.toJson(error)
 
@@ -93,12 +64,12 @@ class ErrorsSpec extends UnitSpec {
           |{
           |  "errors": [
           |    {
-          |      "code": "SOME_CODE_1",
-          |      "message": "some message 1"
+          |      "code": "SERVER_ERROR",
+          |      "message": "Service unavailable."
           |    },
           |    {
-          |      "code": "SOME_CODE_2",
-          |      "message": "some message 2"
+          |      "code": "MATCHING_RESOURCE_NOT_FOUND",
+          |      "message": "Matching resource not found"
           |    }
           |  ]
           |}
@@ -107,8 +78,8 @@ class ErrorsSpec extends UnitSpec {
 
       val errors = Errors(
         Seq(
-          Error("SOME_CODE_1", "some message 1"),
-          Error("SOME_CODE_2", "some message 2")
+          ServiceUnavailableError,
+          NotFoundError
         )
       )
 
