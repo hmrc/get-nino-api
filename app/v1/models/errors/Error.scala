@@ -62,6 +62,12 @@ object NotFoundError extends Error {
   val message: String = "Matching resource not found"
 }
 
+final case class DownstreamValidationError(code: String, message: String) extends Error {
+  val statusCode: Int = BAD_REQUEST
+//  val code: String = "INVALID_REQUEST"
+//  val message: String = "Invalid request"
+}
+
 object BadRequestError extends Error {
   val statusCode: Int = BAD_REQUEST
   val code: String = "INVALID_REQUEST"
