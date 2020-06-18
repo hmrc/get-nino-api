@@ -31,8 +31,7 @@ trait JsonBodyUtil {
         Left(new JsonValidationError(jsErrors))
       case validatedModel: JsSuccess[T] => Right(validatedModel.value)
     }
-    case wat =>
-      println(s"********** + $wat")
+    case _ =>
       Logger.warn("[MicroserviceBaseController][parsedJsonBody] Body of request was not JSON.")
       Left(InvalidBodyTypeError)
   }

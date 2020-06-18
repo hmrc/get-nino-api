@@ -91,7 +91,11 @@ object MethodNotAllowedError extends Error {
   val message: String = "The HTTP method is not valid on this endpoint"
 }
 
-//object UnsupportedVersionError extends Error("NOT_FOUND", "The requested resource could not be found")
+object UnsupportedVersionError extends Error {
+  val statusCode: Int = UNSUPPORTED_MEDIA_TYPE
+  val code: String = "MATCHING_RESOURCE_NOT_FOUND"
+  val message: String = "Matching resource not found"
+}
 
 object OriginatorIdMissingError extends Error {
   val statusCode: Int = BAD_REQUEST
@@ -124,9 +128,9 @@ final case class JsonValidationError(jsErrors: JsError) extends Error {
 
   val getErrors: JsValue = Json.toJson(jsErrors.errors.flatMap {
     case (path, pathErrors) =>
+      val dropObjDot = 4
       pathErrors.map(validationError =>
-        Json.obj("code" -> "BAD_REQUEST", "message" -> validationError.message, "path" -> path.toJsonString.substring(4))
+        Json.obj("code" -> "BAD_REQUEST", "message" -> validationError.message, "path" -> path.toJsonString.drop(dropObjDot))
       )
-  }
-)
+  })
 }
