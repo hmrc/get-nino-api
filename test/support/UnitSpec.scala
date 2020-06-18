@@ -18,6 +18,7 @@ package support
 
 import org.scalamock.scalatest.MockFactory
 import org.scalatest.{EitherValues, Matchers, WordSpecLike}
+import play.api.libs.json.{JsObject, JsString}
 import play.api.test.{DefaultAwaitTimeout, FutureAwaits}
 
 trait UnitSpec extends WordSpecLike
@@ -25,4 +26,9 @@ trait UnitSpec extends WordSpecLike
   with EitherValues
   with Matchers
   with FutureAwaits
-  with DefaultAwaitTimeout
+  with DefaultAwaitTimeout {
+
+  protected def flatJsObject(properties: (String, String)*): JsObject = JsObject(
+    properties.map(prop => (prop._1, JsString(prop._2)))
+  )
+}

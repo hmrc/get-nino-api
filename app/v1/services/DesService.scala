@@ -17,9 +17,11 @@
 package v1.services
 
 import javax.inject.{Inject, Singleton}
-import uk.gov.hmrc.http.HeaderCarrier
+import play.api.Logger
+import uk.gov.hmrc.http.{BadGatewayException, GatewayTimeoutException, HeaderCarrier}
 import v1.connectors.DesConnector
 import v1.connectors.httpParsers.HttpResponseTypes.HttpPostResponse
+import v1.models.errors.ServiceUnavailableError
 import v1.models.request.NinoApplication
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -30,8 +32,15 @@ class DesService @Inject()(
                           ) {
 
   def registerNino(ninoApplication: NinoApplication)
-                  (implicit hc: HeaderCarrier, ec: ExecutionContext): Future[HttpPostResponse[Boolean]] = {
-    desConnector.sendRegisterRequest(ninoApplication)
+                  (implicit hc: HeaderCarrier, ec: ExecutionContext): Future[HttpPostResponse] = {
+    desConnector.sendRegisterRequest(ninoApplication).recover {
+      case e: GatewayTimeoutException =>
+        Logger.warn(s"Message to DES timed out. GatewayTimeoutException: $e")
+        Left(ServiceUnavailableError)
+      case e: BadGatewayException =>
+        Logger.warn(s"Message to DES failed. BadGatewayException: $e")
+        Left(ServiceUnavailableError)
+    }
   }
 
 }

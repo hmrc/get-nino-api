@@ -19,12 +19,11 @@ package v1.controllers
 import config.AppConfig
 import javax.inject.{Inject, Singleton}
 import play.api.Logger
-import play.api.libs.json.{JsValue, Json}
+import play.api.libs.json.Json
 import play.api.mvc._
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.bootstrap.controller.BackendController
 import v1.controllers.predicates.{CorrelationIdPredicate, OriginatorIdPredicate, PrivilegedApplicationPredicate}
-import v1.models.errors.{JsonValidationError, Error => NinoError}
 import v1.models.request.NinoApplication
 import v1.services.DesService
 import v1.utils.JsonBodyUtil
@@ -43,7 +42,6 @@ class RegisterNinoController @Inject()(
                                       (implicit val ec: ExecutionContext) extends BackendController(cc) with JsonBodyUtil {
 
   def register(): Action[AnyContent] = (privilegedApplicationPredicate andThen originatorIdPredicate andThen correlationIdPredicate).async { implicit request =>
-
     val optionalOriginatorId = request.headers.get("OriginatorId")
     val optionalCorrelationId = request.headers.get("CorrelationId")
 
@@ -53,40 +51,23 @@ class RegisterNinoController @Inject()(
       case _ => hc
     }
 
-    request.body match {
-      case jsonContent: AnyContentAsJson if appConfig.features.logDwpJson() =>
-        Logger.info(s"Logging JSON body of incoming request: ${jsonContent.json}")
-      case _ =>
-        Logger.warn("Incoming request did not have a JSON body.")
+    if (appConfig.features.logDwpJson()) request.body match {
+      case jsonContent: AnyContentAsJson => Logger.info(s"Logging JSON body of incoming request: ${jsonContent.json}")
+      case _ => Logger.warn("Incoming request did not have a JSON body.")
     }
 
     Future(parsedJsonBody[NinoApplication]).flatMap {
       case Right(ninoModel) => desService.registerNino(ninoModel)(hcWithOriginatorIdAndCorrelationId, ec).map {
         case Right(_) => Accepted
-        case Left(errors) => badGatewayWithLog(Json.toJson(errors))
+        case Left(error) => logErrorResult(error)
       }
-      case Left(errors) => Future.successful(badRequestWithLog(convertJsErrorsToReadableFormat(errors)))
-    }
-
-  }
-
-  private def badGatewayWithLog[T <: JsValue](input: T)(implicit hc: HeaderCarrier): Result = {
-    Logger.debug(s"Header Carrier for failed 502 request: $hc")
-    Logger.warn(Json.prettyPrint(input))
-    BadGateway(input)
-  }
-
-  private def badRequestWithLog[T <: JsValue](input: T)(implicit hc: HeaderCarrier): Result = {
-    Logger.debug(s"Header Carrier for failed 400 request: $hc")
-    Logger.warn(Json.prettyPrint(input))
-    BadRequest(input)
-  }
-
-  private[controllers] def convertJsErrorsToReadableFormat(error: NinoError): JsValue = {
-    error match {
-      case validationError: JsonValidationError => Json.toJson(validationError)(NinoError.validationWrites)
-      case _ => Json.toJson(error)
+      case Left(error) => Future.successful(logErrorResult(error))
     }
   }
 
+  private def logErrorResult(error: v1.models.errors.Error)(implicit  hc: HeaderCarrier): Result = {
+    Logger.debug(s"Header Carrier for failed request: $hc")
+    Logger.warn(Json.prettyPrint(Json.toJson(error)))
+    error.result
+  }
 }

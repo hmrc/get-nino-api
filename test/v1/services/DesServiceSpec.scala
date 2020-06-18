@@ -20,7 +20,7 @@ import support.UnitSpec
 import uk.gov.hmrc.http.HeaderCarrier
 import utils.NinoApplicationTestData._
 import v1.connectors.DesConnector
-import v1.models.errors.Error
+import v1.models.errors.{Error, ServiceUnavailableError}
 import v1.models.request.NinoApplication
 
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -35,20 +35,19 @@ class DesServiceSpec extends UnitSpec {
   "registerNino" should {
     "return a des response model" when {
       "a response is returned from the connector" in {
-        val returnedResponse = true
 
         (mockConnector.sendRegisterRequest(_: NinoApplication)(_: HeaderCarrier, _: ExecutionContext))
           .expects(maxRegisterNinoRequestModel, *, *)
-          .returns(Future.successful(Right(returnedResponse)))
+          .returns(Future.successful(Right(())))
 
         val response = await(service.registerNino(maxRegisterNinoRequestModel))
 
-        response shouldBe Right(returnedResponse)
+        response shouldBe Right(())
       }
     }
     "return an error model" when {
       "an error is returned from the connector" in {
-        val returnedError = Error("A_PRESET_CODE", "this is an error message")
+        val returnedError = ServiceUnavailableError
 
         (mockConnector.sendRegisterRequest(_: NinoApplication)(_: HeaderCarrier, _: ExecutionContext))
           .expects(maxRegisterNinoRequestModel, *, *)

@@ -35,7 +35,7 @@ class OriginatorIdPredicate @Inject()(
         Future.successful(None)
       } else {
         Logger.warn("[OriginatorIdPredicate][Filter] - OriginatorId does not match regex")
-        Future.successful(Some(BadRequest(Json.toJson(OriginatorIdIncorrectError))))
+        Future.successful(Some(OriginatorIdIncorrectError.result))
       }
 
       case None =>
