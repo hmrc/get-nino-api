@@ -93,9 +93,9 @@ object MethodNotAllowedError extends ErrorResponse {
 }
 
 object UnsupportedVersionError extends ErrorResponse {
-  val statusCode: Int = UNSUPPORTED_MEDIA_TYPE
+  val statusCode: Int = NOT_FOUND
   val code: String = "MATCHING_RESOURCE_NOT_FOUND"
-  val message: String = "Matching resource not found"
+  val message: String = "The version of the requested resource specified in the Accept header does not exist or is not supported"
 }
 
 object OriginatorIdMissingError extends ErrorResponse {

@@ -23,7 +23,7 @@ import play.api.http.{DefaultHttpRequestHandler, HttpConfiguration, HttpFilters}
 import play.api.mvc.{DefaultActionBuilder, Handler, RequestHeader}
 import play.api.routing.Router
 import utils.ErrorHandler
-import v1.models.errors.{InvalidAcceptHeaderError, NotFoundError}
+import v1.models.errors.{InvalidAcceptHeaderError, UnsupportedVersionError}
 
 @Singleton
 class VersionRoutingRequestHandler @Inject()(versionRoutingMap: VersionRoutingMap,
@@ -44,7 +44,7 @@ class VersionRoutingRequestHandler @Inject()(versionRoutingMap: VersionRoutingMa
       case Some(version) =>
         versionRoutingMap.versionRouter(version) match {
           case Some(versionRouter) if featureSwitch.isVersionEnabled(version) => routeWith(versionRouter)(request)
-          case _ => Some(action(NotFoundError.result))
+          case _ => Some(action(UnsupportedVersionError.result))
         }
       case None => {
         Some(action(InvalidAcceptHeaderError.result))
