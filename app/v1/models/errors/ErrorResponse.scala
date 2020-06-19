@@ -44,7 +44,11 @@ object ErrorResponse {
     )
   }
 
+<<<<<<< Updated upstream:app/v1/models/errors/ErrorResponse.scala
   implicit val writes: Writes[ErrorResponse] = (o: ErrorResponse) => JsObject(Seq("code" -> JsString(o.code), "message" -> JsString(o.message)))
+=======
+  implicit val writes: Writes[Error] = (o: Error) => JsObject(Seq("code" -> JsString(o.code), "message" -> JsString(o.message)))
+>>>>>>> Stashed changes:app/v1/models/errors/Error.scala
 }
 
 object ServiceUnavailableError extends ErrorResponse {
