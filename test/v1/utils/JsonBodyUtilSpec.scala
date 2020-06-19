@@ -21,7 +21,7 @@ import play.api.mvc.AnyContentAsJson
 import play.api.test.FakeRequest
 import support.UnitSpec
 import utils.NinoApplicationTestData.{maxRegisterNinoRequestJson, maxRegisterNinoRequestModel}
-import v1.models.errors.{Error, InvalidBodyTypeError}
+import v1.models.errors.{ErrorResponse, InvalidBodyTypeError}
 import v1.models.request.NinoApplication
 
 class JsonBodyUtilSpec extends UnitSpec {
@@ -54,7 +54,7 @@ class JsonBodyUtilSpec extends UnitSpec {
             "putNotThe" -> "correctJson"
           ))
 
-        val invalidParsedJson: Either[Error, NinoApplication] = testUtil.parsedJsonBody[NinoApplication]
+        val invalidParsedJson: Either[ErrorResponse, NinoApplication] = testUtil.parsedJsonBody[NinoApplication]
         invalidParsedJson.isLeft shouldBe true
 
         invalidParsedJson.left.get.code shouldBe "JSON_VALIDATION_ERROR"
