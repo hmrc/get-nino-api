@@ -65,7 +65,7 @@ class RegisterNinoController @Inject()(
     }
   }
 
-  private def logErrorResult(error: v1.models.errors.Error)(implicit  hc: HeaderCarrier): Result = {
+  private def logErrorResult(error: v1.models.errors.ErrorResponse)(implicit hc: HeaderCarrier): Result = {
     Logger.debug(s"Header Carrier for failed request: $hc")
     Logger.warn(Json.prettyPrint(Json.toJson(error)))
     error.result

@@ -20,11 +20,10 @@ import config.{AppConfig, FeatureSwitch}
 import definition.Versions
 import javax.inject.{Inject, Singleton}
 import play.api.http.{DefaultHttpRequestHandler, HttpConfiguration, HttpFilters}
-import play.api.libs.json.Json
-import play.api.mvc.{DefaultActionBuilder, Handler, RequestHeader, Results}
+import play.api.mvc.{DefaultActionBuilder, Handler, RequestHeader}
 import play.api.routing.Router
 import utils.ErrorHandler
-import v1.models.errors.{Error, InvalidAcceptHeaderError, NotFoundError}
+import v1.models.errors.{InvalidAcceptHeaderError, NotFoundError}
 
 @Singleton
 class VersionRoutingRequestHandler @Inject()(versionRoutingMap: VersionRoutingMap,

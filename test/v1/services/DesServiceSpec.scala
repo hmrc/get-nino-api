@@ -20,7 +20,7 @@ import support.UnitSpec
 import uk.gov.hmrc.http.HeaderCarrier
 import utils.NinoApplicationTestData._
 import v1.connectors.DesConnector
-import v1.models.errors.{Error, ServiceUnavailableError}
+import v1.models.errors.{ErrorResponse, ServiceUnavailableError}
 import v1.models.request.NinoApplication
 
 import scala.concurrent.ExecutionContext.Implicits.global

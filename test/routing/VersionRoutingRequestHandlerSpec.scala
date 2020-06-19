@@ -56,14 +56,17 @@ class VersionRoutingRequestHandlerSpec extends UnitSpec with Matchers with MockF
   }
 
   class Test(implicit acceptHeader: Option[String]) {
-    val httpConfiguration = HttpConfiguration("context")
+    val httpConfiguration: HttpConfiguration = HttpConfiguration("context")
     val auditConnector: AuditConnector = mock[AuditConnector]
     val httpAuditEvent: HttpAuditEvent = mock[HttpAuditEvent]
-    val configuration = Configuration("appName" -> "myApp", "bootstrap.errorHandler.warnOnly.statusCodes" -> Seq.empty[Int])
+    val configuration: Configuration =
+      Configuration("appName" -> "myApp", "bootstrap.errorHandler.warnOnly.statusCodes" -> Seq.empty[Int])
 
     private val errorHandler = new ErrorHandler(configuration, auditConnector, httpAuditEvent)
     private val filters = mock[HttpFilters]
     (filters.filters _).stubs().returns(Seq.empty)
+
+    private val actionBuilder: DefaultActionBuilder = DefaultActionBuilder(new play.api.mvc.BodyParsers.Default())
 
     MockedAppConfig.featureSwitch.returns(Some(Configuration(ConfigFactory.parseString(
       """
@@ -73,7 +76,7 @@ class VersionRoutingRequestHandlerSpec extends UnitSpec with Matchers with MockF
 
     //noinspection ScalaDeprecation
     val requestHandler: VersionRoutingRequestHandler =
-      new VersionRoutingRequestHandler(routingMap, errorHandler, httpConfiguration, mockAppConfig, filters, Action)
+      new VersionRoutingRequestHandler(routingMap, errorHandler, httpConfiguration, mockAppConfig, filters, actionBuilder)
 
     def stubHandling(router: Router, path: String)(handler: Option[Handler]): CallHandler1[RequestHeader, Option[Handler]] =
       (router.handlerFor _)
@@ -105,7 +108,6 @@ class VersionRoutingRequestHandlerSpec extends UnitSpec with Matchers with MockF
     implicit val acceptHeader: None.type = None
 
     "return 406" in new Test {
-      val handler: Handler = mock[Handler]
       stubHandling(defaultRouter, "path")(None)
 
       val request: RequestHeader = buildRequest("path")
@@ -134,7 +136,6 @@ class VersionRoutingRequestHandlerSpec extends UnitSpec with Matchers with MockF
     implicit val acceptHeader: Some[String] = Some("application/vnd.hmrc.5.0+json")
 
     "return 404" in new Test {
-      val handler: Handler = mock[Handler]
       stubHandling(defaultRouter, "path")(None)
 
       private val request = buildRequest("path")
@@ -154,8 +155,6 @@ class VersionRoutingRequestHandlerSpec extends UnitSpec with Matchers with MockF
 
     "the version has a route for the resource" must {
       "return 404 Not Found" in new Test {
-        val handler: Handler = mock[Handler]
-
         stubHandling(defaultRouter, "path")(None)
 
         private val request = buildRequest("path")

@@ -16,8 +16,8 @@
 
 package v1.connectors.httpParsers
 
-import v1.models.errors.Error
+import v1.models.errors.ErrorResponse
 
 object HttpResponseTypes {
-  type HttpPostResponse = Either[Error, Unit]
+  type HttpPostResponse = Either[ErrorResponse, Unit]
 }

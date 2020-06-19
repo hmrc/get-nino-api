@@ -25,7 +25,7 @@ import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.bootstrap.http.HttpClient
 import utils.ItNinoApplicationTestData._
 import v1.connectors.httpParsers.HttpResponseTypes.HttpPostResponse
-import v1.models.errors.{Error, ServiceUnavailableError}
+import v1.models.errors.ServiceUnavailableError
 import v1.stubs.AuditStub
 
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -64,17 +64,13 @@ class DesConnectorISpec extends IntegrationBaseSpec {
     "the feature switch is on" should {
 
       "send an Environment header in the request" in new Test {
-
         AuditStub.audit()
         stubSuccess("/register")
 
-        val response: HttpPostResponse = {
-          appConfig.features.useDesStub(true)
-          await(connector.sendRegisterRequest(maxRegisterNinoRequestModel))
-        }
+        appConfig.features.useDesStub(true)
+        await(connector.sendRegisterRequest(maxRegisterNinoRequestModel))
 
         verify(postRequestedFor(urlEqualTo("/register")).withHeader("Environment", equalTo("local")))
-
       }
 
       "return a DesResponse model" when {
