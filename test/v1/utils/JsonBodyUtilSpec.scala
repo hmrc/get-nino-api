@@ -16,7 +16,7 @@
 
 package v1.utils
 
-import play.api.libs.json.{Json, JsonValidationError}
+import play.api.libs.json.Json
 import play.api.mvc.AnyContentAsJson
 import play.api.test.FakeRequest
 import support.UnitSpec
@@ -25,7 +25,6 @@ import v1.models.errors.{ErrorResponse, InvalidBodyTypeError}
 import v1.models.request.NinoApplication
 
 class JsonBodyUtilSpec extends UnitSpec {
-
   object testUtil extends JsonBodyUtil
 
   "parsedBodyJson" should {
