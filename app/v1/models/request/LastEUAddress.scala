@@ -16,9 +16,8 @@
 
 package v1.models.request
 
-import play.api.libs.json.{Json, OFormat, Reads}
 import play.api.libs.functional.syntax._
-import play.api.libs.json._
+import play.api.libs.json.{Json, Reads, _}
 
 final case class LastEUAddress(
                           addressLine1: Option[AddressLine] = None,
@@ -29,7 +28,6 @@ final case class LastEUAddress(
                         )
 
 object LastEUAddress {
-
   implicit val reads: Reads[LastEUAddress] = (
     (__ \ "line1").readNullable[AddressLine] and
     (__ \ "line2").readNullable[AddressLine] and

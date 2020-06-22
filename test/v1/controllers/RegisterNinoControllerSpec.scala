@@ -27,7 +27,7 @@ import uk.gov.hmrc.auth.core.{AuthConnector, InvalidBearerToken}
 import uk.gov.hmrc.http.{HeaderCarrier, HeaderNames}
 import utils.NinoApplicationTestData.{maxRegisterNinoRequestJson, maxRegisterNinoRequestModel}
 import v1.controllers.predicates.{CorrelationIdPredicate, OriginatorIdPredicate, PrivilegedApplicationPredicate}
-import v1.models.errors.{BadRequestError, InvalidBodyTypeError, ErrorResponse => NinoError, JsonValidationError => NinoJsonValidationError}
+import v1.models.errors.{InvalidBodyTypeError, ErrorResponse => NinoError, JsonValidationError => NinoJsonValidationError}
 import v1.models.request.NinoApplication
 import v1.services.DesService
 
@@ -80,7 +80,7 @@ class RegisterNinoControllerSpec extends ControllerBaseSpec {
 
           (mockService.registerNino(_: NinoApplication)(_: HeaderCarrier, _: ExecutionContext))
             .expects(maxRegisterNinoRequestModel, *, *)
-            .returns(Future.successful(Right(true)))
+            .returns(Future.successful(Right(())))
 
           val request = fakeRequest
             .withHeaders(

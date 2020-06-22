@@ -19,8 +19,8 @@ package v1.config.featureSwitch
 import play.api.Configuration
 
 trait BaseFeature {
-
   def getConfig(key: String)(implicit config: Configuration): String =
-    sys.props.get(key).fold(config.getString(key).getOrElse(throw new RuntimeException(s"Missing config for key: $key")))(x => x)
-
+    sys.props.get(key)
+      .orElse(config.getOptional[String](key))
+      .getOrElse(throw new RuntimeException(s"Missing config for key: $key"))
 }
