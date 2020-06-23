@@ -56,7 +56,6 @@ object AddressModel {
       )
       case _ => true
     }
-
   }
 
   private[models] def validateDateAsPriorDate(maybeEarlierDate: Option[DateModel], maybeLaterDate: Option[DateModel], canBeEqual: Boolean = true): Boolean =
