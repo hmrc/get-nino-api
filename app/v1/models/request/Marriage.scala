@@ -45,14 +45,13 @@ object Marriage {
 
   private val stringRegex = "^(?=.{1,35}$)([A-Z]([-'.&\\\\/ ]{0,1}[A-Za-z]+)*[A-Za-z]?)$"
 
-  private[models] def stringValidation(item: Option[String], itemName: String): Boolean = {
-    if (item.fold(true)(dataItem => dataItem.matches(stringRegex))) {
+  private[models] def stringValidation(item: Option[String], itemName: String): Boolean =
+    if (item.forall(_.matches(stringRegex))) {
       true
     } else {
-      Logger.warn(s"[OriginData][stringValidation] - $itemName does not match regex")
+      Logger.warn(s"[Marriage][stringValidation] - $itemName does not match regex")
       false
     }
-  }
 
   private[models] def commonError(fieldName: String) = {
     JsonValidationError(s"There has been an error parsing the $fieldName field. Please check against the regex.")

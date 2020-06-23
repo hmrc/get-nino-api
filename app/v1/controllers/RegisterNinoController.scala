@@ -52,8 +52,10 @@ class RegisterNinoController @Inject()(
     }
 
     if (appConfig.features.logDwpJson()) request.body match {
-      case jsonContent: AnyContentAsJson => Logger.info(s"Logging JSON body of incoming request: ${jsonContent.json}")
-      case _ => Logger.warn("Incoming request did not have a JSON body.")
+      case jsonContent: AnyContentAsJson =>
+        Logger.info(s"[RegisterNinoController][register] Logging JSON body of incoming request: ${jsonContent.json}")
+      case _ =>
+        Logger.warn("[RegisterNinoController][register] Incoming request did not have a JSON body.")
     }
 
     Future(parsedJsonBody[NinoApplication]).flatMap {
@@ -66,8 +68,8 @@ class RegisterNinoController @Inject()(
   }
 
   private def logErrorResult(error: v1.models.errors.ErrorResponse)(implicit hc: HeaderCarrier): Result = {
-    Logger.debug(s"Header Carrier for failed request: $hc")
-    Logger.warn(Json.prettyPrint(Json.toJson(error)))
+    Logger.debug(s"[RegisterNinoController][logErrorResult] Header Carrier for failed request: $hc")
+    Logger.warn(s"[RegisterNinoController][logErrorResult] Error JSON: ${Json.prettyPrint(Json.toJson(error))}")
     error.result
   }
 }

@@ -48,14 +48,13 @@ object OriginData {
 
   private val stringRegex = "^(?=.{1,35}$)([A-Z]([-'.&\\\\/ ]{0,1}[A-Za-z]+)*[A-Za-z]?)$"
 
-  private[models] def stringValidation(item: Option[String], itemName: String): Boolean = {
-    if (item.fold(true)(dataItem => dataItem.matches(stringRegex))) {
+  private[models] def stringValidation(item: Option[String], itemName: String): Boolean =
+    if (item.forall(_.matches(stringRegex))) {
       true
     } else {
       Logger.warn(s"[OriginData][stringValidation] - $itemName does not match regex")
       false
     }
-  }
 
   private[models] def countryCodeValidation: Option[Int] => Boolean = {
     case Some(countryCode) =>
