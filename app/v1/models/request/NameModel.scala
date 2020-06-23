@@ -68,10 +68,7 @@ object NameModel {
   private[models] def validateTitle: Option[String] => Boolean = {
     case Some(inputString) =>
       val passedValidation = validTitles.contains(inputString)
-      if (!passedValidation) {
-        Logger.debug(s"[NameModel][validateTitle] The following title failed validation: $inputString")
-        Logger.warn(s"[NameModel][validateTitle] Unable to parse entered title.")
-      }
+      if (!passedValidation) Logger.warn(s"[NameModel][validateTitle] Unable to parse entered title.")
       passedValidation
     case None => true
   }
@@ -83,10 +80,7 @@ object NameModel {
 
   private[models] def validateType: String => Boolean = { inputString =>
     val passedValidation = validTypes.contains(inputString)
-    if (!passedValidation) {
-      Logger.debug(s"[NameModel][validateType] The following name type failed validation: $inputString")
-      Logger.warn(s"[NameModel][validateType] Unable to parse entered name type.")
-    }
+    if (!passedValidation) Logger.warn(s"[NameModel][validateType] Unable to parse entered name type.")
     passedValidation
   }
 
@@ -95,10 +89,7 @@ object NameModel {
   private[models] def validateName[T](input: T, fieldName: String): Boolean = {
     val checkValidity: String => Boolean = { fieldValue =>
       val passedValidation = fieldValue.matches(nameRegex)
-      if (!passedValidation) {
-        Logger.debug(s"[NameModel][validateName] Unable to validate the name: $fieldValue")
-        Logger.warn(s"[NameModel][validateName] Unable to validate the field: $fieldName")
-      }
+      if (!passedValidation) Logger.warn(s"[NameModel][validateName] Unable to validate the field: $fieldName")
       passedValidation
     }
 

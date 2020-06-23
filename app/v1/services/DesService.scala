@@ -34,11 +34,11 @@ class DesService @Inject()(
   def registerNino(ninoApplication: NinoApplication)
                   (implicit hc: HeaderCarrier, ec: ExecutionContext): Future[HttpPostResponse] = {
     desConnector.sendRegisterRequest(ninoApplication).recover {
-      case e: GatewayTimeoutException =>
-        Logger.warn(s"Message to DES timed out. GatewayTimeoutException: $e")
+      case ex: GatewayTimeoutException =>
+        Logger.warn(s"[DesService][registerNino] Message to DES timed out. GatewayTimeoutException: $ex")
         Left(ServiceUnavailableError)
-      case e: BadGatewayException =>
-        Logger.warn(s"Message to DES failed. BadGatewayException: $e")
+      case ex: BadGatewayException =>
+        Logger.warn(s"[DesService][registerNino] Message to DES failed. BadGatewayException: $ex")
         Left(ServiceUnavailableError)
     }
   }

@@ -48,7 +48,7 @@ class ErrorHandler @Inject()(
       case METHOD_NOT_ALLOWED => Future.successful(MethodNotAllowedError.result)
       case UNSUPPORTED_MEDIA_TYPE => Future.successful(InvalidBodyTypeError.result)
       case _ =>
-        Logger.warn(s"Unexpected client error with statusCode: $statusCode and message: $message")
+        Logger.warn(s"[ErrorHandler][onClientError] Unexpected client error type")
         Future.successful(ServiceUnavailableError.result)
     }
   }
@@ -61,7 +61,7 @@ class ErrorHandler @Inject()(
       case ex: AuthorisationException => Future.successful(UnauthorisedError(ex.reason).result)
       case _: JsValidationException => Future.successful(BadRequestError.result)
       case ex =>
-        Logger.warn(s"Server error due to unexpected exception: $ex")
+        Logger.warn(s"[ErrorHandler][onServerError] Server error due to unexpected exception: $ex")
         Future.successful(ServiceUnavailableError.result)
     }
   }

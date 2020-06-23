@@ -28,9 +28,9 @@ object Postcode {
 
   def regexCheckValidation: String => Boolean = postCodeInput => {
     val passedValidation = postCodeInput.matches(regex)
-    if(!passedValidation) {
-      Logger.warn("[Postcode][regexCheckValidation] - Invalid postcode has been provided.")
-    }
+
+    if(!passedValidation) Logger.warn("[Postcode][regexCheckValidation] - Invalid postcode has been provided.")
+
     passedValidation
   }
 

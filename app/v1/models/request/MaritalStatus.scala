@@ -38,17 +38,16 @@ object MaritalStatus {
     CIVIL_PARTNERSHIP_ANNULLED
   ).map(status => status.value -> status).toMap
 
+  val maritalStatusErrorMessage = "Marital Status is invalid. Please check against valid types."
+  val maritalStatusError = new JsonValidationError(Seq(maritalStatusErrorMessage))
+
   def validateMaritalStatus(maritalStatus: String): Boolean = {
-    val allStatusesAsString: Seq[String] = allStatuses.values.map(_.value).toSeq
+    val passedValidation = allStatuses.values.map(_.value).toSeq.contains(maritalStatus)
 
-    val passedValidation = allStatusesAsString.contains(maritalStatus)
-
-    if(!passedValidation) Logger.info("Marital Status is invalid. Please check against valid types.")
+    if(!passedValidation) Logger.info(s"[MaritalStatus][validateMaritalStatus] $maritalStatusErrorMessage")
 
     passedValidation
   }
-
-  val maritalStatusError = new JsonValidationError(Seq("Marital Status is invalid. Please check against valid types."))
 
   implicit val reads: Reads[MaritalStatus] = for {
     maritalStatusValue <- __.read[String].filter(maritalStatusError)(validateMaritalStatus)

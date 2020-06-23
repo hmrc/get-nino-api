@@ -49,14 +49,13 @@ object AddressModel {
   private[models] def checkPostcodeMandated(postcode: Option[Postcode], countryCode: String): Boolean = {
     countryCode.toUpperCase match {
       case "GBR" | "GGY" | "IMN" => postcode.fold({
-        Logger.warn(s"[AddressModel][postcodeValidation] - $postcode is required if country code is GBR")
+        Logger.warn("[AddressModel][postcodeValidation] - postcode is required if country code is GBR")
         false
       })(
         _ => true
       )
       case _ => true
     }
-
   }
 
   private[models] def validateDateAsPriorDate(maybeEarlierDate: Option[DateModel], maybeLaterDate: Option[DateModel], canBeEqual: Boolean = true): Boolean =
