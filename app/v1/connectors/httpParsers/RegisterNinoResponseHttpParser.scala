@@ -21,7 +21,7 @@ import play.api.http.Status
 import play.api.libs.json.{JsError, JsSuccess}
 import uk.gov.hmrc.http.{HttpReads, HttpResponse}
 import v1.connectors.httpParsers.HttpResponseTypes.HttpPostResponse
-import v1.models.errors.{DesError, DownstreamValidationError, ServiceUnavailableError}
+import v1.models.errors.{DesError, DesErrorTranslator, DownstreamValidationError, ServiceUnavailableError}
 
 import scala.util.{Failure, Success, Try}
 
@@ -36,7 +36,7 @@ object RegisterNinoResponseHttpParser {
         case (Status.FORBIDDEN, Success(JsSuccess(error, _))) =>
           Logger.warn(s"[RegisterNinoResponseHttpParser][read] Downstream validation failed producing" +
             s" Forbidden response returned from DES with error: $error")
-          Left(DownstreamValidationError(error.code, error.reason))
+          Left(DesErrorTranslator.translate(error))
         case (status, Success(JsSuccess(error, _))) =>
           Logger.warn(s"[RegisterNinoResponseHttpParser][read] Unexpected $status response returned." +
             s"DES error code: ${error.code} DES error reason: ${error.reason}")
