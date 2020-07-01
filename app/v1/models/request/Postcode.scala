@@ -23,8 +23,7 @@ final case class Postcode(postCode: String)
 
 object Postcode {
 
-  val regex: String = "^(([A-Z]{1,2})|([A-Z]{1,2}[0-9][0-9A-Z]?)|([A-Z]{1,2}[0-9]" +
-    "[0-9A-Z]? ?[0-9])|([A-Z]{1,2}[0-9][0-9A-Z]? ?[0-9][A-Z]{2})|(BFPO ?[0-9]{1,4}))$"
+  val regex: String = "^(([A-Z]{1,2}[0-9][0-9A-Z]? [0-9][A-Z]{2})|(BFPO ?[0-9]{1,4}))$"
 
   def regexCheckValidation: String => Boolean = postCodeInput => {
     val passedValidation = postCodeInput.matches(regex)

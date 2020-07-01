@@ -98,11 +98,11 @@ class PostcodeSpec extends WordSpec with Matchers {
       }
 
       "has one grouping of characters" should {
-        "return true" in {
+        "return false" in {
 
-          val postcodeString = "SA99"
+          val postcodeString = "SA99OP"
 
-          Postcode.regexCheckValidation(postcodeString) shouldBe true
+          Postcode.regexCheckValidation(postcodeString) shouldBe false
 
         }
       }
