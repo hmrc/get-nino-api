@@ -137,7 +137,7 @@ object ItNinoApplicationTestData {
         "addressLine3" -> "Old",
         "addressLine4" -> "Place",
         "addressLine5" -> "ItsTheFinalLine",
-        "postCode" -> "AA11AA",
+        "postCode" -> "AA1 1AA",
         "countryCode" -> "GBR",
         "startDate" -> earlierWriteOrReadDate,
         "endDate" -> laterWriteOrReadDate
@@ -149,7 +149,7 @@ object ItNinoApplicationTestData {
           "addressLine3" -> "New",
           "addressLine4" -> "Place",
           "addressLine5" -> "ItsTheFinalLine",
-          "postCode" -> "AA11AA",
+          "postCode" -> "AA1 1AA",
           "countryCode" -> "GBR",
           "startDate" -> earlierWriteOrReadDate,
           "endDate" -> laterWriteOrReadDate
@@ -162,7 +162,7 @@ object ItNinoApplicationTestData {
         "line3" -> "Old",
         "line4" -> "Place",
         "line5" -> "ItsTheFinalLine",
-        "postcode" -> "AA11AA",
+        "postcode" -> "AA1 1AA",
         "countryCode" -> "GBR",
         "startDate" -> earlierWriteOrReadDate,
         "endDate" -> laterWriteOrReadDate
@@ -174,7 +174,7 @@ object ItNinoApplicationTestData {
           "line3" -> "New",
           "line4" -> "Place",
           "line5" -> "ItsTheFinalLine",
-          "postcode" -> "AA11AA",
+          "postcode" -> "AA1 1AA",
           "countryCode" -> "GBR",
           "startDate" -> earlierWriteOrReadDate,
           "endDate" -> laterWriteOrReadDate
@@ -189,7 +189,7 @@ object ItNinoApplicationTestData {
           addressLinePrefix(3) -> "Old",
           addressLinePrefix(4) -> "Place",
           addressLinePrefix(5) -> "ItsTheFinalLine",
-          "postCode" -> "AA11AA",
+          "postCode" -> "AA1 1AA",
           "countryCode" -> "GBR",
           "startDate" -> earlierWriteOrReadDate,
           "endDate" -> laterWriteOrReadDate
@@ -201,7 +201,7 @@ object ItNinoApplicationTestData {
           "addressLine3" -> "Old",
           "addressLine4" -> "Place",
           "addressLine5" -> "ItsTheFinalLine",
-          "postCode" -> "AA11AA",
+          "postCode" -> "AA1 1AA",
           "countryCode" -> "GBR",
           "startDate" -> earlierWriteOrReadDate,
           "endDate" -> laterWriteOrReadDate
@@ -216,7 +216,7 @@ object ItNinoApplicationTestData {
           "line3" -> "Old",
           "line4" -> "Place",
           "line5" -> "ItsTheFinalLine",
-          "postcode" -> "AA11AA",
+          "postcode" -> "AA1 1AA",
           "countryCode" -> "GBR",
           "startDate" -> earlierWriteOrReadDate,
           "endDate" -> laterWriteOrReadDate
@@ -228,7 +228,7 @@ object ItNinoApplicationTestData {
           "line3" -> "Old",
           "line4" -> "Place",
           "line5" -> "ItsTheFinalLine",
-          "postcode" -> "AA11AA",
+          "postcode" -> "AA1 1AA",
           "countryCode" -> "GBR",
           "startDate" -> earlierWriteOrReadDate,
           "endDate" -> laterWriteOrReadDate
@@ -440,7 +440,7 @@ object ItNinoApplicationTestData {
         addressLine3 = Some(AddressLine("Old")),
         addressLine4 = Some(AddressLine("Place")),
         addressLine5 = Some(AddressLine("ItsTheFinalLine")),
-        postCode = Some(Postcode("AA11AA")),
+        postCode = Some(Postcode("AA1 1AA")),
         countryCode = "GBR",
         startDate = Some(DateModel(earlierWriteOrReadDate)),
         endDate = Some(DateModel(laterWriteOrReadDate))
@@ -453,7 +453,7 @@ object ItNinoApplicationTestData {
           Some(AddressLine("Old")),
           Some(AddressLine("Place")),
           Some(AddressLine("ItsTheFinalLine")),
-          Some(Postcode("AA11AA")),
+          Some(Postcode("AA1 1AA")),
           "GBR",
           Some(DateModel(earlierWriteOrReadDate)),
           Some(DateModel(laterWriteOrReadDate))
@@ -465,7 +465,7 @@ object ItNinoApplicationTestData {
           Some(AddressLine("Old")),
           Some(AddressLine("Place")),
           Some(AddressLine("ItsTheFinalLine")),
-          Some(Postcode("AA11AA")),
+          Some(Postcode("AA1 1AA")),
           "GBR",
           Some(DateModel(earlierWriteOrReadDate)),
           Some(DateModel(laterWriteOrReadDate))
