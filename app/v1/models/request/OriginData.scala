@@ -56,6 +56,26 @@ object OriginData {
       false
     }
 
+  private val foreignSocialSecurityRegex = "^(?=.{1,29}$)([A-Za-z0-9]([-'.&\\\\/ ]{0,1}[A-Za-z0-9]+)*)$"
+
+  private[models] def foreignSocialSecurityValidation(item: Option[String]): Boolean =
+    if (item.forall(_.matches(foreignSocialSecurityRegex))) {
+      true
+    } else {
+      Logger.warn("[OriginData][foreignSocialSecurityRegex] - foreignSocialSecurity does not match regex")
+      false
+    }
+
+  private val birthTownProvinceRegex = "^(?=.{1,35}$)([A-Z]([-'.&\\\\/ ]{0,1}[A-Za-z ]+)*[A-Za-z]?)$"
+
+  private[models] def birthTownProvinceValidation(item: Option[String], itemName: String): Boolean =
+    if (item.forall(_.matches(birthTownProvinceRegex))) {
+      true
+    } else {
+      Logger.warn(s"[OriginData][birthTownProvinceValidation] - $itemName does not match regex")
+      false
+    }
+
   private[models] def countryCodeValidation: Option[Int] => Boolean = {
     case Some(countryCode) =>
       val passedValidation: Boolean = (countryCode >= 0) && (countryCode <= 286)
@@ -69,9 +89,9 @@ object OriginData {
     birthTownPath.readNullable[String]
       .filter(JsonValidationError("Birth town does not match regex"))(stringValidation(_, "birth town")) and
       birthProvincePath.readNullable[String]
-        .filter(JsonValidationError("Birth province does not match regex"))(stringValidation(_, "birth town")) and
+        .filter(JsonValidationError("Birth province does not match regex"))(birthTownProvinceValidation(_, "birth province")) and
       birthCountryCodePath.readNullable[String]
-        .filter(JsonValidationError("Birth province does not match regex"))(stringValidation(_, "birth town")) and
+        .filter(JsonValidationError("Birth province does not match regex"))(birthTownProvinceValidation(_, "birth town")) and
       birthSurnamePath.readNullable[String]
         .filter(JsonValidationError("Birth surname does not match regex"))(stringValidation(_, "birth surname")) and
       maternalForenamePath.readNullable[String]
@@ -83,7 +103,7 @@ object OriginData {
       paternalSurnamePath.readNullable[String]
         .filter(JsonValidationError("Paternal surname does not match regex"))(stringValidation(_, "paternal surname")) and
       foreignSocialSecurityPath.readNullable[String]
-        .filter(JsonValidationError("Foreign social security does not match regex"))(stringValidation(_, "social security")) and
+        .filter(JsonValidationError("Foreign social security does not match regex"))(foreignSocialSecurityValidation) and
       lastEUAddressPath.readNullable[LastEUAddress]
     )(OriginData.apply _)
 
