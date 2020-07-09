@@ -516,8 +516,8 @@ object NinoApplicationTestData {
           maritalStatus = Some(DIVORCED),
           startDate = Some(DateModel(writeOrReadDate())),
           endDate = Some(DateModel(writeOrReadDate())),
-          spouseNino = "AA000000B",
-          spouseDateOfBirth = DateModel(writeOrReadDate()),
+          spouseNino = Some("AA000000B"),
+          spouseDateOfBirth = Some(DateModel(writeOrReadDate())),
           spouseFirstName = Some("Testforename"),
           spouseSurname = Some("Testsurname")
         ),
@@ -525,8 +525,8 @@ object NinoApplicationTestData {
           maritalStatus = Some(DIVORCED),
           startDate = Some(DateModel(writeOrReadDate())),
           endDate = Some(DateModel(writeOrReadDate())),
-          spouseNino = "AA000000C",
-          spouseDateOfBirth = DateModel(writeOrReadDate()),
+          spouseNino = Some("AA000000C"),
+          spouseDateOfBirth = Some(DateModel(writeOrReadDate())),
           spouseFirstName = Some("Othertestforename"),
           spouseSurname = Some("Testsurname")
         )
