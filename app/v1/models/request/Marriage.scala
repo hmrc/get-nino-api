@@ -24,8 +24,8 @@ final case class Marriage(
                      maritalStatus: Option[MaritalStatus] = None,
                      startDate: Option[DateModel] = None,
                      endDate: Option[DateModel] = None,
-                     spouseNino: String,
-                     spouseDateOfBirth: DateModel,
+                     spouseNino: Option[String] = None,
+                     spouseDateOfBirth: Option[DateModel] = None,
                      spouseFirstName: Option[String] = None,
                      spouseSurname: Option[String] = None
                    )
@@ -61,8 +61,8 @@ object Marriage {
     maritalStatusPath.readNullable[MaritalStatus] and
       startDatePath.readNullable[DateModel] and
       endDatePath.readNullable[DateModel] and
-      partnerNinoPath.read[String].filter(commonError("Partner NINO"))(_.matches(ninoRegex)) and
-      spouseDateOfBirthPath.read[DateModel] and
+      partnerNinoPath.readNullable[String].filter(commonError("Partner NINO"))(_.forall(_.matches(ninoRegex))) and
+      spouseDateOfBirthPath.readNullable[DateModel] and
       spouseFirstNamePath.readNullable[String].filter(commonError("Forename"))(stringValidation(_, "forename")) and
       spouseSurnamePath.readNullable[String].filter(commonError("Surname"))(stringValidation(_, "surname"))
     ) (Marriage.apply _)

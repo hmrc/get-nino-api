@@ -44,33 +44,19 @@ class MarriageSpec extends WordSpec with Matchers {
       )
     }
 
-  private lazy val minMarriageJson: Boolean => JsObject = isReads =>
-    if (isReads) {
-      Json.obj(
-        "partnerNino" -> "AA000000B",
-        "birthDate" -> "01-01-1970"
-      )
-    } else {
-      Json.obj(
-        "spouseNino" -> "AA000000B",
-        "spouseDateOfBirth" -> "1970-01-01"
-      )
-    }
+  private lazy val minMarriageJson: JsObject = Json.obj()
 
   private lazy val maxMarriageModel: Marriage = Marriage(
     maritalStatus = Some(DIVORCED),
     startDate = Some(DateModel("01-01-1990")),
     endDate = Some(DateModel("01-01-2000")),
-    spouseNino = "AA000000B",
-    spouseDateOfBirth = DateModel("01-01-1970"),
+    spouseNino = Some("AA000000B"),
+    spouseDateOfBirth = Some(DateModel("01-01-1970")),
     spouseFirstName = Some("Testforename"),
     spouseSurname = Some("Testsurname")
   )
 
-  private lazy val minMarriageModel: Marriage = Marriage(
-    spouseNino = "AA000000B",
-    spouseDateOfBirth = DateModel("01-01-1970")
-  )
+  private lazy val minMarriageModel: Marriage = Marriage()
 
 
   "Marriage .reads" when {
@@ -87,15 +73,15 @@ class MarriageSpec extends WordSpec with Matchers {
 
       "return a Marriage model with only mandatory items" in {
 
-        minMarriageJson(true).as[Marriage] shouldBe minMarriageModel
+        minMarriageJson.as[Marriage] shouldBe minMarriageModel
       }
     }
 
     "provided with invalid json" should {
 
-      "throw an JsResultException" in {
+      "throw a JsResultException" in {
 
-        val json = Json.obj("bad" -> "json")
+        val json = Json.obj("partnerNino" -> 3)
 
         json.validate[Marriage].isError shouldBe true
       }
@@ -116,7 +102,7 @@ class MarriageSpec extends WordSpec with Matchers {
 
       "correctly parse to JSON" in {
 
-        Json.toJson(minMarriageModel) shouldBe minMarriageJson(false)
+        Json.toJson(minMarriageModel) shouldBe minMarriageJson
       }
     }
   }

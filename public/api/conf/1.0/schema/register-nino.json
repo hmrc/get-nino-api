@@ -296,11 +296,7 @@
           "description": "The spouse's surname string",
           "$ref": "#/definitions/nameElement"
         }
-      },
-      "required": [
-        "partnerNino",
-        "birthDate"
-      ]
+      }
     },
     "origins": {
       "description": "Individual Origins Object",
