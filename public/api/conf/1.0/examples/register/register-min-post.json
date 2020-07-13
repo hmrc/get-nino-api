@@ -10,12 +10,6 @@
       "surname": "ASurname"
     }
   ],
-  "historicNames": [
-    {
-      "nameType": "REGISTERED",
-      "surname": "JOHN"
-    }
-  ],
   "addresses": [
     {
       "addressType": "RESIDENTIAL",
