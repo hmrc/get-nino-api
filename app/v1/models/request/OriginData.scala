@@ -46,17 +46,7 @@ object OriginData {
   private lazy val foreignSocialSecurityPath = __ \ "foreignSocialSecurity"
   private lazy val lastEUAddressPath = __ \ "lastEUAddress"
 
-  private val stringRegex = "^(?=.{1,35}$)([A-Z]([-'.&\\\\/ ]{0,1}[A-Za-z]+)*[A-Za-z]?)$"
-
-  private[models] def stringValidation(item: Option[String], itemName: String): Boolean =
-    if (item.forall(_.matches(stringRegex))) {
-      true
-    } else {
-      Logger.warn(s"[OriginData][stringValidation] - $itemName does not match regex")
-      false
-    }
-
-  private val foreignSocialSecurityRegex = "^(?=.{1,29}$)([A-Za-z0-9]([-'.&\\\\/ ]{0,1}[A-Za-z0-9]+)*)$"
+  private val foreignSocialSecurityRegex = """^(?=.{1,29}$)([A-Za-z0-9]([-'.&\\/ ]{0,1}[A-Za-z0-9]+)*)$"""
 
   private[models] def foreignSocialSecurityValidation(item: Option[String]): Boolean =
     if (item.forall(_.matches(foreignSocialSecurityRegex))) {
@@ -66,7 +56,7 @@ object OriginData {
       false
     }
 
-  private val birthTownProvinceRegex = "^(?=.{1,35}$)([A-Z]([-'.&\\\\/ ]{0,1}[A-Za-z ]+)*[A-Za-z]?)$"
+  private val birthTownProvinceRegex = """^(?=.{1,35}$)([A-Z]([-'.&\\/ ]{0,1}[A-Za-z ]+)*[A-Za-z]?)$"""
 
   private[models] def birthTownProvinceValidation(item: Option[String], itemName: String): Boolean =
     if (item.forall(_.matches(birthTownProvinceRegex))) {
@@ -76,32 +66,43 @@ object OriginData {
       false
     }
 
-  private[models] def countryCodeValidation: Option[Int] => Boolean = {
-    case Some(countryCode) =>
-      val passedValidation: Boolean = (countryCode >= 0) && (countryCode <= 286)
-      if (!passedValidation) Logger.warn("[OriginData][countryCodeValidation] - country code is not valid")
-      passedValidation
-    case _ => true
-  }
+  private val nameElementRegex = """^(?=.{1,99}$)([A-Z]([-'. ]{0,1}[A-Za-z ]+)*[A-Za-z]?)$"""
 
+  private[models] def nameElementValidation(item: Option[String], itemName: String): Boolean =
+    if (item.forall(_.matches(nameElementRegex))) {
+      true
+    } else {
+      Logger.warn(s"[OriginData][nameElementValidation] - $itemName does not match regex")
+      false
+    }
+
+  private val countryCodeRegex = "^[A-Z]{3}$"
+
+  private[models] def countryCodeValidation(item: Option[String]): Boolean =
+    if (item.forall(_.matches(countryCodeRegex))) {
+      true
+    } else {
+      Logger.warn("[OriginData][countryCodeRegex] - countryCode does not match regex")
+      false
+    }
 
   implicit val reads: Reads[OriginData] = (
     birthTownPath.readNullable[String]
-      .filter(JsonValidationError("Birth town does not match regex"))(stringValidation(_, "birth town")) and
+      .filter(JsonValidationError("Birth town does not match regex"))(birthTownProvinceValidation(_, "birth town")) and
       birthProvincePath.readNullable[String]
         .filter(JsonValidationError("Birth province does not match regex"))(birthTownProvinceValidation(_, "birth province")) and
       birthCountryCodePath.readNullable[String]
-        .filter(JsonValidationError("Birth province does not match regex"))(birthTownProvinceValidation(_, "birth town")) and
+        .filter(JsonValidationError("Birth country code is not valid"))(countryCodeValidation) and
       birthSurnamePath.readNullable[String]
-        .filter(JsonValidationError("Birth surname does not match regex"))(stringValidation(_, "birth surname")) and
+        .filter(JsonValidationError("Birth surname does not match regex"))(nameElementValidation(_, "birth surname")) and
       maternalForenamePath.readNullable[String]
-        .filter(JsonValidationError("Maternal forename does not match regex"))(stringValidation(_, "maternal forename")) and
+        .filter(JsonValidationError("Maternal forename does not match regex"))(nameElementValidation(_, "maternal forename")) and
       maternalSurnamePath.readNullable[String]
-        .filter(JsonValidationError("Maternal surname does not match regex"))(stringValidation(_, "maternal surname")) and
+        .filter(JsonValidationError("Maternal surname does not match regex"))(nameElementValidation(_, "maternal surname")) and
       paternalForenamePath.readNullable[String]
-        .filter(JsonValidationError("Paternal forename does not match regex"))(stringValidation(_, "paternal forename")) and
+        .filter(JsonValidationError("Paternal forename does not match regex"))(nameElementValidation(_, "paternal forename")) and
       paternalSurnamePath.readNullable[String]
-        .filter(JsonValidationError("Paternal surname does not match regex"))(stringValidation(_, "paternal surname")) and
+        .filter(JsonValidationError("Paternal surname does not match regex"))(nameElementValidation(_, "paternal surname")) and
       foreignSocialSecurityPath.readNullable[String]
         .filter(JsonValidationError("Foreign social security does not match regex"))(foreignSocialSecurityValidation) and
       lastEUAddressPath.readNullable[LastEUAddress]
