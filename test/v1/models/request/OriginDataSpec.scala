@@ -103,7 +103,7 @@ class OriginDataSpec extends WordSpec with Matchers {
     }
   }
 
-  "OriginData.stringValidation" when {
+  "OriginData.nameElementValidation" when {
 
     "provided with the optional string" which {
 
@@ -111,7 +111,7 @@ class OriginDataSpec extends WordSpec with Matchers {
 
         "return true" in {
 
-          val result = OriginData.stringValidation(Some("Example value"), "Example value")
+          val result = OriginData.nameElementValidation(Some("Example value"), "Example value")
 
           result shouldBe true
         }
@@ -121,7 +121,7 @@ class OriginDataSpec extends WordSpec with Matchers {
 
         "return false" in {
 
-          val result = OriginData.stringValidation(Some("this example is far too long for the regex this in unfortunate"), "Example value")
+          val result = OriginData.nameElementValidation(Some("this example is far too long for the regex this in unfortunate"), "Example value")
 
           result shouldBe false
         }
@@ -131,7 +131,7 @@ class OriginDataSpec extends WordSpec with Matchers {
 
         "return false" in {
 
-          val result = OriginData.stringValidation(Some("!nvalid example"), "Example value")
+          val result = OriginData.nameElementValidation(Some("!nvalid example"), "Example value")
 
           result shouldBe false
         }
@@ -142,7 +142,7 @@ class OriginDataSpec extends WordSpec with Matchers {
 
       "return true" in {
 
-        val result = OriginData.stringValidation(None, "Example value")
+        val result = OriginData.nameElementValidation(None, "Example value")
 
         result shouldBe true
       }
@@ -151,61 +151,40 @@ class OriginDataSpec extends WordSpec with Matchers {
 
   "OriginData.countryCodeValidation" when {
 
-    "provided with the optional Int" which {
+    "provided with the optional String" which {
 
-      "is within the supplied range" should {
+      "passes the regex" should {
 
         "return true" in {
 
-          val result = OriginData.countryCodeValidation(Some(111))
+          val result = OriginData.countryCodeValidation(Some("ABC"))
 
           result shouldBe true
         }
       }
 
-      "is equal to the lower supplied valid range (0)" should {
-
-        "return true" in {
-
-          val result = OriginData.countryCodeValidation(Some(0))
-
-          result shouldBe true
-        }
-      }
-
-      "is equal to the higher supplied valid range (286)" should {
-
-        "return true" in {
-
-          val result = OriginData.countryCodeValidation(Some(286))
-
-          result shouldBe true
-        }
-      }
-
-      "is below the supplied valid range" should {
+      "has too many characters to pass the regex" should {
 
         "return false" in {
 
-          val result = OriginData.countryCodeValidation(Some(-1))
+          val result = OriginData.countryCodeValidation(Some("ABCD"))
 
           result shouldBe false
         }
       }
 
-      "is above the supplied valid range" should {
+      "has too few characters to pass the regex" should {
 
         "return false" in {
 
-          val result = OriginData.countryCodeValidation(Some(287))
+          val result = OriginData.countryCodeValidation(Some("AB"))
 
           result shouldBe false
-
         }
       }
     }
 
-    "is not provided with the optional Int" should {
+    "is not provided with the optional String" should {
 
       "return true" in {
 
