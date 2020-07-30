@@ -46,7 +46,7 @@ object OriginData {
   private lazy val foreignSocialSecurityPath = __ \ "foreignSocialSecurity"
   private lazy val lastEUAddressPath = __ \ "lastEUAddress"
 
-  private val foreignSocialSecurityRegex = """^(?=.{1,29}$)([A-Za-z0-9]([-'.&\\/ ]{0,1}[A-Za-z0-9]+)*)$"""
+  private val foreignSocialSecurityRegex = """^(?=.{1,29}$)([A-Za-z0-9]([-'.&\/ ]{0,1}[A-Za-z0-9]+)*)$"""
 
   private[models] def foreignSocialSecurityValidation(item: Option[String]): Boolean =
     if (item.forall(_.matches(foreignSocialSecurityRegex))) {
@@ -56,7 +56,7 @@ object OriginData {
       false
     }
 
-  private val birthTownProvinceRegex = """^(?=.{1,35}$)([A-Z]([-'.&\\/ ]{0,1}[A-Za-z ]+)*[A-Za-z]?)$"""
+  private val birthTownProvinceRegex = """^(?=.{1,35}$)([A-Z]([-'.&\/ ]{0,1}[A-Za-z ]+)*[A-Za-z]?)$"""
 
   private[models] def birthTownProvinceValidation(item: Option[String], itemName: String): Boolean =
     if (item.forall(_.matches(birthTownProvinceRegex))) {

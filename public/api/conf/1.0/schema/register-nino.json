@@ -338,7 +338,7 @@
         "foreignSocialSecurity": {
           "description": "The individual's previous, non-UK social security reference",
           "type": "string",
-          "pattern": "^(?=.{1,29}$)([A-Za-z0-9]([-'.&\\\\/ ]{0,1}[A-Za-z0-9]+)*)$"
+          "pattern": "^(?=.{1,29}$)([A-Za-z0-9]([-'.&\\/ ]{0,1}[A-Za-z0-9]+)*)$"
         },
         "lastEUAddress": {
           "description": "The individual's last non-UK address details",
@@ -402,7 +402,7 @@
     "originsElement": {
       "description": "Origins Address Element",
       "type": "string",
-      "pattern": "^(?=.{1,35}$)([A-Z]([-'.&\\\\/ ]{0,1}[A-Za-z ]+)*[A-Za-z]?)$"
+      "pattern": "^(?=.{1,35}$)([A-Z]([-'.&\\/ ]{0,1}[A-Za-z ]+)*[A-Za-z]?)$"
     },
     "countryCode": {
       "description": "ISO 3166-1 alpha-3 Country Codes",
