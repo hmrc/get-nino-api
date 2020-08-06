@@ -16,6 +16,8 @@
 
 package v1.controllers
 
+import java.time.{Clock, Instant, LocalDateTime, ZoneId, ZoneOffset}
+
 import org.slf4j.MDC
 import play.api.http.Status
 import play.api.libs.json.{JsError, JsPath, Json, JsonValidationError => JavaJsonValidationError}
@@ -29,6 +31,7 @@ import utils.NinoApplicationTestData.{maxRegisterNinoRequestJson, maxRegisterNin
 import v1.controllers.predicates.{CorrelationIdPredicate, OriginatorIdPredicate, PrivilegedApplicationPredicate}
 import v1.models.errors.{InvalidBodyTypeError, ErrorResponse => NinoError, JsonValidationError => NinoJsonValidationError}
 import v1.models.request.NinoApplication
+import v1.models.validation.NinoApplicationValidation
 import v1.services.DesService
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -36,6 +39,9 @@ import scala.concurrent.{ExecutionContext, Future}
 class RegisterNinoControllerSpec extends ControllerBaseSpec {
 
   implicit val ec: ExecutionContext = stubControllerComponents().executionContext
+
+  private val fixedInstant: Instant = LocalDateTime.parse("2020-08-20T01:02:03.456").toInstant(ZoneOffset.UTC)
+  private val stubClock: Clock      = Clock.fixed(fixedInstant, ZoneId.systemDefault)
 
   val mockAuth: AuthConnector = mock[AuthConnector]
 
@@ -63,6 +69,7 @@ class RegisterNinoControllerSpec extends ControllerBaseSpec {
     mockPrivilegedPredicate,
     mockCorrelationPredicate,
     mockOriginatorPredicate,
+    new NinoApplicationValidation(stubClock),
     mockAppConfig
   )
 
