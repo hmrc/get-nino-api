@@ -135,3 +135,9 @@ final case class JsonValidationError(jsErrors: JsError) extends ErrorResponse {
       )
   })
 }
+
+final case class ModelValidationError(fieldName: String, errorMessage: String) extends ErrorResponse {
+  val statusCode: Int = BAD_REQUEST
+  val code: String = "MODEL_VALIDATION_ERROR"
+  val message: String = s"The provided model failed validation for $fieldName. Reason: $errorMessage"
+}

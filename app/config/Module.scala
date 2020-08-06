@@ -16,11 +16,14 @@
 
 package config
 
+import java.time.{Clock, ZoneOffset}
+
 import com.google.inject.AbstractModule
 
 class Module extends AbstractModule {
 
   override def configure(): Unit = {
+    bind(classOf[Clock]).toInstance(Clock.systemDefaultZone.withZone(ZoneOffset.UTC))
     bind(classOf[AppConfig]).to(classOf[AppConfigImpl]).asEagerSingleton()
     bind(classOf[ApiDefinitionConfig]).to(classOf[ApiDefinitionConfigImpl]).asEagerSingleton()
   }
