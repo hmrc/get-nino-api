@@ -112,7 +112,7 @@ class NameModelSpec extends UnitSpec {
         }
 
         result.getMessage should include ("startDate")
-        result.getMessage should include ("The date provided is after today. The date must be before.")
+        result.getMessage should include ("The date provided is after today. The date must be today or before.")
       }
 
       "the end date given is after the current date" in {
@@ -121,7 +121,7 @@ class NameModelSpec extends UnitSpec {
         }
 
         result.getMessage should include ("endDate")
-        result.getMessage should include ("The date provided is after today. The date must be before.")
+        result.getMessage should include ("The date provided is after today. The date must be today or before.")
       }
 
       "the start date given is after the end date given" in {

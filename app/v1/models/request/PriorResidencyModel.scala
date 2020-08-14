@@ -38,7 +38,7 @@ object PriorResidencyModel {
       case _ => true
     }
 
-  private def dateNonPriorError: JsonValidationError = JsonValidationError("The date provided is after today. The date must be before.")
+  private def dateNonPriorError: JsonValidationError = JsonValidationError("The date provided is after today. The date must be today or before.")
 
   private def startDateAfterEndDateError = JsonValidationError("The given start date is after the given end date.")
 

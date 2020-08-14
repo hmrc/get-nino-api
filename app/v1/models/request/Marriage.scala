@@ -16,13 +16,11 @@
 
 package v1.models.request
 
-import java.time.{LocalDate, ZoneId}
 import java.time.format.DateTimeFormatter
+import java.time.{LocalDate, ZoneId}
 
 import play.api.Logger
-import play.api.libs.functional.syntax._
 import play.api.libs.json._
-import v1.models.request.PriorResidencyModel.{currentDate, dateNonPriorError, validateDateAsPriorDate}
 
 final case class Marriage(
                      maritalStatus: Option[MaritalStatus] = None,
@@ -58,7 +56,7 @@ object Marriage {
       case _ => true
     }
 
-  private def dateNonPriorError: JsonValidationError = JsonValidationError("The date provided is after today. The date must be before.")
+  private def dateNonPriorError: JsonValidationError = JsonValidationError("The date provided is after today. The date must be today or before.")
 
   private def startDateAfterEndDateError = JsonValidationError("The given start date is after the given end date.")
 

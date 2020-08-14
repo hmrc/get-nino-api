@@ -69,7 +69,7 @@ object AddressModel {
 
   private def commonError(fieldName: String) = JsonValidationError(s"There has been an error parsing the $fieldName field. Please check against the regex.")
 
-  private def dateNonPriorError: JsonValidationError = JsonValidationError("The date provided is after today. The date must be before.")
+  private def dateNonPriorError: JsonValidationError = JsonValidationError("The date provided is after today. The date must be today or before.")
 
   private def startDateAfterEndDateError = JsonValidationError("The given start date is after the given end date.")
 
