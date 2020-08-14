@@ -49,11 +49,9 @@ object NameModel {
 
   private def typeValidationError: JsonValidationError = JsonValidationError("Name Type failed validation. Must be one of: \'REGISTERED, ALIAS\'")
 
-  private def dateNonPriorError: JsonValidationError = JsonValidationError("The date provided is after today. The date must be before.")
+  private def dateNonPriorError: JsonValidationError = JsonValidationError("The date provided is after today. The date must be today or before.")
 
-  private def startDateAfterEndDateError: JsonValidationError = {
-    JsonValidationError("The given start date is after the given end date.")
-  }
+  private def startDateAfterEndDateError: JsonValidationError = JsonValidationError("The given start date is after the given end date.")
 
   private val validTitles = Seq(
     "NOT KNOWN",
@@ -111,19 +109,18 @@ object NameModel {
         passedValidation
       case _ => true
     }
-
   }
 
-  private def todayDateAsDateModel = Some(DateModel(LocalDate.now(ZoneId.of("UTC")).format(DateTimeFormatter.ofPattern("dd-MM-yyyy"))))
+  private def currentDate: Option[DateModel] = Some(DateModel(LocalDate.now(ZoneId.of("UTC")).format(DateTimeFormatter.ofPattern("dd-MM-yyyy"))))
 
   implicit val reads: Reads[NameModel] = for {
     title <- titlePath.readNullable[String].filter(titleValidationError)(validateTitle)
     foreName <- forenamePath.readNullable[String].filter(nameValidationError("forename"))(validateName(_, "forename"))
     secondForename <- secondForenamePath.readNullable[String].filter(nameValidationError("second forename"))(validateName(_, "secondForename"))
     surname <- surnamePath.read[String].filter(nameValidationError("surname"))(validateName(_, "surname"))
-    startDate <- startDatePath.readNullable[DateModel].filter(dateNonPriorError)(validateDateAsPriorDate(_, todayDateAsDateModel))
+    startDate <- startDatePath.readNullable[DateModel].filter(dateNonPriorError)(validateDateAsPriorDate(_, currentDate))
     endDate <- endDatePath.readNullable[DateModel]
-            .filter(dateNonPriorError)(validateDateAsPriorDate(_, todayDateAsDateModel))
+            .filter(dateNonPriorError)(validateDateAsPriorDate(_, currentDate))
             .filter(startDateAfterEndDateError)(validateDateAsPriorDate(startDate, _, canBeEqual = false))
     nameType <- typePath.read[String].filter(typeValidationError)(validateType)
   } yield {

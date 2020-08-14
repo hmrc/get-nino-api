@@ -93,16 +93,16 @@ object ItNinoApplicationTestData {
       "applicantMarriages" -> Json.arr(
         Json.obj(
           "maritalStatus" -> "DIVORCED",
-          "startDate" -> writeOrReadDate(),
-          "endDate" -> writeOrReadDate(),
+          "startDate" -> earlierWriteOrReadDate,
+          "endDate" -> laterWriteOrReadDate,
           "spouseNino" -> "AA000000B",
           "spouseDateOfBirth" -> writeOrReadDate(),
           "spouseFirstName" -> "Testforename",
           "spouseSurname" -> "Testsurname"),
         Json.obj(
           "maritalStatus" -> "DIVORCED",
-          "startDate" -> writeOrReadDate(),
-          "endDate" -> writeOrReadDate(),
+          "startDate" -> earlierWriteOrReadDate,
+          "endDate" -> laterWriteOrReadDate,
           "spouseNino" -> "AA000000C",
           "spouseDateOfBirth" -> writeOrReadDate(),
           "spouseFirstName" -> "Othertestforename",
@@ -112,16 +112,16 @@ object ItNinoApplicationTestData {
       "marriages" -> Json.arr(
         Json.obj(
           "maritalStatus" -> "DIVORCED",
-          "startDate" -> writeOrReadDate(),
-          "endDate" -> writeOrReadDate(),
+          "startDate" -> earlierWriteOrReadDate,
+          "endDate" -> laterWriteOrReadDate,
           "partnerNino" -> "AA000000B",
           "birthDate" -> writeOrReadDate(),
           "forename" -> "Testforename",
           "surname" -> "Testsurname"),
         Json.obj(
           "maritalStatus" -> "DIVORCED",
-          "startDate" -> writeOrReadDate(),
-          "endDate" -> writeOrReadDate(),
+          "startDate" -> earlierWriteOrReadDate,
+          "endDate" -> laterWriteOrReadDate,
           "partnerNino" -> "AA000000C",
           "birthDate" -> writeOrReadDate(),
           "forename" -> "Othertestforename",
@@ -327,8 +327,8 @@ object ItNinoApplicationTestData {
         )
       ),
       priorResidencyPath -> Json.arr(
-        Json.obj(priorStartDatePath -> writeOrReadDate(), priorEndDatePath -> writeOrReadDate()),
-        Json.obj(priorStartDatePath -> writeOrReadDate(), priorEndDatePath -> writeOrReadDate())
+        Json.obj(priorStartDatePath -> earlierWriteOrReadDate, priorEndDatePath -> laterWriteOrReadDate),
+        Json.obj(priorStartDatePath -> earlierWriteOrReadDate, priorEndDatePath -> laterWriteOrReadDate)
       ),
       "abroadLiability" -> Json.obj("liabilityStartDate" -> writeOrReadDate(), "liabilityEndDate" -> writeOrReadDate()),
       "nationalityCode" -> "GBR"

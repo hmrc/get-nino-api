@@ -69,9 +69,11 @@ object AddressModel {
 
   private def commonError(fieldName: String) = JsonValidationError(s"There has been an error parsing the $fieldName field. Please check against the regex.")
 
+  private def dateNonPriorError: JsonValidationError = JsonValidationError("The date provided is after today. The date must be today or before.")
+
   private def startDateAfterEndDateError = JsonValidationError("The given start date is after the given end date.")
 
-  private def currentDate = Some(DateModel(LocalDate.now(ZoneId.of("UTC")).format(DateTimeFormatter.ofPattern("dd-MM-yyyy"))))
+  private def currentDate: Option[DateModel] = Some(DateModel(LocalDate.now(ZoneId.of("UTC")).format(DateTimeFormatter.ofPattern("dd-MM-yyyy"))))
 
   implicit val reads: Reads[AddressModel] = for {
     addressType <- addressTypePath.readNullable[AddressType]
@@ -82,15 +84,11 @@ object AddressModel {
     line5 <- line5Path.readNullable[AddressLine]
     countryCode <- countryCodePath.read[String]
     postcode <- postcodePath.readNullable[Postcode].filter(commonError("Post code"))(checkPostcodeMandated(_, countryCode))
-    startDate <- startDatePath.readNullable[DateModel].filter(startDateAfterEndDateError) { startDate =>
-      validateDateAsPriorDate(startDate, Some(DateModel(LocalDate.now(ZoneId.of("UTC")).format(DateTimeFormatter.ofPattern("dd-MM-yyyy")))))
-    }
+    startDate <- startDatePath.readNullable[DateModel].filter(dateNonPriorError)(validateDateAsPriorDate(_, currentDate))
     endDate <- endDatePath.readNullable[DateModel]
       .filter(startDateAfterEndDateError)(validateDateAsPriorDate(startDate, _, canBeEqual = false))
-      .filter(startDateAfterEndDateError)(_.fold(true)(date => validateDateAsPriorDate(Some(date), currentDate)))
-  } yield {
-    AddressModel(addressType, line1, line2, line3, line4, line5, postcode, countryCode, startDate, endDate)
-  }
+      .filter(dateNonPriorError)(_.fold(true)(date => validateDateAsPriorDate(Some(date), currentDate)))
+  } yield AddressModel(addressType, line1, line2, line3, line4, line5, postcode, countryCode, startDate, endDate)
 
   implicit val writes: Writes[AddressModel] = Json.writes[AddressModel]
 }

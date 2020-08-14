@@ -112,7 +112,7 @@ object NinoApplicationTestData {
         Json.obj(
           "maritalStatus" -> "DIVORCED",
           "startDate" -> writeOrReadDate(),
-          "endDate" -> writeOrReadDate(),
+          "endDate" -> writeOrReadDate("2000-10-11", "11-10-2000"),
           "spouseNino" -> "AA000000B",
           "spouseDateOfBirth" -> writeOrReadDate(),
           "spouseFirstName" -> "Testforename",
@@ -120,7 +120,7 @@ object NinoApplicationTestData {
         Json.obj(
           "maritalStatus" -> "DIVORCED",
           "startDate" -> writeOrReadDate(),
-          "endDate" -> writeOrReadDate(),
+          "endDate" -> writeOrReadDate("2000-10-11", "11-10-2000"),
           "spouseNino" -> "AA000000C",
           "spouseDateOfBirth" -> writeOrReadDate(),
           "spouseFirstName" -> "Othertestforename",
@@ -131,7 +131,7 @@ object NinoApplicationTestData {
         Json.obj(
           "maritalStatus" -> "DIVORCED",
           "startDate" -> writeOrReadDate(),
-          "endDate" -> writeOrReadDate(),
+          "endDate" -> writeOrReadDate("2000-10-11", "11-10-2000"),
           "partnerNino" -> "AA000000B",
           "birthDate" -> writeOrReadDate(),
           "forename" -> "Testforename",
@@ -139,7 +139,7 @@ object NinoApplicationTestData {
         Json.obj(
           "maritalStatus" -> "DIVORCED",
           "startDate" -> writeOrReadDate(),
-          "endDate" -> writeOrReadDate(),
+          "endDate" -> writeOrReadDate("2000-10-11", "11-10-2000"),
           "partnerNino" -> "AA000000C",
           "birthDate" -> writeOrReadDate(),
           "forename" -> "Othertestforename",
@@ -346,8 +346,8 @@ object NinoApplicationTestData {
         )
       ),
       priorResidencyPath -> Json.arr(
-        Json.obj(priorStartDatePath -> writeOrReadDate(), priorEndDatePath -> writeOrReadDate()),
-        Json.obj(priorStartDatePath -> writeOrReadDate(), priorEndDatePath -> writeOrReadDate())
+        Json.obj(priorStartDatePath -> writeOrReadDate(), priorEndDatePath -> writeOrReadDate("2000-10-11", "11-10-2000")),
+        Json.obj(priorStartDatePath -> writeOrReadDate(), priorEndDatePath -> writeOrReadDate("2000-10-11", "11-10-2000"))
       ),
       "abroadLiability" -> Json.obj("liabilityStartDate" -> writeOrReadDate(), "liabilityEndDate" -> writeOrReadDate()),
       "nationalityCode" -> "GBR"
@@ -515,7 +515,7 @@ object NinoApplicationTestData {
         Marriage(
           maritalStatus = Some(DIVORCED),
           startDate = Some(DateModel(writeOrReadDate())),
-          endDate = Some(DateModel(writeOrReadDate())),
+          endDate = Some(DateModel(writeOrReadDate("2000-10-11", "11-10-2000"))),
           spouseNino = Some("AA000000B"),
           spouseDateOfBirth = Some(DateModel(writeOrReadDate())),
           spouseFirstName = Some("Testforename"),
@@ -524,7 +524,7 @@ object NinoApplicationTestData {
         Marriage(
           maritalStatus = Some(DIVORCED),
           startDate = Some(DateModel(writeOrReadDate())),
-          endDate = Some(DateModel(writeOrReadDate())),
+          endDate = Some(DateModel(writeOrReadDate("2000-10-11", "11-10-2000"))),
           spouseNino = Some("AA000000C"),
           spouseDateOfBirth = Some(DateModel(writeOrReadDate())),
           spouseFirstName = Some("Othertestforename"),
@@ -543,8 +543,8 @@ object NinoApplicationTestData {
             Some(AddressLine("ItsTheFinalLine"))
           )))),
       applicantPriorResidency = Some(Seq(
-        PriorResidencyModel(Some(DateModel(writeOrReadDate())), Some(DateModel(writeOrReadDate()))),
-        PriorResidencyModel(Some(DateModel(writeOrReadDate())), Some(DateModel(writeOrReadDate())))
+        PriorResidencyModel(Some(DateModel(writeOrReadDate())), Some(DateModel(writeOrReadDate("2000-10-11", "11-10-2000")))),
+        PriorResidencyModel(Some(DateModel(writeOrReadDate())), Some(DateModel(writeOrReadDate("2000-10-11", "11-10-2000"))))
       )),
       abroadLiability = Some(
         AbroadLiabilityModel(Some(DateModel(writeOrReadDate())), Some(DateModel(writeOrReadDate())))

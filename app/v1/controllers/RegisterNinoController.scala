@@ -25,7 +25,6 @@ import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.bootstrap.controller.BackendController
 import v1.controllers.predicates.{CorrelationIdPredicate, OriginatorIdPredicate, PrivilegedApplicationPredicate}
 import v1.models.request.NinoApplication
-import v1.models.validation.NinoApplicationValidation
 import v1.services.DesService
 import v1.utils.JsonBodyUtil
 
@@ -38,7 +37,6 @@ class RegisterNinoController @Inject()(
                                         privilegedApplicationPredicate: PrivilegedApplicationPredicate,
                                         correlationIdPredicate: CorrelationIdPredicate,
                                         originatorIdPredicate: OriginatorIdPredicate,
-                                        validator: NinoApplicationValidation,
                                         appConfig: AppConfig
                                       )
                                       (implicit val ec: ExecutionContext) extends BackendController(cc) with JsonBodyUtil {
@@ -60,7 +58,7 @@ class RegisterNinoController @Inject()(
         Logger.warn("[RegisterNinoController][register] Incoming request did not have a JSON body.")
     }
 
-    Future(parsedJsonBody[NinoApplication].map(validator.validateNinoApplication).joinRight).flatMap {
+    Future(parsedJsonBody[NinoApplication]).flatMap {
       case Right(ninoModel) => desService.registerNino(ninoModel)(hcWithOriginatorIdAndCorrelationId, ec).map {
         case Right(_) => Accepted
         case Left(error) => logErrorResult(error)
