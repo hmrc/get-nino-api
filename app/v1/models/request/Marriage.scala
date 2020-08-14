@@ -16,9 +16,13 @@
 
 package v1.models.request
 
+import java.time.{LocalDate, ZoneId}
+import java.time.format.DateTimeFormatter
+
 import play.api.Logger
 import play.api.libs.functional.syntax._
 import play.api.libs.json._
+import v1.models.request.PriorResidencyModel.{currentDate, dateNonPriorError, validateDateAsPriorDate}
 
 final case class Marriage(
                      maritalStatus: Option[MaritalStatus] = None,
@@ -45,6 +49,22 @@ object Marriage {
 
   private val stringRegex = "^(?=.{1,35}$)([A-Z]([-'.&\\\\/ ]{0,1}[A-Za-z]+)*[A-Za-z]?)$"
 
+  private[models] def validateDateAsPriorDate(maybeEarlierDate: Option[DateModel], maybeLaterDate: Option[DateModel], canBeEqual: Boolean = true): Boolean =
+    (maybeEarlierDate.map(_.asLocalDate), maybeLaterDate.map(_.asLocalDate)) match {
+      case (Some(earlierDate), Some(laterDate)) =>
+        val passedValidation = earlierDate.isBefore(laterDate) || (canBeEqual && earlierDate.isEqual(laterDate))
+        if(!passedValidation) Logger.warn("[AddressModel][validateDateAsPriorDate] The provided earlierDate is after the laterDate.")
+        passedValidation
+      case _ => true
+    }
+
+  private def dateNonPriorError: JsonValidationError = JsonValidationError("The date provided is after today. The date must be before.")
+
+  private def startDateAfterEndDateError = JsonValidationError("The given start date is after the given end date.")
+
+  private def currentDate: Option[DateModel] = Some(DateModel(LocalDate.now(ZoneId.of("UTC")).format(DateTimeFormatter.ofPattern("dd-MM-yyyy"))))
+
+
   private[models] def stringValidation(item: Option[String], itemName: String): Boolean =
     if (item.forall(_.matches(stringRegex))) {
       true
@@ -57,15 +77,18 @@ object Marriage {
     JsonValidationError(s"There has been an error parsing the $fieldName field. Please check against the regex.")
   }
 
-  implicit val reads: Reads[Marriage] = (
-    maritalStatusPath.readNullable[MaritalStatus] and
-      startDatePath.readNullable[DateModel] and
-      endDatePath.readNullable[DateModel] and
-      partnerNinoPath.readNullable[String].filter(commonError("Partner NINO"))(_.forall(_.matches(ninoRegex))) and
-      spouseDateOfBirthPath.readNullable[DateModel] and
-      spouseFirstNamePath.readNullable[String].filter(commonError("Forename"))(stringValidation(_, "forename")) and
-      spouseSurnamePath.readNullable[String].filter(commonError("Surname"))(stringValidation(_, "surname"))
-    ) (Marriage.apply _)
+  implicit val reads: Reads[Marriage] = for {
+    status          <- maritalStatusPath.readNullable[MaritalStatus]
+    startDate       <- startDatePath.readNullable[DateModel]
+      .filter(dateNonPriorError) (validateDateAsPriorDate(_, currentDate))
+    endDate         <- endDatePath.readNullable[DateModel]
+      .filter(startDateAfterEndDateError)(validateDateAsPriorDate(startDate, _, canBeEqual = false))
+      .filter(dateNonPriorError)(_.fold(true)(date => validateDateAsPriorDate(Some(date), currentDate)))
+    partnerNino     <- partnerNinoPath.readNullable[String].filter(commonError("Partner NINO"))(_.forall(_.matches(ninoRegex)))
+    spouseDob       <- spouseDateOfBirthPath.readNullable[DateModel]
+    spouseFirstName <- spouseFirstNamePath.readNullable[String].filter(commonError("Forename"))(stringValidation(_, "forename"))
+    spouseSurname   <- spouseSurnamePath.readNullable[String].filter(commonError("Surname"))(stringValidation(_, "surname"))
+  } yield Marriage(status, startDate, endDate, partnerNino, spouseDob, spouseFirstName, spouseSurname)
 
   implicit val writes: Writes[Marriage] = Json.writes[Marriage]
 
