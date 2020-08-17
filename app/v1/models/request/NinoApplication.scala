@@ -38,7 +38,6 @@ final case class NinoApplication(
                             applicantMarriages: Option[Seq[Marriage]],
                             applicantOrigin: Option[OriginData],
                             applicantPriorResidency: Option[Seq[PriorResidencyModel]],
-                            abroadLiability: Option[AbroadLiabilityModel],
                             nationalityCode: Option[String]
                           )
 
@@ -99,7 +98,6 @@ object NinoApplication {
   private val applicantMarriagesPath = __ \ "marriages"
   private val originDataPath = __ \ "originData"
   private val priorResidencyPath = __ \ "priorResidency"
-  private val abroadLiabilityPath = __ \ "abroadLiability"
   private val nationalityCodePath = __ \ "nationalityCode"
 
   private def commonError(fieldName: String) = {
@@ -133,7 +131,6 @@ object NinoApplication {
       applicantMarriagesPath.readNullable[Seq[Marriage]].filter(minMaxError("marriages"))(seqMinMaxValidation(_, 1, marriagesSeqLength)) and
       originDataPath.readNullable[OriginData] and
       priorResidencyPath.readNullable[Seq[PriorResidencyModel]].filter(minMaxError("priorResidency"))(seqMinMaxValidation(_, 1, priorResidencySeqLength)) and
-      abroadLiabilityPath.readNullable[AbroadLiabilityModel] and
       nationalityCodePath.readNullable[String].filter(
         commonError("nationality code"))(nationalityCode => nationalityCode.fold(true)(validateAgainstRegex(_, nationalityCodeRegex)))
   ) (NinoApplication.apply _)
