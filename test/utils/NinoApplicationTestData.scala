@@ -349,7 +349,6 @@ object NinoApplicationTestData {
         Json.obj(priorStartDatePath -> writeOrReadDate(), priorEndDatePath -> writeOrReadDate("2000-10-11", "11-10-2000")),
         Json.obj(priorStartDatePath -> writeOrReadDate(), priorEndDatePath -> writeOrReadDate("2000-10-11", "11-10-2000"))
       ),
-      "abroadLiability" -> Json.obj("liabilityStartDate" -> writeOrReadDate(), "liabilityEndDate" -> writeOrReadDate()),
       "nationalityCode" -> "GBR"
     )
   }
@@ -378,7 +377,6 @@ object NinoApplicationTestData {
       applicantMarriages = None,
       applicantOrigin = None,
       applicantPriorResidency = None,
-      abroadLiability = None,
       nationalityCode = None
     )
   }
@@ -408,7 +406,6 @@ object NinoApplicationTestData {
       applicantMarriages = None,
       applicantOrigin = None,
       applicantPriorResidency = None,
-      abroadLiability = None,
       nationalityCode = Some("GBR")
     )
   }
@@ -546,9 +543,6 @@ object NinoApplicationTestData {
         PriorResidencyModel(Some(DateModel(writeOrReadDate())), Some(DateModel(writeOrReadDate("2000-10-11", "11-10-2000")))),
         PriorResidencyModel(Some(DateModel(writeOrReadDate())), Some(DateModel(writeOrReadDate("2000-10-11", "11-10-2000"))))
       )),
-      abroadLiability = Some(
-        AbroadLiabilityModel(Some(DateModel(writeOrReadDate())), Some(DateModel(writeOrReadDate())))
-      ),
       nationalityCode = Some("GBR")
     )
   }
