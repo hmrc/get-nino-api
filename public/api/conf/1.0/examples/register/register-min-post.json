@@ -1,9 +1,9 @@
 {
   "nino": "GW629902A",
   "gender": "MALE",
-  "entryDate": "10-10-2020",
-  "birthDate": "10-10-2020",
-  "officeNumber": "1234",
+  "entryDate": "08-06-2020",
+  "birthDate": "02-10-1967",
+  "officeNumber": "123456",
   "names": [
     {
       "nameType": "REGISTERED",
@@ -18,5 +18,3 @@
     }
   ]
 }
-
-
