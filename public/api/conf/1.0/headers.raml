@@ -24,6 +24,7 @@ traits:
       CorrelationId:
         description: A UUID identifier of the transaction.
         type: string
+        pattern: ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$
         required: true
         example: a1e8057e-fbbc-47a8-a8b4-78d9f015c253
 
