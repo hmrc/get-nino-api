@@ -18,11 +18,11 @@ package v1.controllers
 
 import config.AppConfig
 import javax.inject.{Inject, Singleton}
-import play.api.Logger
+import play.api.Logging
 import play.api.libs.json.Json
 import play.api.mvc._
 import uk.gov.hmrc.http.HeaderCarrier
-import uk.gov.hmrc.play.bootstrap.controller.BackendController
+import uk.gov.hmrc.play.bootstrap.backend.controller.BackendController
 import v1.controllers.predicates.{CorrelationIdPredicate, OriginatorIdPredicate, PrivilegedApplicationPredicate}
 import v1.models.request.NinoApplication
 import v1.services.DesService
@@ -39,7 +39,7 @@ class RegisterNinoController @Inject()(
                                         originatorIdPredicate: OriginatorIdPredicate,
                                         appConfig: AppConfig
                                       )
-                                      (implicit val ec: ExecutionContext) extends BackendController(cc) with JsonBodyUtil {
+                                      (implicit val ec: ExecutionContext) extends BackendController(cc) with JsonBodyUtil with Logging{
 
   def register(): Action[AnyContent] = (privilegedApplicationPredicate andThen originatorIdPredicate andThen correlationIdPredicate).async { implicit request =>
     val optionalOriginatorId = request.headers.get("OriginatorId")
@@ -53,9 +53,9 @@ class RegisterNinoController @Inject()(
 
     if (appConfig.features.logDwpJson()) request.body match {
       case jsonContent: AnyContentAsJson =>
-        Logger.info(s"[RegisterNinoController][register] Logging JSON body of incoming request: ${jsonContent.json}")
+        logger.info(s"[RegisterNinoController][register] Logging JSON body of incoming request: ${jsonContent.json}")
       case _ =>
-        Logger.warn("[RegisterNinoController][register] Incoming request did not have a JSON body.")
+        logger.warn("[RegisterNinoController][register] Incoming request did not have a JSON body.")
     }
 
     Future(parsedJsonBody[NinoApplication]).flatMap {
@@ -68,8 +68,8 @@ class RegisterNinoController @Inject()(
   }
 
   private def logErrorResult(error: v1.models.errors.ErrorResponse)(implicit hc: HeaderCarrier): Result = {
-    Logger.debug(s"[RegisterNinoController][logErrorResult] Header Carrier for failed request: $hc")
-    Logger.warn(s"[RegisterNinoController][logErrorResult] Error JSON: ${Json.prettyPrint(Json.toJson(error))}")
+    logger.debug(s"[RegisterNinoController][logErrorResult] Header Carrier for failed request: $hc")
+    logger.warn(s"[RegisterNinoController][logErrorResult] Error JSON: ${Json.prettyPrint(Json.toJson(error))}")
     error.result
   }
 }

@@ -16,9 +16,9 @@
 
 package config
 
-import play.api.{Configuration, Logger}
+import play.api.{Configuration, Logging}
 
-final case class FeatureSwitch(value: Option[Configuration]) {
+final case class FeatureSwitch(value: Option[Configuration]) extends Logging{
 
   private val versionRegex = """(\d)\.\d""".r
 
@@ -27,7 +27,7 @@ final case class FeatureSwitch(value: Option[Configuration]) {
       version match {
         case versionRegex(ver) => Some(ver)
         case _ => {
-          Logger.warn("[FeatureSwitch][isVersionEnabled] - version found does not match regex")
+          logger.warn("[FeatureSwitch][isVersionEnabled] - version found does not match regex")
           None
         }
       }

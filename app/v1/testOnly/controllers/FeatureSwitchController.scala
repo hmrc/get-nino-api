@@ -18,16 +18,16 @@ package v1.testOnly.controllers
 
 import config.AppConfig
 import javax.inject.Inject
-import play.api.Logger
+import play.api.Logging
 import play.api.libs.json.Json
 import play.api.mvc.{Action, AnyContent, ControllerComponents, Result}
-import uk.gov.hmrc.play.bootstrap.controller.BackendController
+import uk.gov.hmrc.play.bootstrap.backend.controller.BackendController
 import v1.config.featureSwitch.FeatureSwitchModel
 
 class FeatureSwitchController @Inject()(
                                          appConfig: AppConfig,
                                          cc: ControllerComponents
-                                       ) extends BackendController(cc) {
+                                       ) extends BackendController(cc) with Logging{
 
   lazy val update: Action[AnyContent] = Action { implicit request =>
     request.body.asJson match {
@@ -36,11 +36,11 @@ class FeatureSwitchController @Inject()(
           appConfig.features.useDesStub(model.useDesStub)
           result
         case None =>
-          Logger.warn("[FeatureSwitchController][update] Unable to parse json as FeatureSwitchModel")
+          logger.warn("[FeatureSwitchController][update] Unable to parse json as FeatureSwitchModel")
           result
       }
       case None =>
-        Logger.warn("[FeatureSwitchController][update] Unable to validate body as JSON")
+        logger.warn("[FeatureSwitchController][update] Unable to validate body as JSON")
         result
     }
   }

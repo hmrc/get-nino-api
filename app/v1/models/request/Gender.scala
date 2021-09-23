@@ -16,20 +16,20 @@
 
 package v1.models.request
 
-import play.api.Logger
+import play.api.Logging
 import play.api.libs.json._
 
 sealed trait Gender {
   val value: String
 }
 
-object Gender {
+object Gender extends Logging{
   private[models] def validGenderCheck: String => Boolean = {
     case Male.value => true
     case Female.value => true
     case GenderNotKnown.value => true
     case _ =>
-      Logger.warn("[Gender][valueCheck] Provided gender failed check")
+      logger.warn("[Gender][valueCheck] Provided gender failed check")
       false
 
   }

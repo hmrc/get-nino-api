@@ -32,7 +32,6 @@ class VersionSpec extends UnitSpec {
       "return None when Accept header does not contain a version" in {
         Versions.getFromRequest(HeaderCarrier().withExtraHeaders((ACCEPT, "application/json"))) shouldBe None
       }
-
       "return the version when Accept header contains the version" in {
         Versions.getFromRequest(HeaderCarrier().withExtraHeaders((ACCEPT, "application/vnd.hmrc.1.0+json"))) shouldBe Some("1.0")
       }

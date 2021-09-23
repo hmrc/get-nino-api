@@ -19,7 +19,7 @@ package utils
 import javax.inject.{Inject, Singleton}
 import play.api.http.Status._
 import play.api.mvc.{RequestHeader, Result}
-import play.api.{Configuration, Logger}
+import play.api.{Configuration, Logging}
 import uk.gov.hmrc.auth.core.AuthorisationException
 import uk.gov.hmrc.http._
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
@@ -35,10 +35,10 @@ class ErrorHandler @Inject()(
                               auditConnector: AuditConnector,
                               httpAuditEvent: HttpAuditEvent
                             )
-                            (implicit ec: ExecutionContext) extends JsonErrorHandler(auditConnector, httpAuditEvent, config) {
+                            (implicit ec: ExecutionContext) extends JsonErrorHandler(auditConnector, httpAuditEvent, config) with Logging{
 
   override def onClientError(request: RequestHeader, statusCode: Int, message: String): Future[Result] = {
-    Logger.warn(s"[ErrorHandler][onClientError] error in version 1, for (${request.method}) [${request.uri}] with status:" +
+    logger.warn(s"[ErrorHandler][onClientError] error in version 1, for (${request.method}) [${request.uri}] with status:" +
       s" $statusCode and message: $message")
 
     statusCode match {
@@ -48,20 +48,20 @@ class ErrorHandler @Inject()(
       case METHOD_NOT_ALLOWED => Future.successful(MethodNotAllowedError.result)
       case UNSUPPORTED_MEDIA_TYPE => Future.successful(InvalidBodyTypeError.result)
       case _ =>
-        Logger.warn(s"[ErrorHandler][onClientError] Unexpected client error type")
+        logger.warn(s"[ErrorHandler][onClientError] Unexpected client error type")
         Future.successful(ServiceUnavailableError.result)
     }
   }
 
   override def onServerError(request: RequestHeader, ex: Throwable): Future[Result] = {
-    Logger.warn(s"[ErrorHandler][onServerError] Internal server error in version 1, for (${request.method}) [${request.uri}] -> ", ex)
+    logger.warn(s"[ErrorHandler][onServerError] Internal server error in version 1, for (${request.method}) [${request.uri}] -> ", ex)
 
     ex match {
       case _: NotFoundException => Future.successful(NotFoundError.result)
       case ex: AuthorisationException => Future.successful(UnauthorisedError(ex.reason).result)
       case _: JsValidationException => Future.successful(BadRequestError.result)
       case ex =>
-        Logger.warn(s"[ErrorHandler][onServerError] Server error due to unexpected exception: $ex")
+        logger.warn(s"[ErrorHandler][onServerError] Server error due to unexpected exception: $ex")
         Future.successful(ServiceUnavailableError.result)
     }
   }

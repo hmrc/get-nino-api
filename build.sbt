@@ -73,3 +73,8 @@ dependencyUpdatesFilter -= moduleFilter(organization = "com.typesafe.play", revi
 dependencyUpdatesFilter -= moduleFilter(organization = "com.typesafe.play", name = "twirl-api")
 dependencyUpdatesFilter -= moduleFilter(organization = "org.scalatestplus.play", revision = "4.*")
 
+scalacOptions ++= Seq(
+  "-P:silencer:globalFilters=Unused import",
+  "-feature"
+)
+

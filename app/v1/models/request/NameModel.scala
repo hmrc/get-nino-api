@@ -19,7 +19,7 @@ package v1.models.request
 import java.time.format.DateTimeFormatter
 import java.time.{LocalDate, ZoneId}
 
-import play.api.Logger
+import play.api.Logging
 import play.api.libs.json._
 
 final case class NameModel(
@@ -32,7 +32,7 @@ final case class NameModel(
                       nameType: String
                     )
 
-object NameModel {
+object NameModel extends Logging{
   private lazy val titlePath = __ \ "title"
   private lazy val forenamePath = __ \ "forename"
   private lazy val secondForenamePath = __ \ "secondForename"
@@ -66,7 +66,7 @@ object NameModel {
   private[models] def validateTitle: Option[String] => Boolean = {
     case Some(inputString) =>
       val passedValidation = validTitles.contains(inputString)
-      if (!passedValidation) Logger.warn(s"[NameModel][validateTitle] Unable to parse entered title.")
+      if (!passedValidation) logger.warn(s"[NameModel][validateTitle] Unable to parse entered title.")
       passedValidation
     case None => true
   }
@@ -78,7 +78,7 @@ object NameModel {
 
   private[models] def validateType: String => Boolean = { inputString =>
     val passedValidation = validTypes.contains(inputString)
-    if (!passedValidation) Logger.warn(s"[NameModel][validateType] Unable to parse entered name type.")
+    if (!passedValidation) logger.warn(s"[NameModel][validateType] Unable to parse entered name type.")
     passedValidation
   }
 
@@ -87,7 +87,7 @@ object NameModel {
   private[models] def validateName[T](input: T, fieldName: String): Boolean = {
     val checkValidity: String => Boolean = { fieldValue =>
       val passedValidation = fieldValue.matches(nameRegex)
-      if (!passedValidation) Logger.warn(s"[NameModel][validateName] Unable to validate the field: $fieldName")
+      if (!passedValidation) logger.warn(s"[NameModel][validateName] Unable to validate the field: $fieldName")
       passedValidation
     }
 
@@ -105,7 +105,7 @@ object NameModel {
         val earlierModelAsDate = LocalDate.parse(earlierDateModel.dateString, DateTimeFormatter.ofPattern("dd-MM-yyyy"))
         val laterModelAsDate = LocalDate.parse(laterDateModel.dateString, DateTimeFormatter.ofPattern("dd-MM-yyyy"))
         val passedValidation = earlierModelAsDate.isBefore(laterModelAsDate) || (canBeEqual && earlierModelAsDate.isEqual(laterModelAsDate))
-        if(!passedValidation) Logger.warn("[NameModel][validateDateAsPriorDate] The provided earlierDate is after the laterDate.")
+        if(!passedValidation) logger.warn("[NameModel][validateDateAsPriorDate] The provided earlierDate is after the laterDate.")
         passedValidation
       case _ => true
     }

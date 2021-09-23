@@ -5,11 +5,25 @@
         <encoder class="uk.gov.hmrc.play.logging.JsonEncoder"/>
     </appender>
 
-    <logger name="uk.gov" level="${logger.uk.gov:-WARN}"/>
+    <logger name="uk.gov" level="${logger.uk.gov:-INFO}"/>
 
-    <logger name="application" level="${logger.application:-WARN}"/>
+    <logger name="application" level="${logger.application:-INFO}"/>
 
-    <root level="${logger.application:-WARN}">
+    <logger name="v1.controllers" level="${logger.application:-INFO}"/>
+
+    <logger name="v1.connectors" level="${logger.application:-INFO}"/>
+
+    <logger name="v1.models.request" level="${logger.application:-INFO}"/>
+
+    <logger name="v1.services" level="${logger.application:-INFO}"/>
+
+    <logger name="v1.utils" level="${logger.application:-INFO}"/>
+
+    <logger name="utils" level="${logger.application:-INFO}"/>
+
+    <logger name="config" level="${logger.application:-INFO}"/>
+
+    <root level="${logger.application:-INFO}">
         <appender-ref ref="STDOUT"/>
     </root>
 </configuration>

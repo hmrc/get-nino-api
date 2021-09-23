@@ -16,37 +16,37 @@
 
 package v1.connectors.httpParsers
 
-import play.api.Logger
+import play.api.Logging
 import play.api.http.Status
 import play.api.libs.json.{JsError, JsSuccess}
 import uk.gov.hmrc.http.{HttpReads, HttpResponse}
 import v1.connectors.httpParsers.HttpResponseTypes.HttpPostResponse
-import v1.models.errors.{DesError, DesErrorTranslator, DownstreamValidationError, ServiceUnavailableError}
+import v1.models.errors.{DesError, DesErrorTranslator, ServiceUnavailableError}
 
 import scala.util.{Failure, Success, Try}
 
 object RegisterNinoResponseHttpParser {
 
-  implicit object RegisterNinoResponseReads extends HttpReads[HttpPostResponse] {
+  implicit object RegisterNinoResponseReads extends HttpReads[HttpPostResponse] with Logging{
     override def read(method: String, url: String, response: HttpResponse): HttpPostResponse = {
       (response.status, Try(response.json.validate[DesError])) match {
         case (Status.ACCEPTED, _) =>
-          Logger.debug("[RegisterNinoResponseHttpParser][read] Status Accepted")
+          logger.debug("[RegisterNinoResponseHttpParser][read] Status Accepted")
           Right(())
         case (Status.FORBIDDEN, Success(JsSuccess(error, _))) =>
-          Logger.warn(s"[RegisterNinoResponseHttpParser][read] Downstream validation failed producing" +
+          logger.warn(s"[RegisterNinoResponseHttpParser][read] Downstream validation failed producing" +
             s" Forbidden response returned from DES with error: $error")
           Left(DesErrorTranslator.translate(error))
         case (status, Success(JsSuccess(error, _))) =>
-          Logger.warn(s"[RegisterNinoResponseHttpParser][read] Unexpected $status response returned." +
+          logger.warn(s"[RegisterNinoResponseHttpParser][read] Unexpected $status response returned." +
             s"DES error code: ${error.code} DES error reason: ${error.reason}")
           Left(ServiceUnavailableError)
         case (status, Success(JsError(err))) =>
-          Logger.warn(s"[RegisterNinoResponseHttpParser][read] Unexpected $status response returned." +
+          logger.warn(s"[RegisterNinoResponseHttpParser][read] Unexpected $status response returned." +
             s"Couldn't parse error JSON from DES. Parsing error: $err")
           Left(ServiceUnavailableError)
         case (status, Failure(ex)) =>
-          Logger.warn(s"[RegisterNinoResponseHttpParser][read] Unexpected $status response returned." +
+          logger.warn(s"[RegisterNinoResponseHttpParser][read] Unexpected $status response returned." +
             s"Exception reading JSON body from DES response: $ex")
           Left(ServiceUnavailableError)
       }

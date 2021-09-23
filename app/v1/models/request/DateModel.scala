@@ -19,7 +19,7 @@ package v1.models.request
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
-import play.api.Logger
+import play.api.Logging
 import play.api.libs.json._
 
 final case class DateModel(
@@ -28,7 +28,7 @@ final case class DateModel(
   def asLocalDate: LocalDate = LocalDate.parse(dateString, DateTimeFormatter.ofPattern("dd-MM-yyyy"))
 }
 
-object DateModel {
+object DateModel extends Logging{
 
   private val dwpDateRegex: String = """^\d{2}-\d{2}-\d{4}$"""
   private val npsDateRegex: String =
@@ -46,8 +46,8 @@ object DateModel {
     val isValidDwpDate: String => Boolean = dateInput => {
       val passedValidation = dateInput.matches(dwpDateRegex)
       if (!passedValidation) {
-        Logger.debug(s"[StartDateEndDate][validateDwpDate] Unable to parse the following date: $dateInput")
-        Logger.warn(s"[StartDateEndDate][validateDwpDate] Unable to parse the provided date.")
+        logger.debug(s"[StartDateEndDate][validateDwpDate] Unable to parse the following date: $dateInput")
+        logger.warn(s"[StartDateEndDate][validateDwpDate] Unable to parse the provided date.")
       }
       passedValidation
     }

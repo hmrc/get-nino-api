@@ -17,7 +17,7 @@
 package v1.controllers.predicates
 
 import javax.inject.Inject
-import play.api.Logger
+import play.api.Logging
 import play.api.libs.json.Json
 import play.api.mvc._
 import v1.models.errors.{CorrelationIdIncorrectError, CorrelationIdMissingError}
@@ -27,7 +27,7 @@ import scala.concurrent.{ExecutionContext, Future}
 class CorrelationIdPredicate @Inject()(
                                         ec: ExecutionContext,
                                         val controllerComponents: ControllerComponents
-                                      ) extends ActionFilter[Request] with BaseController {
+                                      ) extends ActionFilter[Request] with BaseController with Logging{
 
   val CORRELATION_ID = "CorrelationId"
 
@@ -40,11 +40,11 @@ class CorrelationIdPredicate @Inject()(
       case Some(id) => if (id.matches(correlationIdRegex)) {
         Future.successful(None)
       } else {
-        Logger.warn("[CorrelationIdPredicate][Filter] - CorrelationId does not match regex")
+        logger.warn("[CorrelationIdPredicate][Filter] - CorrelationId does not match regex")
         Future.successful(Some(BadRequest(Json.toJson(CorrelationIdIncorrectError))))
       }
       case _ =>
-        Logger.warn("[CorrelationIdPredicate][Filter] - CorrelationId is missing")
+        logger.warn("[CorrelationIdPredicate][Filter] - CorrelationId is missing")
         Future.successful(Some(BadRequest(Json.toJson(CorrelationIdMissingError))))
     }
   }

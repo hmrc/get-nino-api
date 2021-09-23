@@ -16,14 +16,14 @@
 
 package v1.models.request
 
-import play.api.Logger
+import play.api.Logging
 import play.api.libs.json._
 
 sealed trait BirthDateVerification {
   val value: String
 }
 
-object BirthDateVerification {
+object BirthDateVerification extends Logging{
 
   private[models] def birthDateValidation: String => Boolean = {
     case Unverified.value => true
@@ -31,7 +31,7 @@ object BirthDateVerification {
     case VerificationNotKnown.value => true
     case CoegConfirmed.value => true
     case _ =>
-      Logger.warn("[BirthDateVerification][valueCheck] birthDateVerification field is invalid")
+      logger.warn("[BirthDateVerification][valueCheck] birthDateVerification field is invalid")
       false
   }
 

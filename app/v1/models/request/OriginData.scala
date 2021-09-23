@@ -16,7 +16,7 @@
 
 package v1.models.request
 
-import play.api.Logger
+import play.api.Logging
 import play.api.libs.functional.syntax._
 import play.api.libs.json._
 
@@ -33,7 +33,7 @@ final case class OriginData(
                        lastEUAddress: Option[LastEUAddress] = None
                      )
 
-object OriginData {
+object OriginData extends Logging{
 
   private lazy val birthTownPath = __ \ "birthTown"
   private lazy val birthProvincePath = __ \ "birthProvince"
@@ -52,7 +52,7 @@ object OriginData {
     if (item.forall(_.matches(foreignSocialSecurityRegex))) {
       true
     } else {
-      Logger.warn("[OriginData][foreignSocialSecurityRegex] - foreignSocialSecurity does not match regex")
+      logger.warn("[OriginData][foreignSocialSecurityRegex] - foreignSocialSecurity does not match regex")
       false
     }
 
@@ -62,7 +62,7 @@ object OriginData {
     if (item.forall(_.matches(birthTownProvinceRegex))) {
       true
     } else {
-      Logger.warn(s"[OriginData][birthTownProvinceValidation] - $itemName does not match regex")
+      logger.warn(s"[OriginData][birthTownProvinceValidation] - $itemName does not match regex")
       false
     }
 
@@ -72,7 +72,7 @@ object OriginData {
     if (item.forall(_.matches(nameElementRegex))) {
       true
     } else {
-      Logger.warn(s"[OriginData][nameElementValidation] - $itemName does not match regex")
+      logger.warn(s"[OriginData][nameElementValidation] - $itemName does not match regex")
       false
     }
 
@@ -82,7 +82,7 @@ object OriginData {
     if (item.forall(_.matches(countryCodeRegex))) {
       true
     } else {
-      Logger.warn("[OriginData][countryCodeRegex] - countryCode does not match regex")
+      logger.warn("[OriginData][countryCodeRegex] - countryCode does not match regex")
       false
     }
 
