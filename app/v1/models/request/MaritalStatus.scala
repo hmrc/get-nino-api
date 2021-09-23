@@ -15,14 +15,14 @@
  */
 
 package v1.models.request
-import play.api.Logger
+import play.api.Logging
 import play.api.libs.json._
 
 sealed trait MaritalStatus {
   val value: String
 }
 
-object MaritalStatus {
+object MaritalStatus extends Logging{
   private[models] val allStatuses: Map[String, MaritalStatus] = Seq(
     MARRIAGE_TERMINATED,
     MARRIAGE_ANNULLED,
@@ -44,7 +44,7 @@ object MaritalStatus {
   def validateMaritalStatus(maritalStatus: String): Boolean = {
     val passedValidation = allStatuses.values.map(_.value).toSeq.contains(maritalStatus)
 
-    if(!passedValidation) Logger.info(s"[MaritalStatus][validateMaritalStatus] $maritalStatusErrorMessage")
+    if(!passedValidation) logger.info(s"[MaritalStatus][validateMaritalStatus] $maritalStatusErrorMessage")
 
     passedValidation
   }

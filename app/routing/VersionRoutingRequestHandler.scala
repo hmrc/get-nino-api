@@ -18,12 +18,14 @@ package routing
 
 import config.{AppConfig, FeatureSwitch}
 import definition.Versions
-import javax.inject.{Inject, Singleton}
 import play.api.http.{DefaultHttpRequestHandler, HttpConfiguration, HttpFilters}
 import play.api.mvc.{DefaultActionBuilder, Handler, RequestHeader}
 import play.api.routing.Router
+import play.core.DefaultWebCommands
 import utils.ErrorHandler
 import v1.models.errors.{InvalidAcceptHeaderError, UnsupportedVersionError}
+
+import javax.inject.{Inject, Singleton}
 
 @Singleton
 class VersionRoutingRequestHandler @Inject()(versionRoutingMap: VersionRoutingMap,
@@ -32,7 +34,14 @@ class VersionRoutingRequestHandler @Inject()(versionRoutingMap: VersionRoutingMa
                                              config: AppConfig,
                                              filters: HttpFilters,
                                              action: DefaultActionBuilder)
-  extends DefaultHttpRequestHandler(versionRoutingMap.defaultRouter, errorHandler, httpConfiguration, filters) {
+  extends DefaultHttpRequestHandler(
+    webCommands = new DefaultWebCommands,
+    optDevContext = None,
+    router = versionRoutingMap.defaultRouter,
+    errorHandler = errorHandler,
+    configuration = httpConfiguration,
+    filters = filters.filters
+  ) {
 
   private val featureSwitch = FeatureSwitch(config.featureSwitch)
 
@@ -46,9 +55,8 @@ class VersionRoutingRequestHandler @Inject()(versionRoutingMap: VersionRoutingMa
           case Some(versionRouter) if featureSwitch.isVersionEnabled(version) => routeWith(versionRouter)(request)
           case _ => Some(action(UnsupportedVersionError.result))
         }
-      case None => {
+      case None =>
         Some(action(InvalidAcceptHeaderError.result))
-      }
     }
 
     documentHandler orElse apiHandler

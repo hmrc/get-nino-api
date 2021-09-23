@@ -18,7 +18,7 @@ package v1.controllers.predicates
 
 import javax.inject.{Inject, Singleton}
 import org.slf4j.MDC
-import play.api.Logger
+import play.api.Logging
 import play.api.mvc.{Result, _}
 import uk.gov.hmrc.auth.core.AuthProvider.PrivilegedApplication
 import uk.gov.hmrc.auth.core._
@@ -35,7 +35,7 @@ class PrivilegedApplicationPredicate @Inject()(
                                                 val controllerComponents: ControllerComponents,
                                                 override implicit val executionContext: ExecutionContext
                                               )
-  extends ActionBuilder[Request, AnyContent] with AuthorisedFunctions with BaseController {
+  extends ActionBuilder[Request, AnyContent] with AuthorisedFunctions with BaseController with Logging{
 
   override def invokeBlock[A](request: Request[A], block: Request[A] => Future[Result]): Future[Result] = {
     implicit val hc: HeaderCarrier = HeaderCarrierConverter.fromHeadersAndSession(request.headers, None)
@@ -47,10 +47,10 @@ class PrivilegedApplicationPredicate @Inject()(
       block(request)
     } recover {
       case error: AuthorisationException =>
-        Logger.debug(s"Authorization failed. Bearer token sent: ${hc.authorization}")
+        logger.debug(s"Authorization failed. Bearer token sent: ${hc.authorization}")
         UnauthorisedError(error.reason).result
       case ex =>
-        Logger.warn(s"Auth request failed with unexpected exception: $ex")
+        logger.warn(s"Auth request failed with unexpected exception: $ex")
         ServiceUnavailableError.result
     }
   }

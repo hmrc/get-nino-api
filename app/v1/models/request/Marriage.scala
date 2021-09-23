@@ -19,7 +19,7 @@ package v1.models.request
 import java.time.format.DateTimeFormatter
 import java.time.{LocalDate, ZoneId}
 
-import play.api.Logger
+import play.api.Logging
 import play.api.libs.json._
 
 final case class Marriage(
@@ -32,7 +32,7 @@ final case class Marriage(
                      spouseSurname: Option[String] = None
                    )
 
-object Marriage {
+object Marriage extends Logging{
 
   private lazy val maritalStatusPath = __ \ "maritalStatus"
   private lazy val startDatePath = __ \ "startDate"
@@ -51,7 +51,7 @@ object Marriage {
     (maybeEarlierDate.map(_.asLocalDate), maybeLaterDate.map(_.asLocalDate)) match {
       case (Some(earlierDate), Some(laterDate)) =>
         val passedValidation = earlierDate.isBefore(laterDate) || (canBeEqual && earlierDate.isEqual(laterDate))
-        if(!passedValidation) Logger.warn("[AddressModel][validateDateAsPriorDate] The provided earlierDate is after the laterDate.")
+        if(!passedValidation) logger.warn("[AddressModel][validateDateAsPriorDate] The provided earlierDate is after the laterDate.")
         passedValidation
       case _ => true
     }
@@ -67,7 +67,7 @@ object Marriage {
     if (item.forall(_.matches(stringRegex))) {
       true
     } else {
-      Logger.warn(s"[Marriage][stringValidation] - $itemName does not match regex")
+      logger.warn(s"[Marriage][stringValidation] - $itemName does not match regex")
       false
     }
 

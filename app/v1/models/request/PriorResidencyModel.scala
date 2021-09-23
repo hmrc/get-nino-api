@@ -19,7 +19,7 @@ package v1.models.request
 import java.time.format.DateTimeFormatter
 import java.time.{LocalDate, ZoneId}
 
-import play.api.Logger
+import play.api.Logging
 import play.api.libs.json.{Json, Reads, _}
 
 final case class PriorResidencyModel(
@@ -27,13 +27,13 @@ final case class PriorResidencyModel(
                                 endDate: Option[DateModel] = None
                               )
 
-object PriorResidencyModel {
+object PriorResidencyModel extends Logging{
 
   private[models] def validateDateAsPriorDate(maybeEarlierDate: Option[DateModel], maybeLaterDate: Option[DateModel], canBeEqual: Boolean = true): Boolean =
     (maybeEarlierDate.map(_.asLocalDate), maybeLaterDate.map(_.asLocalDate)) match {
       case (Some(earlierDate), Some(laterDate)) =>
         val passedValidation = earlierDate.isBefore(laterDate) || (canBeEqual && earlierDate.isEqual(laterDate))
-        if(!passedValidation) Logger.warn("[AddressModel][validateDateAsPriorDate] The provided earlierDate is after the laterDate.")
+        if(!passedValidation) logger.warn("[AddressModel][validateDateAsPriorDate] The provided earlierDate is after the laterDate.")
         passedValidation
       case _ => true
     }

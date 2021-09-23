@@ -18,11 +18,9 @@ package v1.connectors
 
 import config.AppConfig
 import javax.inject.{Inject, Singleton}
-import play.api.Logger
+import play.api.Logging
 import play.api.libs.json.Json
-import uk.gov.hmrc.http.HeaderCarrier
-import uk.gov.hmrc.http.logging.Authorization
-import uk.gov.hmrc.play.bootstrap.http.HttpClient
+import uk.gov.hmrc.http.{HeaderCarrier, HttpClient}
 import v1.connectors.httpParsers.HttpResponseTypes.HttpPostResponse
 import v1.connectors.httpParsers.RegisterNinoResponseHttpParser.RegisterNinoResponseReads
 import v1.models.request.NinoApplication
@@ -33,7 +31,7 @@ import scala.concurrent.{ExecutionContext, Future}
 class DesConnector @Inject()(
                               http: HttpClient,
                               appConfig: AppConfig
-                            ) {
+                            ) extends Logging{
 
   def sendRegisterRequest(request: NinoApplication)
                          (implicit hc: HeaderCarrier, ec: ExecutionContext): Future[HttpPostResponse] = {
@@ -44,15 +42,13 @@ class DesConnector @Inject()(
       s"${appConfig.desBaseUrl()}${appConfig.desContext()}"
     }
 
-    val headerCarrierWithEnvironmentHeader: HeaderCarrier =
-      hc.copy(authorization = Some(Authorization(s"Bearer ${appConfig.desToken()}")))
-        .withExtraHeaders(("Environment", appConfig.desEnvironment()))
+    val headers = Seq("Environment" -> appConfig.desEnvironment, "Authorization" -> s"Bearer ${appConfig.desToken()}")
 
     val requestBody = Json.toJson(request)
 
-    if (appConfig.features.logDesJson()) Logger.info(s"Logging JSON body of outgoing DES request: $requestBody")
+    if (appConfig.features.logDesJson()) logger.info(s"Logging JSON body of outgoing DES request: $requestBody")
 
-    http.POST(url, requestBody)(implicitly, RegisterNinoResponseReads, headerCarrierWithEnvironmentHeader, ec)
+    http.POST(url, requestBody, headers = headers)
   }
 
 }

@@ -16,23 +16,23 @@
 
 package v1.utils
 
-import play.api.Logger
+import play.api.Logging
 import play.api.libs.json.{JsError, JsSuccess, Reads}
 import play.api.mvc.{AnyContentAsJson, Request}
 import v1.models.errors.{ErrorResponse, InvalidBodyTypeError, JsonValidationError}
 
-trait JsonBodyUtil {
+trait JsonBodyUtil extends Logging{
 
   def parsedJsonBody[T](implicit request: Request[_], reads: Reads[T]): Either[ErrorResponse, T] = request.body match {
     case body: AnyContentAsJson => body.json.validate[T] match {
       case jsErrors: JsError =>
-        Logger.debug(s"[MicroserviceBaseController][parsedJsonBody] Json received, but could not validate. Errors: $jsErrors")
-        Logger.warn("[MicroserviceBaseController][parsedJsonBody] Json received, but could not validate.")
+        logger.debug(s"[MicroserviceBaseController][parsedJsonBody] Json received, but could not validate. Errors: $jsErrors")
+        logger.warn("[MicroserviceBaseController][parsedJsonBody] Json received, but could not validate.")
         Left(JsonValidationError(jsErrors))
       case validatedModel: JsSuccess[T] => Right(validatedModel.value)
     }
     case _ =>
-      Logger.warn("[MicroserviceBaseController][parsedJsonBody] Body of request was not JSON.")
+      logger.warn("[MicroserviceBaseController][parsedJsonBody] Body of request was not JSON.")
       Left(InvalidBodyTypeError)
   }
 

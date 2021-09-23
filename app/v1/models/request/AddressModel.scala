@@ -16,10 +16,10 @@
 
 package v1.models.request
 
-import java.time.{LocalDate, ZoneId}
 import java.time.format.DateTimeFormatter
+import java.time.{LocalDate, ZoneId}
 
-import play.api.Logger
+import play.api.Logging
 import play.api.libs.json._
 
 final case class AddressModel(addressType: Option[AddressType],
@@ -33,7 +33,7 @@ final case class AddressModel(addressType: Option[AddressType],
                         startDate: Option[DateModel],
                         endDate: Option[DateModel])
 
-object AddressModel {
+object AddressModel extends Logging{
 
   val addressTypePath: JsPath = __ \ "addressType"
   val line1Path: JsPath = __ \ "line1"
@@ -49,7 +49,7 @@ object AddressModel {
   private[models] def checkPostcodeMandated(postcode: Option[Postcode], countryCode: String): Boolean = {
     countryCode.toUpperCase match {
       case "GBR" | "GGY" | "IMN" => postcode.fold({
-        Logger.warn("[AddressModel][postcodeValidation] - postcode is required if country code is GBR")
+        logger.warn("[AddressModel][postcodeValidation] - postcode is required if country code is GBR")
         false
       })(
         _ => true
@@ -62,7 +62,7 @@ object AddressModel {
     (maybeEarlierDate.map(_.asLocalDate), maybeLaterDate.map(_.asLocalDate)) match {
       case (Some(earlierDate), Some(laterDate)) =>
         val passedValidation = earlierDate.isBefore(laterDate) || (canBeEqual && earlierDate.isEqual(laterDate))
-        if(!passedValidation) Logger.warn("[AddressModel][validateDateAsPriorDate] The provided earlierDate is after the laterDate.")
+        if(!passedValidation) logger.warn("[AddressModel][validateDateAsPriorDate] The provided earlierDate is after the laterDate.")
         passedValidation
       case _ => true
     }

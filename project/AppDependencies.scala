@@ -19,9 +19,13 @@ import sbt._
 
 object AppDependencies {
 
+  val silencerVersion = "1.6.0"
+
   val compile: Seq[ModuleID] = Seq(
-    "uk.gov.hmrc" %% "bootstrap-backend-play-27" % "3.4.0",
-    "uk.gov.hmrc" %% "play-hmrc-api" % "5.3.0-play-27"
+    "uk.gov.hmrc" %% "bootstrap-backend-play-27" % "5.14.0",
+    "uk.gov.hmrc" %% "play-hmrc-api" % "5.3.0-play-27",
+    compilerPlugin("com.github.ghik" % "silencer-plugin" % silencerVersion cross CrossVersion.full),
+    "com.github.ghik" % "silencer-lib" % silencerVersion % Provided cross CrossVersion.full
   )
 
   val test: Seq[ModuleID] = Seq(

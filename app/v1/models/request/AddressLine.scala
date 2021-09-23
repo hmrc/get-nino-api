@@ -16,20 +16,20 @@
 
 package v1.models.request
 
-import play.api.Logger
+import play.api.Logging
 import play.api.libs.json._
 
 
 final case class AddressLine(addressLine: String)
 
-object AddressLine {
+object AddressLine extends Logging{
 
   val regex: String = "^(?=.{1,35}$)([A-Za-z0-9]([-'.& ]?[A-Za-z0-9 ]+)*)$"
 
   def addressLineValidation: String => Boolean = addressInput => {
     val passedValidation = addressInput.matches(regex)
     if (!passedValidation) {
-      Logger.warn("[AddressLine][regexCheck] Unable to parse the provided address line.")
+      logger.warn("[AddressLine][regexCheck] Unable to parse the provided address line.")
     }
     passedValidation
   }
