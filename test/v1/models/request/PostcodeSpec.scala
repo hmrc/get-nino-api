@@ -16,10 +16,11 @@
 
 package v1.models.request
 
-import org.scalatest.{Matchers, WordSpec}
+import org.scalatest.matchers.should.Matchers
+import org.scalatest.wordspec.AnyWordSpec
 import play.api.libs.json.{JsString, Json}
 
-class PostcodeSpec extends WordSpec with Matchers {
+class PostcodeSpec extends AnyWordSpec with Matchers {
 
   val postcodeModel: Postcode = Postcode("TF3 4NT")
   val postcodeJson: JsString = JsString("TF3 4NT")

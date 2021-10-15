@@ -121,7 +121,7 @@ class RegisterNinoControllerSpec extends ControllerBaseSpec {
           val result = controller.register()(request)
 
           status(result) shouldBe Status.UNSUPPORTED_MEDIA_TYPE
-          contentAsJson(result) shouldBe Json.toJson(InvalidBodyTypeError)
+          contentAsJson(result) shouldBe contentAsJson(Future.successful(InvalidBodyTypeError.result))
         }
       }
 

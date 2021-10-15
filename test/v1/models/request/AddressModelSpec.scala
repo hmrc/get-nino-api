@@ -19,10 +19,11 @@ package v1.models.request
 import java.time.{LocalDate, ZoneId}
 import java.time.format.DateTimeFormatter
 
-import org.scalatest.{Matchers, WordSpec}
+import org.scalatest.matchers.should.Matchers
+import org.scalatest.wordspec.AnyWordSpec
 import play.api.libs.json.{JsValue, Json}
 
-class AddressModelSpec extends WordSpec with Matchers {
+class AddressModelSpec extends AnyWordSpec with Matchers {
 
   val minimumAddressJson: Boolean => JsValue = isReads => {
 

@@ -16,14 +16,15 @@
 
 package v1.models.request
 
-import org.scalatest.{Matchers, WordSpec}
+import org.scalatest.matchers.should.Matchers
+import org.scalatest.wordspec.AnyWordSpec
 import play.api.libs.json.{JsString, Json}
 
-class AddressLineSpec extends WordSpec with Matchers {
+class AddressLineSpec extends AnyWordSpec with Matchers {
 
-  val addressLineJson = JsString("1234 Test Avenue")
+  val addressLineJson: JsString = JsString("1234 Test Avenue")
   val addressLineStartingWithNumber: AddressLine = AddressLine("1234 Test Avenue")
-  val invalidJson = JsString("~~~~~ Error invalid json ~~~~~~")
+  val invalidJson: JsString = JsString("~~~~~ Error invalid json ~~~~~~")
 
   "AddressLine.read" when {
 

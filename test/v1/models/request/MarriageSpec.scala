@@ -16,10 +16,11 @@
 
 package v1.models.request
 
-import org.scalatest.{Matchers, WordSpec}
+import org.scalatest.matchers.should.Matchers
+import org.scalatest.wordspec.AnyWordSpec
 import play.api.libs.json.{JsObject, Json}
 
-class MarriageSpec extends WordSpec with Matchers {
+class MarriageSpec extends AnyWordSpec with Matchers {
 
   private lazy val maxMarriageJson: Boolean => JsObject = isReads =>
     if (isReads) {

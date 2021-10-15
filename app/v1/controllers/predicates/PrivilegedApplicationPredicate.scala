@@ -24,10 +24,10 @@ import uk.gov.hmrc.auth.core.AuthProvider.PrivilegedApplication
 import uk.gov.hmrc.auth.core._
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.http.HeaderNames.{xRequestId, xSessionId}
-import uk.gov.hmrc.play.HeaderCarrierConverter
+import uk.gov.hmrc.play.http.HeaderCarrierConverter
 import v1.models.errors.{ServiceUnavailableError, UnauthorisedError}
-
 import scala.concurrent.{ExecutionContext, Future}
+
 
 @Singleton
 class PrivilegedApplicationPredicate @Inject()(
@@ -38,7 +38,7 @@ class PrivilegedApplicationPredicate @Inject()(
   extends ActionBuilder[Request, AnyContent] with AuthorisedFunctions with BaseController with Logging{
 
   override def invokeBlock[A](request: Request[A], block: Request[A] => Future[Result]): Future[Result] = {
-    implicit val hc: HeaderCarrier = HeaderCarrierConverter.fromHeadersAndSession(request.headers, None)
+    implicit val hc: HeaderCarrier = HeaderCarrierConverter.fromRequest(request)
 
     hc.requestId.foreach(requestId => if (Option(MDC.get(xRequestId)).isEmpty) MDC.put(xRequestId, requestId.value))
     hc.sessionId.foreach(sessionId => if (Option(MDC.get(xSessionId)).isEmpty) MDC.put(xSessionId, sessionId.value))

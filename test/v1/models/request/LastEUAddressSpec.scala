@@ -16,10 +16,11 @@
 
 package v1.models.request
 
-import org.scalatest.{Matchers, WordSpec}
+import org.scalatest.matchers.should.Matchers
+import org.scalatest.wordspec.AnyWordSpec
 import play.api.libs.json.{JsObject, Json}
 
-class LastEUAddressSpec extends WordSpec with Matchers {
+class LastEUAddressSpec extends AnyWordSpec with Matchers {
 
   "LastEUAddress.formats" when {
 

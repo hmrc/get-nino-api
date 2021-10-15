@@ -39,15 +39,15 @@ class GenderSpec extends UnitSpec {
 
     "correctly parse to json" when {
       "passed in MALE" in {
-        Json.toJson(Male) shouldBe JsString("MALE")
+        Male shouldBe JsString("MALE").as[Gender]
       }
 
       "passed in FEMALE" in {
-        Json.toJson(Female) shouldBe JsString("FEMALE")
+        Female shouldBe JsString("FEMALE").as[Gender]
       }
 
       "passed in NOT-KNOWN" in {
-        Json.toJson(GenderNotKnown) shouldBe JsString("NOT-KNOWN")
+        GenderNotKnown shouldBe JsString("NOT-KNOWN").as[Gender]
       }
     }
 

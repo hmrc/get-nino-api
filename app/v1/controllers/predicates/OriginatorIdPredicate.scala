@@ -16,12 +16,11 @@
 
 package v1.controllers.predicates
 
-import javax.inject.Inject
 import play.api.Logging
-import play.api.libs.json.Json
 import play.api.mvc._
 import v1.models.errors.{OriginatorIdIncorrectError, OriginatorIdMissingError}
 
+import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class OriginatorIdPredicate @Inject()(
@@ -40,7 +39,7 @@ class OriginatorIdPredicate @Inject()(
 
       case None =>
         logger.warn("[OriginatorIdPredicate][Filter] - OriginatorId is missing")
-        Future.successful(Some(BadRequest(Json.toJson(OriginatorIdMissingError))))
+        Future.successful(Some(OriginatorIdMissingError.result))
     }
   }
 
