@@ -16,14 +16,15 @@
 
 package v1.models.request
 
-import org.scalatest.{Matchers, WordSpec}
+import org.scalatest.matchers.should.Matchers
+import org.scalatest.wordspec.AnyWordSpec
 import play.api.libs.json.{JsString, Json}
 
-class AddressTypeSpec extends WordSpec with Matchers {
+class AddressTypeSpec extends AnyWordSpec with Matchers {
 
-  val residentialJson = JsString(Residential.value)
-  val correspondenceJson = JsString(Correspondence.value)
-  val invalidJson = JsString("Error")
+  val residentialJson: JsString = JsString(Residential.value)
+  val correspondenceJson: JsString = JsString(Correspondence.value)
+  val invalidJson: JsString = JsString("Error")
 
   "AddressType.read" when {
 
@@ -66,11 +67,11 @@ class AddressTypeSpec extends WordSpec with Matchers {
     "provided with a valid AddressType" should {
 
       "return a Residential object" in {
-        Json.toJson(Residential) shouldBe residentialJson
+        Residential shouldBe residentialJson.as[AddressType]
       }
 
       "return a Correspondence object" in {
-        Json.toJson(Correspondence) shouldBe correspondenceJson
+        Correspondence shouldBe correspondenceJson.as[AddressType]
       }
     }
   }

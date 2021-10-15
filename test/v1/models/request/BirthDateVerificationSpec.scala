@@ -16,14 +16,14 @@
 
 package v1.models.request
 
-import play.api.libs.json.{JsString, Json}
+import play.api.libs.json.JsString
 import support.UnitSpec
 
 class BirthDateVerificationSpec extends UnitSpec {
-  val verifiedString = JsString("VERIFIED")
-  val unverifiedString = JsString("UNVERIFIED")
-  val notKnownString = JsString("NOT KNOWN")
-  val coegConfirmedString = JsString("COEG CONFIRMED")
+  val verifiedString: JsString = JsString("VERIFIED")
+  val unverifiedString: JsString = JsString("UNVERIFIED")
+  val notKnownString: JsString = JsString("NOT KNOWN")
+  val coegConfirmedString: JsString = JsString("COEG CONFIRMED")
 
   "BirthDateVerification" should {
 
@@ -48,19 +48,19 @@ class BirthDateVerificationSpec extends UnitSpec {
 
     "correctly parse to Json" when {
       "value provided is VERIFIED" in {
-        Json.toJson(Verified) shouldBe verifiedString
+        Verified shouldBe verifiedString.as[BirthDateVerification]
       }
 
       "value provided is UNVERIFIED" in {
-        Json.toJson(Unverified) shouldBe unverifiedString
+        Unverified shouldBe unverifiedString.as[BirthDateVerification]
       }
 
       "value provided is NOT KNOWN" in {
-        Json.toJson(VerificationNotKnown) shouldBe notKnownString
+        VerificationNotKnown shouldBe notKnownString.as[BirthDateVerification]
       }
 
       "value provided is COEG CONFIRMED" in {
-        Json.toJson(CoegConfirmed) shouldBe coegConfirmedString
+        CoegConfirmed shouldBe coegConfirmedString.as[BirthDateVerification]
       }
     }
 

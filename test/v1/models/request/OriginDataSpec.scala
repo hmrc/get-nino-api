@@ -16,10 +16,11 @@
 
 package v1.models.request
 
-import org.scalatest.{Matchers, WordSpec}
+import org.scalatest.matchers.should.Matchers
+import org.scalatest.wordspec.AnyWordSpec
 import play.api.libs.json.{JsObject, Json}
 
-class OriginDataSpec extends WordSpec with Matchers {
+class OriginDataSpec extends AnyWordSpec with Matchers {
 
   val minOriginDataJson: JsObject = Json.obj()
 

@@ -22,7 +22,7 @@ import config.AppConfig
 import play.api.http.Status
 import support.IntegrationBaseSpec
 import uk.gov.hmrc.http.HeaderCarrier
-import uk.gov.hmrc.play.bootstrap.http.HttpClient
+import uk.gov.hmrc.http.HttpClient
 import utils.ItNinoApplicationTestData._
 import v1.connectors.httpParsers.HttpResponseTypes.HttpPostResponse
 import v1.models.errors.ServiceUnavailableError

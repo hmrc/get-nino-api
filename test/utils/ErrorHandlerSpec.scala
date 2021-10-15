@@ -58,7 +58,7 @@ class ErrorHandlerSpec extends UnitSpec with GuiceOneAppPerSuite {
         val result: Future[Result] = handler.onClientError(requestHeader, Status.NOT_FOUND, "test")
         status(result) shouldBe Status.NOT_FOUND
 
-        contentAsJson(result) shouldBe Json.toJson(NotFoundError)
+        contentAsJson(result) shouldBe contentAsJson(Future.successful(NotFoundError.result))
       }
     }
 
@@ -67,7 +67,7 @@ class ErrorHandlerSpec extends UnitSpec with GuiceOneAppPerSuite {
         val result: Future[Result] = handler.onClientError(requestHeader, BAD_REQUEST, "test")
         status(result) shouldBe BAD_REQUEST
 
-        contentAsJson(result) shouldBe Json.toJson(BadRequestError)
+        contentAsJson(result) shouldBe contentAsJson(Future.successful(BadRequestError.result))
       }
     }
 
@@ -85,7 +85,7 @@ class ErrorHandlerSpec extends UnitSpec with GuiceOneAppPerSuite {
         val result: Future[Result] = handler.onClientError(requestHeader, UNSUPPORTED_MEDIA_TYPE, "test")
         status(result) shouldBe UNSUPPORTED_MEDIA_TYPE
 
-        contentAsJson(result) shouldBe Json.toJson(InvalidBodyTypeError)
+        contentAsJson(result) shouldBe contentAsJson(Future.successful(InvalidBodyTypeError.result))
       }
     }
 
@@ -106,7 +106,7 @@ class ErrorHandlerSpec extends UnitSpec with GuiceOneAppPerSuite {
         val result: Future[Result] = handler.onServerError(requestHeader, new NotFoundException("test") with NoStackTrace)
 
         status(result) shouldBe NOT_FOUND
-        contentAsJson(result) shouldBe Json.toJson(NotFoundError)
+        contentAsJson(result) shouldBe contentAsJson(Future.successful(NotFoundError.result))
       }
     }
 
@@ -124,7 +124,7 @@ class ErrorHandlerSpec extends UnitSpec with GuiceOneAppPerSuite {
         val result: Future[Result] = handler.onServerError(requestHeader, new JsValidationException("test", "test", classOf[String], "errs") with NoStackTrace)
 
         status(result) shouldBe BAD_REQUEST
-        contentAsJson(result) shouldBe Json.toJson(BadRequestError)
+        contentAsJson(result) shouldBe contentAsJson(Future.successful(BadRequestError.result))
       }
     }
 
@@ -133,7 +133,7 @@ class ErrorHandlerSpec extends UnitSpec with GuiceOneAppPerSuite {
         val result: Future[Result] = handler.onServerError(requestHeader, new Exception with NoStackTrace)
 
         status(result) shouldBe SERVICE_UNAVAILABLE
-        contentAsJson(result) shouldBe Json.toJson(ServiceUnavailableError)
+        contentAsJson(result) shouldBe contentAsJson(Future.successful(ServiceUnavailableError.result))
       }
     }
   }

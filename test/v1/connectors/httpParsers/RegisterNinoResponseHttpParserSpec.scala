@@ -25,15 +25,14 @@ import v1.models.errors.ServiceUnavailableError
 
 class RegisterNinoResponseHttpParserSpec extends UnitSpec {
 
-  val successfulResponse: HttpResponse = HttpResponse(Status.ACCEPTED, None)
+  val successfulResponse: HttpResponse = HttpResponse(Status.ACCEPTED, "")
 
-  val invalidModelJson: HttpResponse = HttpResponse(Status.OK, Some(
-    Json.obj("notMessage" -> 5))
-  )
+  val invalidModelJson: HttpResponse = HttpResponse(Status.OK, json = Json.obj("notMessage" -> 5), Map.empty)
 
   val unsuccessfulResponse: HttpResponse = HttpResponse(
     Status.INTERNAL_SERVER_ERROR,
-    Some(Json.obj("code" -> "INVALID_DATE_OF_BIRTH", "reason"-> "The remote endpoint has indicated that the name Type needs to be different."))
+    json = Json.obj("code" -> "INVALID_DATE_OF_BIRTH", "reason"-> "The remote endpoint has indicated that the name Type needs to be different."),
+    Map.empty
   )
 
   "The RegisterNinoResponseHttpParser" should {

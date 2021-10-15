@@ -22,10 +22,13 @@ import play.api.http.HeaderNames.ACCEPT
 import play.api.http.Status
 import play.api.libs.json.{JsValue, Json}
 import play.api.libs.ws.{WSRequest, WSResponse}
+import play.api.test.Helpers.contentAsJson
 import support.IntegrationBaseSpec
 import utils.ItNinoApplicationTestData.{faultyRegisterNinoRequestJson, maxRegisterNinoRequestJson}
 import v1.models.errors.{CorrelationIdIncorrectError, CorrelationIdMissingError, OriginatorIdIncorrectError, OriginatorIdMissingError}
 import v1.stubs.{AuditStub, AuthStub, DesStub}
+
+import scala.concurrent.Future
 
 class RegisterNinoISpec extends IntegrationBaseSpec {
 
@@ -262,7 +265,7 @@ class RegisterNinoISpec extends IntegrationBaseSpec {
           }
 
           lazy val result: WSResponse = await(requestWithIncorrectOriginatorId().post(maxRegisterNinoRequestJson(false)))
-          result.json shouldBe Json.toJson(OriginatorIdIncorrectError)
+          result.json shouldBe contentAsJson(Future.successful(OriginatorIdIncorrectError.result))
         }
       }
 
@@ -287,7 +290,7 @@ class RegisterNinoISpec extends IntegrationBaseSpec {
           }
 
           lazy val result: WSResponse = await(requestWithMissingOriginatorId().post(maxRegisterNinoRequestJson(false)))
-          result.json shouldBe Json.toJson(OriginatorIdMissingError)
+          result.json shouldBe contentAsJson(Future.successful(OriginatorIdMissingError.result))
         }
       }
     }
@@ -314,7 +317,7 @@ class RegisterNinoISpec extends IntegrationBaseSpec {
         }
 
         lazy val result: WSResponse = await(requestWithIncorrectCorrelationId().post(maxRegisterNinoRequestJson(false)))
-        result.json shouldBe Json.toJson(CorrelationIdIncorrectError)
+        result.json shouldBe contentAsJson(Future.successful(CorrelationIdIncorrectError.result))
       }
     }
 
@@ -339,7 +342,7 @@ class RegisterNinoISpec extends IntegrationBaseSpec {
         }
 
         lazy val result: WSResponse = await(requestWithMissingCorrelationId().post(maxRegisterNinoRequestJson(false)))
-        result.json shouldBe Json.toJson(CorrelationIdMissingError)
+        result.json shouldBe contentAsJson(Future.successful(CorrelationIdMissingError.result))
       }
     }
 

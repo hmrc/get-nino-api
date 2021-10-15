@@ -16,7 +16,7 @@
 
 package v1.models.request
 
-import play.api.libs.json.{JsString, Json}
+import play.api.libs.json.JsString
 import support.UnitSpec
 
 class MaritalStatusSpec extends UnitSpec {
@@ -31,7 +31,7 @@ class MaritalStatusSpec extends UnitSpec {
     }
 
     "parse to a JsString" in {
-      Json.toJson(MARRIED) shouldBe JsString(validMaritalStatusString)
+      MARRIED shouldBe JsString(validMaritalStatusString).as[MaritalStatus]
     }
 
     "return a JsError" when {
