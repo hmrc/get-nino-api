@@ -4,7 +4,7 @@ resolvers += Resolver.url("HMRC-open-artefacts-ivy", url("https://open.artefacts
 
 resolvers += Resolver.typesafeRepo("releases")
 
-addSbtPlugin("org.wartremover" % "sbt-wartremover" % "2.4.16")
+addSbtPlugin("org.wartremover" % "sbt-wartremover" % "2.4.10")
 
 addSbtPlugin("uk.gov.hmrc" % "sbt-auto-build" % "3.5.0")
 
