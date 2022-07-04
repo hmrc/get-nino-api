@@ -47,7 +47,11 @@ class ErrorHandlerSpec extends UnitSpec with GuiceOneAppPerSuite {
     val auditConnector: AuditConnector = mock[AuditConnector]
     val httpAuditEvent: HttpAuditEvent = mock[HttpAuditEvent]
 
-    val configuration = Configuration("appName" -> "myApp", "bootstrap.errorHandler.warnOnly.statusCodes" -> List(Status.OK))
+    val configuration: Configuration = Configuration(
+      "appName" -> "myApp",
+      "bootstrap.errorHandler.suppress4xxErrorMessages" -> false,
+      "bootstrap.errorHandler.suppress5xxErrorMessages" -> false,
+      "bootstrap.errorHandler.warnOnly.statusCodes" -> List(Status.OK))
     val handler = new ErrorHandler(configuration, auditConnector, httpAuditEvent)
   }
 
