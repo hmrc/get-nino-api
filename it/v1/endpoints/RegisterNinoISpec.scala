@@ -22,6 +22,7 @@ import play.api.http.HeaderNames.ACCEPT
 import play.api.http.Status
 import play.api.libs.json.{JsValue, Json}
 import play.api.libs.ws.{WSRequest, WSResponse}
+import play.api.test.Helpers.AUTHORIZATION
 import play.api.test.Helpers.contentAsJson
 import support.IntegrationBaseSpec
 import utils.ItNinoApplicationTestData.{faultyRegisterNinoRequestJson, maxRegisterNinoRequestJson}
@@ -43,6 +44,7 @@ class RegisterNinoISpec extends IntegrationBaseSpec {
       buildRequest("/process-nino")
         .withHttpHeaders(
           (ACCEPT, "application/vnd.hmrc.1.0+json"),
+          (AUTHORIZATION, "Bearer 123"),
           ("OriginatorId", "DA2_DWP_REG"),
           ("CorrelationId", "DBABB1dB-7DED-b5Dd-19ce-5168C9E8fff9")
         )
@@ -259,6 +261,7 @@ class RegisterNinoISpec extends IntegrationBaseSpec {
             buildRequest("/process-nino")
               .withHttpHeaders(
                 (ACCEPT, "application/vnd.hmrc.1.0+json"),
+                (AUTHORIZATION, "Bearer 123"),
                 ("CorrelationId", "DBABB1dB-7DED-b5Dd-19ce-5168C9E8fff9"),
                 ("OriginatorId", "NOT-CORRECT")
               )
@@ -285,6 +288,7 @@ class RegisterNinoISpec extends IntegrationBaseSpec {
             buildRequest("/process-nino")
               .withHttpHeaders(
                 (ACCEPT, "application/vnd.hmrc.1.0+json"),
+                (AUTHORIZATION, "Bearer 123"),
                 ("CorrelationId", "DBABB1dB-7DED-b5Dd-19ce-5168C9E8fff9")
               )
           }
@@ -311,6 +315,7 @@ class RegisterNinoISpec extends IntegrationBaseSpec {
           buildRequest("/process-nino")
             .withHttpHeaders(
               (ACCEPT, "application/vnd.hmrc.1.0+json"),
+              (AUTHORIZATION, "Bearer 123"),
               ("OriginatorId", "DA2_DWP_REG"),
               ("CorrelationId", "12234567-0987654321-b5Dd-19ce-5168C9E8fff9")
             )
@@ -337,6 +342,7 @@ class RegisterNinoISpec extends IntegrationBaseSpec {
           buildRequest("/process-nino")
             .withHttpHeaders(
               (ACCEPT, "application/vnd.hmrc.1.0+json"),
+              (AUTHORIZATION, "Bearer 123"),
               ("OriginatorId", "DA2_DWP_REG")
             )
         }

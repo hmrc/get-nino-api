@@ -30,7 +30,7 @@ lazy val wartRemoverError = {
     Wart.IsInstanceOf,
     Wart.Any
   )
-  wartremoverErrors in(Compile, compile) ++= errorWarts
+  Compile / compile / wartremoverErrors ++= errorWarts
 }
 
 lazy val microservice = Project(appName, file("."))
@@ -38,8 +38,7 @@ lazy val microservice = Project(appName, file("."))
   .disablePlugins(JUnitXmlReportPlugin)
   .settings(
     majorVersion := 0,
-    libraryDependencies ++= AppDependencies.compile ++ AppDependencies.test,
-    dependencyOverrides ++= AppDependencies.overrides
+    libraryDependencies ++= AppDependencies.compile ++ AppDependencies.test
   )
   .settings(PlayKeys.playDefaultPort := 9750)
   .settings(publishingSettings: _*)
@@ -47,9 +46,9 @@ lazy val microservice = Project(appName, file("."))
   .settings(integrationTestSettings(): _*)
   .settings(resolvers += Resolver.jcenterRepo)
   .settings(CodeCoverageSettings.settings: _*)
-  .settings(scalaVersion := "2.12.13")
-  .settings(wartRemoverError, wartremoverExcluded ++= routes.in(Compile).value)
-  .settings(resourceDirectory in IntegrationTest := (baseDirectory apply { baseDir: File => baseDir / "it/resources" }).value)
+  .settings(scalaVersion := "2.12.16")
+  .settings(wartRemoverError, wartremoverExcluded ++= (Compile / routes).value)
+  .settings(IntegrationTest / resourceDirectory := (baseDirectory apply { baseDir: File => baseDir / "it/resources" }).value)
 
 scalacOptions ++= Seq(
   "-P:silencer:globalFilters=Unused import",
