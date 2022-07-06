@@ -47,6 +47,7 @@ lazy val microservice = Project(appName, file("."))
   .settings(resolvers += Resolver.jcenterRepo)
   .settings(CodeCoverageSettings.settings: _*)
   .settings(scalaVersion := "2.12.16")
+  .settings(Compile / scalacOptions -= "utf8")
   .settings(wartRemoverError, wartremoverExcluded ++= (Compile / routes).value)
   .settings(IntegrationTest / resourceDirectory := (baseDirectory apply { baseDir: File => baseDir / "it/resources" }).value)
 
