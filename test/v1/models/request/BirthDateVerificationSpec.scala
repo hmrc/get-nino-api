@@ -20,9 +20,9 @@ import play.api.libs.json.JsString
 import support.UnitSpec
 
 class BirthDateVerificationSpec extends UnitSpec {
-  val verifiedString: JsString = JsString("VERIFIED")
-  val unverifiedString: JsString = JsString("UNVERIFIED")
-  val notKnownString: JsString = JsString("NOT KNOWN")
+  val verifiedString: JsString      = JsString("VERIFIED")
+  val unverifiedString: JsString    = JsString("UNVERIFIED")
+  val notKnownString: JsString      = JsString("NOT KNOWN")
   val coegConfirmedString: JsString = JsString("COEG CONFIRMED")
 
   "BirthDateVerification" should {

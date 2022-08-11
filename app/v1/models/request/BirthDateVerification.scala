@@ -23,30 +23,30 @@ sealed trait BirthDateVerification {
   val value: String
 }
 
-object BirthDateVerification extends Logging{
+object BirthDateVerification extends Logging {
 
   private[models] def birthDateValidation: String => Boolean = {
-    case Unverified.value => true
-    case Verified.value => true
+    case Unverified.value           => true
+    case Verified.value             => true
     case VerificationNotKnown.value => true
-    case CoegConfirmed.value => true
-    case _ =>
+    case CoegConfirmed.value        => true
+    case _                          =>
       logger.warn("[BirthDateVerification][valueCheck] birthDateVerification field is invalid")
       false
   }
 
   implicit val reads: Reads[BirthDateVerification] = for {
-    birthDateValue <- __.read[String].filter(JsonValidationError("Invalid Birth Date verification"))(birthDateValidation)
-  } yield {
-    birthDateValue match {
-      case Unverified.value => Unverified
-      case Verified.value => Verified
-      case VerificationNotKnown.value => VerificationNotKnown
-      case CoegConfirmed.value => CoegConfirmed
-    }
+    birthDateValue <-
+      __.read[String].filter(JsonValidationError("Invalid Birth Date verification"))(birthDateValidation)
+  } yield birthDateValue match {
+    case Unverified.value           => Unverified
+    case Verified.value             => Verified
+    case VerificationNotKnown.value => VerificationNotKnown
+    case CoegConfirmed.value        => CoegConfirmed
   }
 
-  implicit val writes: Writes[BirthDateVerification] = Writes[BirthDateVerification](verificationValue => JsString(verificationValue.value))
+  implicit val writes: Writes[BirthDateVerification] =
+    Writes[BirthDateVerification](verificationValue => JsString(verificationValue.value))
 }
 
 case object Unverified extends BirthDateVerification {

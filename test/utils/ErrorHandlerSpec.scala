@@ -48,11 +48,13 @@ class ErrorHandlerSpec extends UnitSpec with GuiceOneAppPerSuite {
     val httpAuditEvent: HttpAuditEvent = mock[HttpAuditEvent]
 
     val configuration: Configuration = Configuration(
-      "appName" -> "myApp",
+      "appName"                                         -> "myApp",
       "bootstrap.errorHandler.suppress4xxErrorMessages" -> false,
       "bootstrap.errorHandler.suppress5xxErrorMessages" -> false,
-      "bootstrap.errorHandler.warnOnly.statusCodes" -> List(Status.OK))
-    val handler = new ErrorHandler(configuration, auditConnector, httpAuditEvent)
+      "bootstrap.errorHandler.warnOnly.statusCodes"     -> List(Status.OK),
+      "metrics.enabled"                                 -> false
+    )
+    val handler                      = new ErrorHandler(configuration, auditConnector, httpAuditEvent)
   }
 
   "onClientError" should {
@@ -97,8 +99,11 @@ class ErrorHandlerSpec extends UnitSpec with GuiceOneAppPerSuite {
       "invalid method type" in new Test() {
         val result: Future[Result] = handler.onClientError(requestHeader, METHOD_NOT_ALLOWED, "test")
 
-        status(result) shouldBe METHOD_NOT_ALLOWED
-        contentAsJson(result) shouldBe flatJsObject("code" -> "METHOD_NOT_ALLOWED", "message" -> "The HTTP method is not valid on this endpoint")
+        status(result)        shouldBe METHOD_NOT_ALLOWED
+        contentAsJson(result) shouldBe flatJsObject(
+          "code"    -> "METHOD_NOT_ALLOWED",
+          "message" -> "The HTTP method is not valid on this endpoint"
+        )
       }
     }
   }
@@ -107,27 +112,32 @@ class ErrorHandlerSpec extends UnitSpec with GuiceOneAppPerSuite {
 
     "return 404 with error body" when {
       "NotFoundException thrown" in new Test() {
-        val result: Future[Result] = handler.onServerError(requestHeader, new NotFoundException("test") with NoStackTrace)
+        val result: Future[Result] =
+          handler.onServerError(requestHeader, new NotFoundException("test") with NoStackTrace)
 
-        status(result) shouldBe NOT_FOUND
+        status(result)        shouldBe NOT_FOUND
         contentAsJson(result) shouldBe contentAsJson(Future.successful(NotFoundError.result))
       }
     }
 
     "return 401 with error body" when {
       "AuthorisationException thrown" in new Test() {
-        val result: Future[Result] = handler.onServerError(requestHeader, new InsufficientEnrolments("test") with NoStackTrace)
+        val result: Future[Result] =
+          handler.onServerError(requestHeader, new InsufficientEnrolments("test") with NoStackTrace)
 
-        status(result) shouldBe UNAUTHORIZED
+        status(result)        shouldBe UNAUTHORIZED
         contentAsJson(result) shouldBe flatJsObject("code" -> "CLIENT_OR_AGENT_NOT_AUTHORISED", "message" -> "test")
       }
     }
 
     "return 400 with error body" when {
       "JsValidationException thrown" in new Test() {
-        val result: Future[Result] = handler.onServerError(requestHeader, new JsValidationException("test", "test", classOf[String], "errs") with NoStackTrace)
+        val result: Future[Result] = handler.onServerError(
+          requestHeader,
+          new JsValidationException("test", "test", classOf[String], "errs") with NoStackTrace
+        )
 
-        status(result) shouldBe BAD_REQUEST
+        status(result)        shouldBe BAD_REQUEST
         contentAsJson(result) shouldBe contentAsJson(Future.successful(BadRequestError.result))
       }
     }
@@ -136,10 +146,9 @@ class ErrorHandlerSpec extends UnitSpec with GuiceOneAppPerSuite {
       "other exception thrown" in new Test() {
         val result: Future[Result] = handler.onServerError(requestHeader, new Exception with NoStackTrace)
 
-        status(result) shouldBe SERVICE_UNAVAILABLE
+        status(result)        shouldBe SERVICE_UNAVAILABLE
         contentAsJson(result) shouldBe contentAsJson(Future.successful(ServiceUnavailableError.result))
       }
     }
   }
 }
-

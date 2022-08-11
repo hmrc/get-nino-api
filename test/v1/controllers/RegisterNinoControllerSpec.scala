@@ -74,19 +74,21 @@ class RegisterNinoControllerSpec extends ControllerBaseSpec {
 
         "return 202" in {
 
-          (mockAuth.authorise(_: Predicate, _: Retrieval[_])(_: HeaderCarrier, _: ExecutionContext))
+          (mockAuth
+            .authorise(_: Predicate, _: Retrieval[_])(_: HeaderCarrier, _: ExecutionContext))
             .expects(*, *, *, *)
             .returns(Future.successful((): Unit))
 
-          (mockService.registerNino(_: NinoApplication)(_: HeaderCarrier, _: ExecutionContext))
+          (mockService
+            .registerNino(_: NinoApplication)(_: HeaderCarrier, _: ExecutionContext))
             .expects(maxRegisterNinoRequestModel, *, *)
             .returns(Future.successful(Right(())))
 
           val request = fakeRequest
             .withHeaders(
-              "Accept" -> "application/vnd.hmrc.1.0+json",
-              "OriginatorId" -> "DA2_DWP_REG",
-              "CorrelationId" -> "DBABB1dB-7DED-b5Dd-19ce-5168C9E8fff9",
+              "Accept"               -> "application/vnd.hmrc.1.0+json",
+              "OriginatorId"         -> "DA2_DWP_REG",
+              "CorrelationId"        -> "DBABB1dB-7DED-b5Dd-19ce-5168C9E8fff9",
               HeaderNames.xRequestId -> "1234567890",
               HeaderNames.xSessionId -> "0987654321"
             )
@@ -106,21 +108,22 @@ class RegisterNinoControllerSpec extends ControllerBaseSpec {
 
         "return 415" in {
 
-          (mockAuth.authorise(_: Predicate, _: Retrieval[_])(_: HeaderCarrier, _: ExecutionContext))
+          (mockAuth
+            .authorise(_: Predicate, _: Retrieval[_])(_: HeaderCarrier, _: ExecutionContext))
             .expects(*, *, *, *)
             .returning(Future.successful((): Unit))
 
           val request = fakeRequest
             .withHeaders(
-              "Accept" -> "application/vnd.hmrc.1.0+json",
+              "Accept"        -> "application/vnd.hmrc.1.0+json",
               "CorrelationId" -> "DBABB1dB-7DED-b5Dd-19ce-5168C9E8fff9",
-              "OriginatorId" -> "DA2_DWP_REG"
+              "OriginatorId"  -> "DA2_DWP_REG"
             )
             .withMethod("POST")
 
           val result = controller.register()(request)
 
-          status(result) shouldBe Status.UNSUPPORTED_MEDIA_TYPE
+          status(result)        shouldBe Status.UNSUPPORTED_MEDIA_TYPE
           contentAsJson(result) shouldBe contentAsJson(Future.successful(InvalidBodyTypeError.result))
         }
       }
@@ -128,29 +131,36 @@ class RegisterNinoControllerSpec extends ControllerBaseSpec {
       "when the request body is valid json, but cannot be validated as a NinoApplication" should {
         "return a 400" in {
 
-          (mockAuth.authorise(_: Predicate, _: Retrieval[_])(_: HeaderCarrier, _: ExecutionContext))
+          (mockAuth
+            .authorise(_: Predicate, _: Retrieval[_])(_: HeaderCarrier, _: ExecutionContext))
             .expects(*, *, *, *)
             .returning(Future.successful((): Unit))
 
           val request = fakeRequest
             .withHeaders(
-              "Accept" -> "application/vnd.hmrc.1.0+json",
+              "Accept"        -> "application/vnd.hmrc.1.0+json",
               "CorrelationId" -> "DBABB1dB-7DED-b5Dd-19ce-5168C9E8fff9",
-              "OriginatorId" -> "DA2_DWP_REG"
+              "OriginatorId"  -> "DA2_DWP_REG"
             )
             .withMethod("POST")
-            .withJsonBody(Json.obj(
-              "aField" -> "aValue"
-            ))
+            .withJsonBody(
+              Json.obj(
+                "aField" -> "aValue"
+              )
+            )
 
           val result = controller.register()(request)
 
-          status(result) shouldBe Status.BAD_REQUEST
-          contentAsJson(result) shouldBe Json.toJson(NinoJsonValidationError(JsError(
-            Seq("addresses", "entryDate", "gender", "officeNumber", "nino", "birthDate", "names").map { field =>
-              (JsPath \ field, Seq(JavaJsonValidationError("error.path.missing")))
-            }
-          )))(NinoError.validationWrites)
+          status(result)        shouldBe Status.BAD_REQUEST
+          contentAsJson(result) shouldBe Json.toJson(
+            NinoJsonValidationError(
+              JsError(
+                Seq("addresses", "entryDate", "gender", "officeNumber", "nino", "birthDate", "names").map { field =>
+                  (JsPath \ field, Seq(JavaJsonValidationError("error.path.missing")))
+                }
+              )
+            )
+          )(NinoError.validationWrites)
         }
       }
 
@@ -160,12 +170,17 @@ class RegisterNinoControllerSpec extends ControllerBaseSpec {
 
       "return an unauthorised response" in {
 
-        (mockAuth.authorise(_: Predicate, _: Retrieval[_])(_: HeaderCarrier, _: ExecutionContext))
+        (mockAuth
+          .authorise(_: Predicate, _: Retrieval[_])(_: HeaderCarrier, _: ExecutionContext))
           .expects(*, *, *, *)
           .returns(Future.failed(InvalidBearerToken()))
 
         val request = fakeRequest
-          .withHeaders("Accept" -> "application/vnd.hmrc.1.0+json", HeaderNames.xRequestId -> "1234567890", HeaderNames.xSessionId -> "0987654321")
+          .withHeaders(
+            "Accept"               -> "application/vnd.hmrc.1.0+json",
+            HeaderNames.xRequestId -> "1234567890",
+            HeaderNames.xSessionId -> "0987654321"
+          )
           .withMethod("POST")
           .withJsonBody(maxRegisterNinoRequestJson(false))
 

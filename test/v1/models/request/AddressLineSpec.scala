@@ -22,9 +22,9 @@ import play.api.libs.json.{JsString, Json}
 
 class AddressLineSpec extends AnyWordSpec with Matchers {
 
-  val addressLineJson: JsString = JsString("1234 Test Avenue")
+  val addressLineJson: JsString                  = JsString("1234 Test Avenue")
   val addressLineStartingWithNumber: AddressLine = AddressLine("1234 Test Avenue")
-  val invalidJson: JsString = JsString("~~~~~ Error invalid json ~~~~~~")
+  val invalidJson: JsString                      = JsString("~~~~~ Error invalid json ~~~~~~")
 
   "AddressLine.read" when {
 
@@ -120,5 +120,3 @@ class AddressLineSpec extends AnyWordSpec with Matchers {
     }
   }
 }
-
-

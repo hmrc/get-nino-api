@@ -24,46 +24,47 @@ class OriginDataSpec extends AnyWordSpec with Matchers {
 
   val minOriginDataJson: JsObject = Json.obj()
 
-  val maxOriginDataJson: Boolean =>JsObject = isWrite => {
+  val maxOriginDataJson: Boolean => JsObject = isWrite => {
     val addressLinePrefix = (lineNo: Int) => if (isWrite) s"addressLine$lineNo" else s"line$lineNo"
     Json.obj(
-    "birthTown" -> "Birth town value",
-    "birthProvince" -> "Birth province value",
-    "birthCountryCode" -> "GBR",
-    "birthSurname" -> "Birth surname value",
-    "maternalForename" -> "Maternal forename value",
-    "maternalSurname" -> "Maternal surname value",
-    "paternalForename" -> "Paternal forename value",
-    "paternalSurname" -> "Paternal surname value",
-    "foreignSocialSecurity" -> "Foreign social security value",
-    "lastEUAddress" -> Json.obj(
-      addressLinePrefix(1) -> "1 line value",
-      addressLinePrefix(2) -> "2 line value",
-      addressLinePrefix(3) -> "3 line value",
-      addressLinePrefix(4) -> "4 line value",
-      addressLinePrefix(5) -> "5 line value"
+      "birthTown"             -> "Birth town value",
+      "birthProvince"         -> "Birth province value",
+      "birthCountryCode"      -> "GBR",
+      "birthSurname"          -> "Birth surname value",
+      "maternalForename"      -> "Maternal forename value",
+      "maternalSurname"       -> "Maternal surname value",
+      "paternalForename"      -> "Paternal forename value",
+      "paternalSurname"       -> "Paternal surname value",
+      "foreignSocialSecurity" -> "Foreign social security value",
+      "lastEUAddress"         -> Json.obj(
+        addressLinePrefix(1) -> "1 line value",
+        addressLinePrefix(2) -> "2 line value",
+        addressLinePrefix(3) -> "3 line value",
+        addressLinePrefix(4) -> "4 line value",
+        addressLinePrefix(5) -> "5 line value"
+      )
     )
-  )}
+  }
 
-  val maxOriginDataModel = OriginData(
+  val maxOriginDataModel: OriginData = OriginData(
     birthTown = Some("Birth town value"),
     birthProvince = Some("Birth province value"),
     birthCountryCode = Some("GBR"),
-
     birthSurname = Some("Birth surname value"),
     maternalForename = Some("Maternal forename value"),
     maternalSurname = Some("Maternal surname value"),
     paternalForename = Some("Paternal forename value"),
     paternalSurname = Some("Paternal surname value"),
     foreignSocialSecurity = Some("Foreign social security value"),
-    lastEUAddress = Some(LastEUAddress(
-      addressLine1 = Some(AddressLine("1 line value")),
-      addressLine2 = Some(AddressLine("2 line value")),
-      addressLine3 = Some(AddressLine("3 line value")),
-      addressLine4 = Some(AddressLine("4 line value")),
-      addressLine5 = Some(AddressLine("5 line value"))
-    ))
-
+    lastEUAddress = Some(
+      LastEUAddress(
+        addressLine1 = Some(AddressLine("1 line value")),
+        addressLine2 = Some(AddressLine("2 line value")),
+        addressLine3 = Some(AddressLine("3 line value")),
+        addressLine4 = Some(AddressLine("4 line value")),
+        addressLine5 = Some(AddressLine("5 line value"))
+      )
+    )
   )
 
   "OriginData.reads" when {
@@ -122,7 +123,10 @@ class OriginDataSpec extends AnyWordSpec with Matchers {
 
         "return false" in {
 
-          val result = OriginData.nameElementValidation(Some("this example is far too long for the regex this in unfortunate"), "Example value")
+          val result = OriginData.nameElementValidation(
+            Some("this example is far too long for the regex this in unfortunate"),
+            "Example value"
+          )
 
           result shouldBe false
         }

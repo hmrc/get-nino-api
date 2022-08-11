@@ -26,16 +26,16 @@ import uk.gov.hmrc.api.controllers.DocumentationController
 import scala.concurrent.Future
 
 @Singleton()
-class ApiDocumentationController @Inject()(cc: ControllerComponents,
-                                           assets: Assets,
-                                           errorHandler: HttpErrorHandler,
-                                           apiConfig: ApiDefinitionConfig)
-  extends DocumentationController(cc, assets, errorHandler) {
+class ApiDocumentationController @Inject() (
+  cc: ControllerComponents,
+  assets: Assets,
+  errorHandler: HttpErrorHandler,
+  apiConfig: ApiDefinitionConfig
+) extends DocumentationController(cc, assets, errorHandler) {
 
-  override def definition(): Action[AnyContent] = Action.async { implicit request =>
-
+  override def definition(): Action[AnyContent] = Action.async {
     lazy val apiAccess: JsObject = Json.obj(
-      "type" -> apiConfig.accessType(),
+      "type"                      -> apiConfig.accessType(),
       "whitelistedApplicationIds" -> apiConfig.whiteListedApplicationIds()
     )
 

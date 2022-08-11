@@ -21,26 +21,25 @@ import play.api.libs.json._
 
 final case class Postcode(postCode: String)
 
-object Postcode extends Logging{
+object Postcode extends Logging {
 
   val regex: String = "^(([A-Z]{1,2}[0-9][0-9A-Z]? [0-9][A-Z]{2})|(BFPO ?[0-9]{1,4}))$"
 
   def regexCheckValidation: String => Boolean = postCodeInput => {
     val passedValidation = postCodeInput.matches(regex)
 
-    if(!passedValidation) logger.warn("[Postcode][regexCheckValidation] - Invalid postcode has been provided.")
+    if (!passedValidation) logger.warn("[Postcode][regexCheckValidation] - Invalid postcode has been provided.")
 
     passedValidation
   }
 
   implicit val reads: Reads[Postcode] = for {
-    postCodeString <- __.read[String].filter(JsonValidationError("PostCode has failed validation"))(regexCheckValidation)
-  } yield {
-    Postcode(postCodeString)
-  }
+    postCodeString <-
+      __.read[String].filter(JsonValidationError("PostCode has failed validation"))(regexCheckValidation)
+  } yield Postcode(postCodeString)
 
-  implicit val writes: Writes[Postcode] = Writes {
-    value => JsString(value.postCode)
+  implicit val writes: Writes[Postcode] = Writes { value =>
+    JsString(value.postCode)
   }
 
 }

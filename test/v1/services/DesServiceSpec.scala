@@ -28,15 +28,16 @@ import scala.concurrent.{ExecutionContext, Future}
 
 class DesServiceSpec extends UnitSpec {
 
-  implicit val hc: HeaderCarrier = HeaderCarrier()
+  implicit val hc: HeaderCarrier  = HeaderCarrier()
   val mockConnector: DesConnector = mock[DesConnector]
-  val service = new DesService(mockConnector)
+  val service                     = new DesService(mockConnector)
 
   "registerNino" should {
     "return a des response model" when {
       "a response is returned from the connector" in {
 
-        (mockConnector.sendRegisterRequest(_: NinoApplication)(_: HeaderCarrier, _: ExecutionContext))
+        (mockConnector
+          .sendRegisterRequest(_: NinoApplication)(_: HeaderCarrier, _: ExecutionContext))
           .expects(maxRegisterNinoRequestModel, *, *)
           .returns(Future.successful(Right(())))
 
@@ -49,7 +50,8 @@ class DesServiceSpec extends UnitSpec {
       "an error is returned from the connector" in {
         val returnedError = ServiceUnavailableError
 
-        (mockConnector.sendRegisterRequest(_: NinoApplication)(_: HeaderCarrier, _: ExecutionContext))
+        (mockConnector
+          .sendRegisterRequest(_: NinoApplication)(_: HeaderCarrier, _: ExecutionContext))
           .expects(maxRegisterNinoRequestModel, *, *)
           .returns(Future.successful(Left(returnedError)))
 

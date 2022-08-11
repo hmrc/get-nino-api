@@ -17,6 +17,7 @@
 package v1.connectors
 
 import config.AppConfig
+
 import javax.inject.{Inject, Singleton}
 import play.api.Logging
 import play.api.libs.json.Json
@@ -24,43 +25,46 @@ import uk.gov.hmrc.http.{HeaderCarrier, HttpClient}
 import v1.connectors.httpParsers.HttpResponseTypes.HttpPostResponse
 import v1.connectors.httpParsers.RegisterNinoResponseHttpParser.RegisterNinoResponseReads
 import v1.models.request.NinoApplication
+
 import java.util.UUID.randomUUID
 import scala.concurrent.{ExecutionContext, Future}
+import scala.util.matching.Regex
 
 @Singleton
-class DesConnector @Inject()(
-                              http: HttpClient,
-                              appConfig: AppConfig
-                            ) extends Logging{
+class DesConnector @Inject() (
+  http: HttpClient,
+  appConfig: AppConfig
+) extends Logging {
 
-  val CorrelationIdPattern = """.*([A-Za-z0-9]{8}-[A-Za-z0-9]{4}-[A-Za-z0-9]{4}-[A-Za-z0-9]{4}).*""".r
+  val CorrelationIdPattern: Regex = """.*([A-Za-z0-9]{8}-[A-Za-z0-9]{4}-[A-Za-z0-9]{4}-[A-Za-z0-9]{4}).*""".r
 
-  def generateNewUUID : String = randomUUID.toString
+  def generateNewUUID: String = randomUUID.toString
 
-  def correlationId(hc: HeaderCarrier): String = {
+  def correlationId(hc: HeaderCarrier): String =
     hc.requestId match {
-      case Some(requestId) => requestId.value match {
-        case CorrelationIdPattern(prefix) => prefix + "-" + generateNewUUID.substring(24)
-        case _ => generateNewUUID
-      }
-      case _ => generateNewUUID
+      case Some(requestId) =>
+        requestId.value match {
+          case CorrelationIdPattern(prefix) => prefix + "-" + generateNewUUID.substring(24)
+          case _                            => generateNewUUID
+        }
+      case _               => generateNewUUID
     }
-  }
 
-  def sendRegisterRequest(request: NinoApplication)
-                         (implicit hc: HeaderCarrier, ec: ExecutionContext): Future[HttpPostResponse] = {
-    val url = if(appConfig.features.useDesStub()) {
+  def sendRegisterRequest(
+    request: NinoApplication
+  )(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[HttpPostResponse] = {
+    val url = if (appConfig.features.useDesStub()) {
       s"${appConfig.desStubUrl}/${appConfig.desStubContext}"
     } else {
       s"${appConfig.desBaseUrl()}${appConfig.desContext()}"
     }
 
     def desHeaders(implicit hc: HeaderCarrier): Seq[(String, String)] = Seq(
-      "Environment" -> appConfig.desEnvironment,
+      "Environment"   -> appConfig.desEnvironment,
       "Authorization" -> s"Bearer ${appConfig.desToken()}",
       "CorrelationId" -> correlationId(hc)
     )
-    val requestBody = Json.toJson(request)
+    val requestBody                                                   = Json.toJson(request)
 
     if (appConfig.features.logDesJson()) logger.info(s"Logging JSON body of outgoing DES request: $requestBody")
 

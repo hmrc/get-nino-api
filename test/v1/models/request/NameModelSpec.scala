@@ -24,51 +24,54 @@ import support.UnitSpec
 
 class NameModelSpec extends UnitSpec {
 
-  private def readWriteDate(isWrite: Boolean, writeDate: String = "2000-10-10", readDate: String = "10-10-2000"): String = {
+  private def readWriteDate(
+    isWrite: Boolean,
+    writeDate: String = "2000-10-10",
+    readDate: String = "10-10-2000"
+  ): String =
     if (isWrite) writeDate else readDate
-  }
 
   val minJson: Boolean => JsObject = isWrite =>
     Json.obj(
-      "surname" -> "MinimumMan",
+      "surname"  -> "MinimumMan",
       "nameType" -> "REGISTERED"
     )
 
   val maxJson: Boolean => JsObject = isWrite => {
-    val firstNamePath = if (isWrite) "firstName" else "forename"
+    val firstNamePath  = if (isWrite) "firstName" else "forename"
     val middleNamePath = if (isWrite) "middleName" else "secondForename"
 
     Json.obj(
-      "title" -> "MR",
-      firstNamePath -> "First",
+      "title"        -> "MR",
+      firstNamePath  -> "First",
       middleNamePath -> "Middle",
-      "surname" -> "Last",
-      "startDate" -> readWriteDate(isWrite, "1990-10-10", "10-10-1990"),
-      "endDate" -> readWriteDate(isWrite),
-      "nameType" -> "REGISTERED"
+      "surname"      -> "Last",
+      "startDate"    -> readWriteDate(isWrite, "1990-10-10", "10-10-1990"),
+      "endDate"      -> readWriteDate(isWrite),
+      "nameType"     -> "REGISTERED"
     )
   }
 
   val faultyStartDateModelJson: JsObject = Json.obj(
-    "surname" -> "Miles",
-    "nameType" -> "REGISTERED",
+    "surname"   -> "Miles",
+    "nameType"  -> "REGISTERED",
     "startDate" -> LocalDate.now().plusDays(1).format(DateTimeFormatter.ofPattern("dd-MM-yyyy"))
   )
 
   val faultyEndDateModelJson: JsObject = Json.obj(
-    "surname" -> "Miles",
+    "surname"  -> "Miles",
     "nameType" -> "REGISTERED",
-    "endDate" -> LocalDate.now().plusDays(1).format(DateTimeFormatter.ofPattern("dd-MM-yyyy"))
+    "endDate"  -> LocalDate.now().plusDays(1).format(DateTimeFormatter.ofPattern("dd-MM-yyyy"))
   )
 
   val beforeDateAfterEndDateModel: JsObject = Json.obj(
-    "surname" -> "Miles",
-    "nameType" -> "REGISTERED",
+    "surname"   -> "Miles",
+    "nameType"  -> "REGISTERED",
     "startDate" -> LocalDate.now().minusDays(1).format(DateTimeFormatter.ofPattern("dd-MM-yyyy")),
-    "endDate" -> LocalDate.now().minusDays(2).format(DateTimeFormatter.ofPattern("dd-MM-yyyy"))
+    "endDate"   -> LocalDate.now().minusDays(2).format(DateTimeFormatter.ofPattern("dd-MM-yyyy"))
   )
 
-  val maxModel = NameModel(
+  val maxModel: NameModel = NameModel(
     Some("MR"),
     Some("First"),
     Some("Middle"),
@@ -78,7 +81,7 @@ class NameModelSpec extends UnitSpec {
     nameType = "REGISTERED"
   )
 
-  val minModel = NameModel(
+  val minModel: NameModel = NameModel(
     surname = "MinimumMan",
     nameType = "REGISTERED"
   )
@@ -111,8 +114,8 @@ class NameModelSpec extends UnitSpec {
           faultyStartDateModelJson.as[NameModel]
         }
 
-        result.getMessage should include ("startDate")
-        result.getMessage should include ("The date provided is after today. The date must be today or before.")
+        result.getMessage should include("startDate")
+        result.getMessage should include("The date provided is after today. The date must be today or before.")
       }
 
       "the end date given is after the current date" in {
@@ -120,8 +123,8 @@ class NameModelSpec extends UnitSpec {
           faultyEndDateModelJson.as[NameModel]
         }
 
-        result.getMessage should include ("endDate")
-        result.getMessage should include ("The date provided is after today. The date must be today or before.")
+        result.getMessage should include("endDate")
+        result.getMessage should include("The date provided is after today. The date must be today or before.")
       }
 
       "the start date given is after the end date given" in {
@@ -129,8 +132,8 @@ class NameModelSpec extends UnitSpec {
           beforeDateAfterEndDateModel.as[NameModel]
         }
 
-        result.getMessage should include ("endDate")
-        result.getMessage should include ("The given start date is after the given end date.")
+        result.getMessage should include("endDate")
+        result.getMessage should include("The given start date is after the given end date.")
       }
     }
 
@@ -148,9 +151,11 @@ class NameModelSpec extends UnitSpec {
             "REV"
           )
 
-          validTitle.foreach(title => s"is $title" in {
-            NameModel.validateTitle(Some(title)) shouldBe true
-          })
+          validTitle.foreach(title =>
+            s"is $title" in {
+              NameModel.validateTitle(Some(title)) shouldBe true
+            }
+          )
         }
       }
 
@@ -169,9 +174,11 @@ class NameModelSpec extends UnitSpec {
             "ALIAS"
           )
 
-          validTitle.foreach(nameType => s"is $nameType" in {
-            NameModel.validateType(nameType) shouldBe true
-          })
+          validTitle.foreach(nameType =>
+            s"is $nameType" in {
+              NameModel.validateType(nameType) shouldBe true
+            }
+          )
         }
       }
 
@@ -215,7 +222,10 @@ class NameModelSpec extends UnitSpec {
         }
 
         "the name is longer than 99 characters" in {
-          runValidation("Thisnameisreallyreallylongmorethanthanninentyninecharacterskindoflongnobodyshouldhaveanamethatisthis", "SomeNameType") shouldBe false
+          runValidation(
+            "Thisnameisreallyreallylongmorethanthanninentyninecharacterskindoflongnobodyshouldhaveanamethatisthis",
+            "SomeNameType"
+          ) shouldBe false
         }
 
         "the name is less than 3 characters" in {
@@ -230,7 +240,8 @@ class NameModelSpec extends UnitSpec {
 
     ".validateDateAsPriorDate" should {
 
-      val currentDate = Some(DateModel(LocalDate.now(ZoneId.of("UTC")).format(DateTimeFormatter.ofPattern("dd-MM-yyyy"))))
+      val currentDate =
+        Some(DateModel(LocalDate.now(ZoneId.of("UTC")).format(DateTimeFormatter.ofPattern("dd-MM-yyyy"))))
 
       "return true" when {
 

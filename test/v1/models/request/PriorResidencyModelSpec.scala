@@ -23,21 +23,21 @@ class PriorResidencyModelSpec extends UnitSpec {
   val minJson: JsObject = Json.obj()
 
   val maxJson: Boolean => JsObject = isWrite => {
-    if(isWrite){
+    if (isWrite) {
       Json.obj(
-       "startDate" -> "2000-10-10",
-        "endDate" -> "2000-10-11"
+        "startDate" -> "2000-10-10",
+        "endDate"   -> "2000-10-11"
       )
-    } else{
+    } else {
       Json.obj(
         "priorStartDate" -> "10-10-2000",
-        "priorEndDate" -> "11-10-2000"
+        "priorEndDate"   -> "11-10-2000"
       )
     }
   }
 
-  val modelMin = PriorResidencyModel()
-  val modelMax = PriorResidencyModel(Some(DateModel("10-10-2000")), Some(DateModel("11-10-2000")))
+  val modelMin: PriorResidencyModel = PriorResidencyModel()
+  val modelMax: PriorResidencyModel = PriorResidencyModel(Some(DateModel("10-10-2000")), Some(DateModel("11-10-2000")))
 
   "PriorResidencyModel" should {
     "correctly parse from json" when {

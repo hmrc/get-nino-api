@@ -70,42 +70,54 @@ class VersionRoutingRequestHandlerSpec extends UnitSpec with Matchers with MockF
   test =>
 
   implicit private val actorSystem: ActorSystem = ActorSystem("test")
-  implicit private val mat: Materializer = ActorMaterializer()
+  implicit private val mat: Materializer        = Materializer(actorSystem)
 
   private val defaultRouter = mock[Router]
-  private val v1Router = mock[Router]
-  private val v2Router = mock[Router]
-  private val v3Router = mock[Router]
+  private val v1Router      = mock[Router]
+  private val v2Router      = mock[Router]
+  private val v3Router      = mock[Router]
 
   private val routingMap = new VersionRoutingMap {
     override val defaultRouter: Router = test.defaultRouter
-    override val map = Map("1.0" -> v1Router, "2.0" -> v2Router, "3.0" -> v3Router)
+    override val map: Map[String, Router] = Map("1.0" -> v1Router, "2.0" -> v2Router, "3.0" -> v3Router)
   }
 
   class Test(implicit acceptHeader: Option[String]) {
     val httpConfiguration: HttpConfiguration = HttpConfiguration("context")
-    val auditConnector: AuditConnector = mock[AuditConnector]
-    val httpAuditEvent: HttpAuditEvent = mock[HttpAuditEvent]
-    val configuration: Configuration =
-      Configuration("appName" -> "myApp", "bootstrap.errorHandler.warnOnly.statusCodes" -> Seq.empty[Int])
+    val auditConnector: AuditConnector       = mock[AuditConnector]
+    val httpAuditEvent: HttpAuditEvent       = mock[HttpAuditEvent]
+    val configuration: Configuration         =
+      Configuration(
+        "appName"                                     -> "myApp",
+        "bootstrap.errorHandler.warnOnly.statusCodes" -> Seq.empty[Int],
+        "metrics.enabled"                             -> false
+      )
 
     private val errorHandler = new ErrorHandler(configuration, auditConnector, httpAuditEvent)
-    private val filters = mock[HttpFilters]
+    private val filters      = mock[HttpFilters]
     (filters.filters _).stubs().returns(Seq.empty)
 
     private val actionBuilder: DefaultActionBuilder = DefaultActionBuilder(new play.api.mvc.BodyParsers.Default())
 
-    MockedAppConfig.featureSwitch.returns(Some(Configuration(ConfigFactory.parseString(
-      """
+    MockedAppConfig.featureSwitch.returns(Some(Configuration(ConfigFactory.parseString("""
         |version-1.enabled = true
         |version-2.enabled = true
       """.stripMargin))))
 
     //noinspection ScalaDeprecation
     val requestHandler: VersionRoutingRequestHandler =
-      new VersionRoutingRequestHandler(routingMap, errorHandler, httpConfiguration, mockAppConfig, filters, actionBuilder)
+      new VersionRoutingRequestHandler(
+        routingMap,
+        errorHandler,
+        httpConfiguration,
+        mockAppConfig,
+        filters,
+        actionBuilder
+      )
 
-    def stubHandling(router: Router, path: String)(handler: Option[Handler]): CallHandler1[RequestHeader, Option[Handler]] =
+    def stubHandling(router: Router, path: String)(
+      handler: Option[Handler]
+    ): CallHandler1[RequestHeader, Option[Handler]] =
       (router.handlerFor _)
         .expects(where { r: RequestHeader =>
           r.path == path
@@ -138,12 +150,11 @@ class VersionRoutingRequestHandlerSpec extends UnitSpec with Matchers with MockF
       stubHandling(defaultRouter, "path")(None)
 
       val request: RequestHeader = buildRequest("path")
-      inside(requestHandler.routeRequest(request)) {
-        case Some(a: EssentialAction) =>
-          val result = a.apply(request)
+      inside(requestHandler.routeRequest(request)) { case Some(a: EssentialAction) =>
+        val result = a.apply(request)
 
-          status(result) shouldBe NOT_ACCEPTABLE
-          contentAsJson(result) shouldBe InvalidAcceptHeaderError
+        status(result)        shouldBe NOT_ACCEPTABLE
+        contentAsJson(result) shouldBe InvalidAcceptHeaderError
       }
     }
   }
@@ -167,12 +178,11 @@ class VersionRoutingRequestHandlerSpec extends UnitSpec with Matchers with MockF
 
       private val request = buildRequest("path")
 
-      inside(requestHandler.routeRequest(request)) {
-        case Some(a: EssentialAction) =>
-          val result = a.apply(request)
+      inside(requestHandler.routeRequest(request)) { case Some(a: EssentialAction) =>
+        val result = a.apply(request)
 
-          status(result) shouldBe NOT_FOUND
-          contentAsJson(result) shouldBe UnsupportedVersionError
+        status(result)        shouldBe NOT_FOUND
+        contentAsJson(result) shouldBe UnsupportedVersionError
       }
     }
   }
@@ -185,19 +195,18 @@ class VersionRoutingRequestHandlerSpec extends UnitSpec with Matchers with MockF
         stubHandling(defaultRouter, "path")(None)
 
         private val request = buildRequest("path")
-        inside(requestHandler.routeRequest(request)) {
-          case Some(a: EssentialAction) =>
-            val result = a.apply(request)
+        inside(requestHandler.routeRequest(request)) { case Some(a: EssentialAction) =>
+          val result = a.apply(request)
 
-            status(result) shouldBe NOT_FOUND
-            contentAsJson(result) shouldBe UnsupportedVersionError
+          status(result)        shouldBe NOT_FOUND
+          contentAsJson(result) shouldBe UnsupportedVersionError
 
         }
       }
     }
   }
 
-  private def handleWithDefaultRoutes(router: Router)(implicit acceptHeader: Option[String]): Unit = {
+  private def handleWithDefaultRoutes(router: Router)(implicit acceptHeader: Option[String]): Unit =
     "if the request ends with a trailing slash" when {
       "handler found" should {
         "use it" in new Test {
@@ -220,9 +229,8 @@ class VersionRoutingRequestHandlerSpec extends UnitSpec with Matchers with MockF
         }
       }
     }
-  }
 
-  private def handleWithVersionRoutes(router: Router)(implicit acceptHeader: Option[String]): Unit = {
+  private def handleWithVersionRoutes(router: Router)(implicit acceptHeader: Option[String]): Unit =
     "if the request ends with a trailing slash" when {
       "handler found" should {
         "use it" in new Test {
@@ -251,5 +259,4 @@ class VersionRoutingRequestHandlerSpec extends UnitSpec with Matchers with MockF
         }
       }
     }
-  }
 }
