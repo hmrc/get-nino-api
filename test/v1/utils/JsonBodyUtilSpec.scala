@@ -48,15 +48,17 @@ class JsonBodyUtilSpec extends UnitSpec {
       "the json body cannot be validated" in {
         implicit val request: FakeRequest[AnyContentAsJson] = FakeRequest()
           .withMethod("POST")
-          .withJsonBody(Json.obj(
-            "thisIs" -> "validJson",
-            "putNotThe" -> "correctJson"
-          ))
+          .withJsonBody(
+            Json.obj(
+              "thisIs"    -> "validJson",
+              "putNotThe" -> "correctJson"
+            )
+          )
 
         val invalidParsedJson: Either[ErrorResponse, NinoApplication] = testUtil.parsedJsonBody[NinoApplication]
         invalidParsedJson.isLeft shouldBe true
 
-        invalidParsedJson.left.get.code shouldBe "JSON_VALIDATION_ERROR"
+        invalidParsedJson.left.get.code    shouldBe "JSON_VALIDATION_ERROR"
         invalidParsedJson.left.get.message shouldBe "The provided JSON was unable to be validated as the selected model."
       }
     }

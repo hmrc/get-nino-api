@@ -19,10 +19,9 @@ package v1.models.request
 import play.api.Logging
 import play.api.libs.json._
 
-
 final case class AddressLine(addressLine: String)
 
-object AddressLine extends Logging{
+object AddressLine extends Logging {
 
   val regex: String = "^(?=.{1,35}$)([A-Za-z0-9]([-'.& ]?[A-Za-z0-9 ]+)*)$"
 
@@ -35,10 +34,9 @@ object AddressLine extends Logging{
   }
 
   implicit val reads: Reads[AddressLine] = for {
-    addressLineString <- __.read[String].filter(JsonValidationError("Address line has failed validation"))(addressLineValidation)
-  } yield {
-    AddressLine(addressLineString)
-  }
+    addressLineString <-
+      __.read[String].filter(JsonValidationError("Address line has failed validation"))(addressLineValidation)
+  } yield AddressLine(addressLineString)
 
-  implicit val writes: Writes[AddressLine] = Writes { value => JsString(value.addressLine) }
+  implicit val writes: Writes[AddressLine] = Writes(value => JsString(value.addressLine))
 }

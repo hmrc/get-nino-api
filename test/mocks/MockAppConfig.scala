@@ -27,24 +27,20 @@ trait MockAppConfig extends MockFactory {
 
   object MockedAppConfig {
 
-    def desBaseUrl(): CallHandler[String] = {
+    def desBaseUrl(): CallHandler[String] =
       (mockAppConfig.desBaseUrl: () => String)
         .expects()
-    }
 
-    def desEnvironment(): CallHandler[String] = {
+    def desEnvironment(): CallHandler[String] =
       (mockAppConfig.desEnvironment: () => String)
         .expects()
-    }
 
-    def desToken(): CallHandler[String] = {
+    def desToken(): CallHandler[String] =
       (mockAppConfig.desToken: () => String)
         .expects()
-    }
 
-    def featureSwitch: CallHandler[Option[Configuration]] = {
+    def featureSwitch: CallHandler[Option[Configuration]] =
       (mockAppConfig.featureSwitch _: () => Option[Configuration])
         .expects()
-    }
   }
 }

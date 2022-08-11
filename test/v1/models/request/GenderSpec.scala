@@ -55,7 +55,7 @@ class GenderSpec extends UnitSpec {
       "the value is not one of the available values" in {
         val json = Json.obj("bad" -> "json")
 
-        json .validate[Gender].isError shouldBe true
+        json.validate[Gender].isError shouldBe true
       }
     }
   }

@@ -22,9 +22,9 @@ import play.api.libs.json.{JsString, Json}
 
 class AddressTypeSpec extends AnyWordSpec with Matchers {
 
-  val residentialJson: JsString = JsString(Residential.value)
+  val residentialJson: JsString    = JsString(Residential.value)
   val correspondenceJson: JsString = JsString(Correspondence.value)
-  val invalidJson: JsString = JsString("Error")
+  val invalidJson: JsString        = JsString("Error")
 
   "AddressType.read" when {
 

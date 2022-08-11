@@ -24,7 +24,6 @@ class LastEUAddressSpec extends AnyWordSpec with Matchers {
 
   "LastEUAddress.formats" when {
 
-
     val maximumLastEUAddressModel = LastEUAddress(
       Some(AddressLine("1 line address")),
       Some(AddressLine("2 line address")),
@@ -69,7 +68,7 @@ class LastEUAddressSpec extends AnyWordSpec with Matchers {
 
         "parse to json correctly" in {
 
-         Json.toJson(maximumLastEUAddressModel) shouldBe maximumLastEUAddressJson(true)
+          Json.toJson(maximumLastEUAddressModel) shouldBe maximumLastEUAddressJson(true)
 
         }
       }

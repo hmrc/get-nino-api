@@ -36,7 +36,8 @@ class ApiDefinitionConfigSpec extends UnitSpec {
 
         val expected = "BETA"
 
-        (mockConfig.get[String](_: String)(_: ConfigLoader[String]))
+        (mockConfig
+          .get[String](_: String)(_: ConfigLoader[String]))
           .expects("api.status", *)
           .returns(expected)
 
@@ -60,7 +61,8 @@ class ApiDefinitionConfigSpec extends UnitSpec {
 
         val expected = "PUBLIC"
 
-        (mockConfig.getOptional[String](_: String)(_: ConfigLoader[String]))
+        (mockConfig
+          .getOptional[String](_: String)(_: ConfigLoader[String]))
           .expects("api.access.type", *)
           .returns(Some(expected))
 
@@ -73,7 +75,8 @@ class ApiDefinitionConfigSpec extends UnitSpec {
 
         val expected = "PRIVATE"
 
-        (mockConfig.getOptional[String](_: String)(_: ConfigLoader[String]))
+        (mockConfig
+          .getOptional[String](_: String)(_: ConfigLoader[String]))
           .expects("api.access.type", *)
           .returns(None)
 
@@ -89,7 +92,8 @@ class ApiDefinitionConfigSpec extends UnitSpec {
 
         private val expected = Seq("a", "b")
 
-        (mockConfig.get[Seq[String]](_: String)(_: ConfigLoader[Seq[String]]))
+        (mockConfig
+          .get[Seq[String]](_: String)(_: ConfigLoader[Seq[String]]))
           .expects("api.access.whitelistedApplicationIds", *)
           .returns(expected)
 

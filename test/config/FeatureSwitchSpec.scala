@@ -28,8 +28,7 @@ class FeatureSwitchSpec extends UnitSpec {
   "version enabled" when {
     "there is config set" should {
 
-      val featureSwitch = createFeatureSwitch(
-        """
+      val featureSwitch = createFeatureSwitch("""
           |version-1.enabled = true
           |version-2.enabled = false
         """.stripMargin)

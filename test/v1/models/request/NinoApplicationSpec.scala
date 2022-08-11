@@ -25,33 +25,35 @@ import utils.NinoApplicationTestData._
 
 class NinoApplicationSpec extends UnitSpec {
 
-  val validNino = "YG285464A"
+  val validNino   = "YG285464A"
   val invalidNino = "1234567890ASDFGHJKL"
 
-  val validOfficeNumberMin = "1"
-  val validOfficeNumberMid = "123456"
-  val validOfficeNumberMax = "1234567890"
+  val validOfficeNumberMin          = "1"
+  val validOfficeNumberMid          = "123456"
+  val validOfficeNumberMax          = "1234567890"
   val invalidOfficeNumberCharacters = "thishasletterssoisntanumber"
-  val invalidOfficeNumberLength = "12345678901"
-  val invalidOfficeNumberNoLength = ""
+  val invalidOfficeNumberLength     = "12345678901"
+  val invalidOfficeNumberNoLength   = ""
 
-  val validContactNumberMin = "1"
-  val validContactNumberMid = "12345678901234567893456"
-  val validContactNumberMax = "123456789012345678901234567890123456789012345678901234567890123456789012"
+  val validContactNumberMin          = "1"
+  val validContactNumberMid          = "12345678901234567893456"
+  val validContactNumberMax          = "123456789012345678901234567890123456789012345678901234567890123456789012"
   val invalidContactNumberCharacters = "thishasletterssoisntanumber"
-  val invalidContactNumberLength = "1234567890123456789012345678901234567890123456789012345678901234567890123"
-  val invalidContactNumberNoLength = ""
+  val invalidContactNumberLength     = "1234567890123456789012345678901234567890123456789012345678901234567890123"
+  val invalidContactNumberNoLength   = ""
 
-  private val ninoRegex = "^([ACEHJLMOPRSWXY][A-CEGHJ-NPR-TW-Z]|B[A-CEHJ-NPR-TW-Z]|" +
+  private val ninoRegex          = "^([ACEHJLMOPRSWXY][A-CEGHJ-NPR-TW-Z]|B[A-CEHJ-NPR-TW-Z]|" +
     "G[ACEGHJ-NPR-TW-Z]|[KT][A-CEGHJ-MPR-TW-Z]|N[A-CEGHJL-NPR-SW-Z]|Z[A-CEGHJ-NPR-TW-Y])[0-9]{6}[A-D]$"
-  private val officeNumberRegex = "^([0-9]{1,10})$"
+  private val officeNumberRegex  = "^([0-9]{1,10})$"
   private val contactNumberRegex = "^([0-9]{1,72})$"
 
   private def validateNino: String => Boolean = input => NinoApplication.validateAgainstRegex(input, ninoRegex)
 
-  private def validateOffice: String => Boolean = input => NinoApplication.validateAgainstRegex(input, officeNumberRegex)
+  private def validateOffice: String => Boolean = input =>
+    NinoApplication.validateAgainstRegex(input, officeNumberRegex)
 
-  private def validateContact: String => Boolean = input => NinoApplication.validateAgainstRegex(input, contactNumberRegex)
+  private def validateContact: String => Boolean = input =>
+    NinoApplication.validateAgainstRegex(input, contactNumberRegex)
 
   ".validateAgainstRegex" when {
 
@@ -140,30 +142,32 @@ class NinoApplicationSpec extends UnitSpec {
   }
 
   ".validateCountry" should {
+    val minCountryIndex = 0
+    val maxCountryIndex = 286
 
     "return true" when {
 
       "the country value is at the minimum" in {
-        NinoApplication.validateCountry(0) shouldBe true
+        NinoApplication.validateCountry(minCountryIndex) shouldBe true
       }
 
       "the country value is at the maximum" in {
-        NinoApplication.validateCountry(286) shouldBe true
+        NinoApplication.validateCountry(maxCountryIndex) shouldBe true
       }
 
       "the country value is within range" in {
-        NinoApplication.validateCountry(143) shouldBe true
+        NinoApplication.validateCountry((maxCountryIndex + minCountryIndex) / 2) shouldBe true
       }
     }
 
     "return false" when {
 
       "the number is below the minimum" in {
-        NinoApplication.validateCountry(-1) shouldBe false
+        NinoApplication.validateCountry(minCountryIndex - 1) shouldBe false
       }
 
       "the number is above the maximum" in {
-        NinoApplication.validateCountry(287) shouldBe false
+        NinoApplication.validateCountry(maxCountryIndex + 1) shouldBe false
       }
     }
   }
@@ -247,8 +251,8 @@ class NinoApplicationSpec extends UnitSpec {
     "return true" when {
 
       "the provided age is above 15 years and 8 months" in {
-        val today = LocalDateTime.now()
-        val validAge = today.minusYears(15).minusMonths(8).minusDays(1)
+        val today               = LocalDateTime.now()
+        val validAge            = today.minusYears(15).minusMonths(8).minusDays(1)
         val validAgeAsDateModel = DateModel(validAge.format(DateTimeFormatter.ofPattern("dd-MM-yyyy")))
 
         NinoApplication.validateAge(validAgeAsDateModel) shouldBe true
@@ -258,16 +262,16 @@ class NinoApplicationSpec extends UnitSpec {
     "return false" when {
 
       "the provided age is exactly 15 years and 8 months" in {
-        val today = LocalDateTime.now()
-        val invalidAge = today.minusYears(15).minusMonths(8)
+        val today                 = LocalDateTime.now()
+        val invalidAge            = today.minusYears(15).minusMonths(8)
         val invalidAgeAsDateModel = DateModel(invalidAge.format(DateTimeFormatter.ofPattern("dd-MM-yyyy")))
 
         NinoApplication.validateAge(invalidAgeAsDateModel) shouldBe false
       }
 
       "the provided age is less than 15 years and 8 months" in {
-        val today = LocalDateTime.now()
-        val invalidAge = today.minusYears(15).minusMonths(8).plusDays(1)
+        val today                 = LocalDateTime.now()
+        val invalidAge            = today.minusYears(15).minusMonths(8).plusDays(1)
         val invalidAgeAsDateModel = DateModel(invalidAge.format(DateTimeFormatter.ofPattern("dd-MM-yyyy")))
 
         NinoApplication.validateAge(invalidAgeAsDateModel) shouldBe false
@@ -313,16 +317,26 @@ class NinoApplicationSpec extends UnitSpec {
             AddressModel(
               Some(Residential),
               AddressLine("Some address"),
-              None, None, None, None, None,
+              None,
+              None,
+              None,
+              None,
+              None,
               "GBR",
-              Some(DateModel("01-01-2000")), None
+              Some(DateModel("01-01-2000")),
+              None
             ),
             AddressModel(
               None,
               AddressLine("Some address"),
-              None, None, None, None, None,
+              None,
+              None,
+              None,
+              None,
+              None,
               "GBR",
-              Some(DateModel("01-01-2000")), None
+              Some(DateModel("01-01-2000")),
+              None
             )
           )
         ) shouldBe true
@@ -337,16 +351,26 @@ class NinoApplicationSpec extends UnitSpec {
             AddressModel(
               None,
               AddressLine("Some address"),
-              None, None, None, None, None,
+              None,
+              None,
+              None,
+              None,
+              None,
               "GBR",
-              Some(DateModel("01-01-2000")), None
+              Some(DateModel("01-01-2000")),
+              None
             ),
             AddressModel(
               None,
               AddressLine("Some address"),
-              None, None, None, None, None,
+              None,
+              None,
+              None,
+              None,
+              None,
               "GBR",
-              Some(DateModel("01-01-2000")), None
+              Some(DateModel("01-01-2000")),
+              None
             )
           )
         ) shouldBe false
@@ -387,19 +411,27 @@ class NinoApplicationSpec extends UnitSpec {
         }
 
         "generates an exception for the nino field" in {
-          expectedException.getMessage should include("There has been an error parsing the nino field. Please check against the regex.")
+          expectedException.getMessage should include(
+            "There has been an error parsing the nino field. Please check against the regex."
+          )
         }
 
         "generates an exception for the country code field" in {
-          expectedException.getMessage should include("There has been an error parsing the nationality code field. Please check against the regex.")
+          expectedException.getMessage should include(
+            "There has been an error parsing the nationality code field. Please check against the regex."
+          )
         }
 
         "generates an exception for the office number field" in {
-          expectedException.getMessage should include("There has been an error parsing the office number field. Please check against the regex.")
+          expectedException.getMessage should include(
+            "There has been an error parsing the office number field. Please check against the regex."
+          )
         }
 
         "generates an exception for the contact number field" in {
-          expectedException.getMessage should include("There has been an error parsing the contact number field. Please check against the regex.")
+          expectedException.getMessage should include(
+            "There has been an error parsing the contact number field. Please check against the regex."
+          )
         }
       }
     }

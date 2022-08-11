@@ -24,31 +24,36 @@ import play.api.mvc.{Action, AnyContent, ControllerComponents, Result}
 import uk.gov.hmrc.play.bootstrap.backend.controller.BackendController
 import v1.config.featureSwitch.FeatureSwitchModel
 
-class FeatureSwitchController @Inject()(
-                                         appConfig: AppConfig,
-                                         cc: ControllerComponents
-                                       ) extends BackendController(cc) with Logging{
+class FeatureSwitchController @Inject() (
+  appConfig: AppConfig,
+  cc: ControllerComponents
+) extends BackendController(cc)
+    with Logging {
 
   lazy val update: Action[AnyContent] = Action { implicit request =>
     request.body.asJson match {
-      case Some(jsonBody) => jsonBody.asOpt[FeatureSwitchModel] match {
-        case Some(model) =>
-          appConfig.features.useDesStub(model.useDesStub)
-          result
-        case None =>
-          logger.warn("[FeatureSwitchController][update] Unable to parse json as FeatureSwitchModel")
-          result
-      }
-      case None =>
+      case Some(jsonBody) =>
+        jsonBody.asOpt[FeatureSwitchModel] match {
+          case Some(model) =>
+            appConfig.features.useDesStub(model.useDesStub)
+            result
+          case None        =>
+            logger.warn("[FeatureSwitchController][update] Unable to parse json as FeatureSwitchModel")
+            result
+        }
+      case None           =>
         logger.warn("[FeatureSwitchController][update] Unable to validate body as JSON")
         result
     }
   }
 
-  def result: Result = {
-    Ok(Json.toJson(FeatureSwitchModel(
-      appConfig.features.useDesStub()
-    )))
-  }
+  def result: Result =
+    Ok(
+      Json.toJson(
+        FeatureSwitchModel(
+          appConfig.features.useDesStub()
+        )
+      )
+    )
 
 }

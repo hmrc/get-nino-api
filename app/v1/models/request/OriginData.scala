@@ -21,30 +21,30 @@ import play.api.libs.functional.syntax._
 import play.api.libs.json._
 
 final case class OriginData(
-                       birthTown: Option[String] = None,
-                       birthProvince: Option[String] = None,
-                       birthCountryCode: Option[String] = None,
-                       birthSurname: Option[String] = None,
-                       maternalForename: Option[String] = None,
-                       maternalSurname: Option[String] = None,
-                       paternalForename: Option[String] = None,
-                       paternalSurname: Option[String] = None,
-                       foreignSocialSecurity: Option[String] = None,
-                       lastEUAddress: Option[LastEUAddress] = None
-                     )
+  birthTown: Option[String] = None,
+  birthProvince: Option[String] = None,
+  birthCountryCode: Option[String] = None,
+  birthSurname: Option[String] = None,
+  maternalForename: Option[String] = None,
+  maternalSurname: Option[String] = None,
+  paternalForename: Option[String] = None,
+  paternalSurname: Option[String] = None,
+  foreignSocialSecurity: Option[String] = None,
+  lastEUAddress: Option[LastEUAddress] = None
+)
 
-object OriginData extends Logging{
+object OriginData extends Logging {
 
-  private lazy val birthTownPath = __ \ "birthTown"
-  private lazy val birthProvincePath = __ \ "birthProvince"
-  private lazy val birthCountryCodePath = __ \ "birthCountryCode"
-  private lazy val birthSurnamePath = __ \ "birthSurname"
-  private lazy val maternalForenamePath = __ \ "maternalForename"
-  private lazy val maternalSurnamePath = __ \ "maternalSurname"
-  private lazy val paternalForenamePath = __ \ "paternalForename"
-  private lazy val paternalSurnamePath = __ \ "paternalSurname"
+  private lazy val birthTownPath             = __ \ "birthTown"
+  private lazy val birthProvincePath         = __ \ "birthProvince"
+  private lazy val birthCountryCodePath      = __ \ "birthCountryCode"
+  private lazy val birthSurnamePath          = __ \ "birthSurname"
+  private lazy val maternalForenamePath      = __ \ "maternalForename"
+  private lazy val maternalSurnamePath       = __ \ "maternalSurname"
+  private lazy val paternalForenamePath      = __ \ "paternalForename"
+  private lazy val paternalSurnamePath       = __ \ "paternalSurname"
   private lazy val foreignSocialSecurityPath = __ \ "foreignSocialSecurity"
-  private lazy val lastEUAddressPath = __ \ "lastEUAddress"
+  private lazy val lastEUAddressPath         = __ \ "lastEUAddress"
 
   private val foreignSocialSecurityRegex = """^(?=.{1,29}$)([A-Za-z0-9]([-'.&\/ ]{0,1}[A-Za-z0-9]+)*)$"""
 
@@ -87,26 +87,49 @@ object OriginData extends Logging{
     }
 
   implicit val reads: Reads[OriginData] = (
-    birthTownPath.readNullable[String]
+    birthTownPath
+      .readNullable[String]
       .filter(JsonValidationError("Birth town does not match regex"))(birthTownProvinceValidation(_, "birth town")) and
-      birthProvincePath.readNullable[String]
-        .filter(JsonValidationError("Birth province does not match regex"))(birthTownProvinceValidation(_, "birth province")) and
-      birthCountryCodePath.readNullable[String]
+      birthProvincePath
+        .readNullable[String]
+        .filter(JsonValidationError("Birth province does not match regex"))(
+          birthTownProvinceValidation(_, "birth province")
+        ) and
+      birthCountryCodePath
+        .readNullable[String]
         .filter(JsonValidationError("Birth country code is not valid"))(countryCodeValidation) and
-      birthSurnamePath.readNullable[String]
-        .filter(JsonValidationError("Birth surname does not match regex"))(nameElementValidation(_, "birth surname")) and
-      maternalForenamePath.readNullable[String]
-        .filter(JsonValidationError("Maternal forename does not match regex"))(nameElementValidation(_, "maternal forename")) and
-      maternalSurnamePath.readNullable[String]
-        .filter(JsonValidationError("Maternal surname does not match regex"))(nameElementValidation(_, "maternal surname")) and
-      paternalForenamePath.readNullable[String]
-        .filter(JsonValidationError("Paternal forename does not match regex"))(nameElementValidation(_, "paternal forename")) and
-      paternalSurnamePath.readNullable[String]
-        .filter(JsonValidationError("Paternal surname does not match regex"))(nameElementValidation(_, "paternal surname")) and
-      foreignSocialSecurityPath.readNullable[String]
-        .filter(JsonValidationError("Foreign social security does not match regex"))(foreignSocialSecurityValidation) and
+      birthSurnamePath
+        .readNullable[String]
+        .filter(JsonValidationError("Birth surname does not match regex"))(
+          nameElementValidation(_, "birth surname")
+        ) and
+      maternalForenamePath
+        .readNullable[String]
+        .filter(JsonValidationError("Maternal forename does not match regex"))(
+          nameElementValidation(_, "maternal forename")
+        ) and
+      maternalSurnamePath
+        .readNullable[String]
+        .filter(JsonValidationError("Maternal surname does not match regex"))(
+          nameElementValidation(_, "maternal surname")
+        ) and
+      paternalForenamePath
+        .readNullable[String]
+        .filter(JsonValidationError("Paternal forename does not match regex"))(
+          nameElementValidation(_, "paternal forename")
+        ) and
+      paternalSurnamePath
+        .readNullable[String]
+        .filter(JsonValidationError("Paternal surname does not match regex"))(
+          nameElementValidation(_, "paternal surname")
+        ) and
+      foreignSocialSecurityPath
+        .readNullable[String]
+        .filter(JsonValidationError("Foreign social security does not match regex"))(
+          foreignSocialSecurityValidation
+        ) and
       lastEUAddressPath.readNullable[LastEUAddress]
-    )(OriginData.apply _)
+  )(OriginData.apply _)
 
   implicit val writes: Writes[OriginData] = Json.writes[OriginData]
 

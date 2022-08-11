@@ -29,39 +29,44 @@ import v1.models.errors._
 
 import scala.concurrent.{ExecutionContext, Future}
 
-
 @Singleton
-class ErrorHandler @Inject()(
-                              config: Configuration,
-                              auditConnector: AuditConnector,
-                              httpAuditEvent: HttpAuditEvent
-                            )
-                            (implicit ec: ExecutionContext) extends JsonErrorHandler(auditConnector, httpAuditEvent, config) with Logging{
+class ErrorHandler @Inject() (
+  config: Configuration,
+  auditConnector: AuditConnector,
+  httpAuditEvent: HttpAuditEvent
+)(implicit ec: ExecutionContext)
+    extends JsonErrorHandler(auditConnector, httpAuditEvent, config)
+    with Logging {
 
   override def onClientError(request: RequestHeader, statusCode: Int, message: String): Future[Result] = {
-    logger.warn(s"[ErrorHandler][onClientError] error in version 1, for (${request.method}) [${request.uri}] with status:" +
-      s" $statusCode and message: $message")
+    logger.warn(
+      s"[ErrorHandler][onClientError] error in version 1, for (${request.method}) [${request.uri}] with status:" +
+        s" $statusCode and message: $message"
+    )
 
     statusCode match {
-      case BAD_REQUEST => Future.successful(BadRequestError.result)
-      case NOT_FOUND => Future.successful(NotFoundError.result)
-      case UNAUTHORIZED => Future.successful(UnauthorisedError(message).result)
-      case METHOD_NOT_ALLOWED => Future.successful(MethodNotAllowedError.result)
+      case BAD_REQUEST            => Future.successful(BadRequestError.result)
+      case NOT_FOUND              => Future.successful(NotFoundError.result)
+      case UNAUTHORIZED           => Future.successful(UnauthorisedError(message).result)
+      case METHOD_NOT_ALLOWED     => Future.successful(MethodNotAllowedError.result)
       case UNSUPPORTED_MEDIA_TYPE => Future.successful(InvalidBodyTypeError.result)
-      case _ =>
+      case _                      =>
         logger.warn(s"[ErrorHandler][onClientError] Unexpected client error type")
         Future.successful(ServiceUnavailableError.result)
     }
   }
 
   override def onServerError(request: RequestHeader, ex: Throwable): Future[Result] = {
-    logger.warn(s"[ErrorHandler][onServerError] Internal server error in version 1, for (${request.method}) [${request.uri}] -> ", ex)
+    logger.warn(
+      s"[ErrorHandler][onServerError] Internal server error in version 1, for (${request.method}) [${request.uri}] -> ",
+      ex
+    )
 
     ex match {
-      case _: NotFoundException => Future.successful(NotFoundError.result)
+      case _: NotFoundException       => Future.successful(NotFoundError.result)
       case ex: AuthorisationException => Future.successful(UnauthorisedError(ex.reason).result)
-      case _: JsValidationException => Future.successful(BadRequestError.result)
-      case ex =>
+      case _: JsValidationException   => Future.successful(BadRequestError.result)
+      case ex                         =>
         logger.warn(s"[ErrorHandler][onServerError] Server error due to unexpected exception: $ex")
         Future.successful(ServiceUnavailableError.result)
     }

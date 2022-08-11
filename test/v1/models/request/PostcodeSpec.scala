@@ -23,8 +23,8 @@ import play.api.libs.json.{JsString, Json}
 class PostcodeSpec extends AnyWordSpec with Matchers {
 
   val postcodeModel: Postcode = Postcode("TF3 4NT")
-  val postcodeJson: JsString = JsString("TF3 4NT")
-  val invalidJson: JsString = JsString("!Invalid Json")
+  val postcodeJson: JsString  = JsString("TF3 4NT")
+  val invalidJson: JsString   = JsString("!Invalid Json")
 
   "PostCode.reads" when {
 
@@ -72,7 +72,7 @@ class PostcodeSpec extends AnyWordSpec with Matchers {
       "starts with a valid character" should {
         "return true" in {
 
-          val postcodeString : Postcode = Postcode("QW3 8RT")
+          val postcodeString: Postcode = Postcode("QW3 8RT")
 
           Postcode.regexCheckValidation(postcodeString.postCode) shouldBe true
         }

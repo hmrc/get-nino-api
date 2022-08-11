@@ -31,7 +31,10 @@ class RegisterNinoResponseHttpParserSpec extends UnitSpec {
 
   val unsuccessfulResponse: HttpResponse = HttpResponse(
     Status.INTERNAL_SERVER_ERROR,
-    json = Json.obj("code" -> "INVALID_DATE_OF_BIRTH", "reason"-> "The remote endpoint has indicated that the name Type needs to be different."),
+    json = Json.obj(
+      "code"   -> "INVALID_DATE_OF_BIRTH",
+      "reason" -> "The remote endpoint has indicated that the name Type needs to be different."
+    ),
     Map.empty
   )
 
@@ -43,7 +46,8 @@ class RegisterNinoResponseHttpParserSpec extends UnitSpec {
     }
     "return an error model" when {
       "an unknown status is returned" in {
-        RegisterNinoResponseReads.read("", "", unsuccessfulResponse)
+        RegisterNinoResponseReads
+          .read("", "", unsuccessfulResponse)
           .shouldBe(
             Left(ServiceUnavailableError)
           )

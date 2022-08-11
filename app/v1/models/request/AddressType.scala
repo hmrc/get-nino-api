@@ -26,21 +26,19 @@ object AddressType {
 
   implicit val reads: Reads[AddressType] = for {
     addressValue <- __.read[String].filter(JsonValidationError("Unable to parse Address Type"))(validAddressTypeCheck)
-  } yield {
-    addressValue match {
-      case Residential.value => Residential
-      case Correspondence.value => Correspondence
-    }
+  } yield addressValue match {
+    case Residential.value    => Residential
+    case Correspondence.value => Correspondence
   }
 
-  implicit val writes: Writes[AddressType] = Writes {
-    addressType => JsString(addressType.value)
+  implicit val writes: Writes[AddressType] = Writes { addressType =>
+    JsString(addressType.value)
   }
 
   def validAddressTypeCheck: String => Boolean = {
-    case Residential.value => true
+    case Residential.value    => true
     case Correspondence.value => true
-    case _ => false
+    case _                    => false
   }
 }
 
