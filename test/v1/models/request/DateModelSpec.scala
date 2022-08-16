@@ -21,15 +21,15 @@ import support.UnitSpec
 
 class DateModelSpec extends UnitSpec {
 
-  val jsonForRead: JsString = JsString (
+  val jsonForRead: JsString = JsString(
     "06-01-1993"
   )
 
-  val jsonForReadInvalidNpsConversion: JsString = JsString (
+  val jsonForReadInvalidNpsConversion: JsString = JsString(
     "29-02-1993"
   )
 
-  val jsonForReadInvalidDate: JsString = JsString (
+  val jsonForReadInvalidDate: JsString = JsString(
     "1993-01-06"
   )
 
@@ -37,7 +37,7 @@ class DateModelSpec extends UnitSpec {
     "1993-01-06"
   )
 
-  val validModel = DateModel("06-01-1993")
+  val validModel: DateModel = DateModel("06-01-1993")
 
   "Date model" should {
 
@@ -49,7 +49,7 @@ class DateModelSpec extends UnitSpec {
 
       "regardless of the month" which {
 
-        (1 to 12).map (number => s"20-${("0" + number.toString).takeRight(2)}-2000").foreach { stringDate =>
+        (1 to 12).map(number => s"20-${("0" + number.toString).takeRight(2)}-2000").foreach { stringDate =>
           s"for the following string: $stringDate" in {
             val expectedModel = DateModel(stringDate)
 

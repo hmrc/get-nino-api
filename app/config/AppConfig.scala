@@ -41,18 +41,17 @@ trait AppConfig {
 }
 
 @Singleton
-class AppConfigImpl @Inject()(implicit val configuration: ServicesConfig, config: Configuration)
-  extends AppConfig {
+class AppConfigImpl @Inject() (implicit val configuration: ServicesConfig, config: Configuration) extends AppConfig {
 
   private val desServicePrefix = "microservice.services.des"
 
   def featureSwitch: Option[Configuration] = config.getOptional[Configuration]("feature-switch")
 
-  override lazy val desBaseUrl: String = configuration.baseUrl("des")
+  override lazy val desBaseUrl: String     = configuration.baseUrl("des")
   override lazy val desEnvironment: String = configuration.getString(s"$desServicePrefix.env")
-  override lazy val desToken: String = configuration.getString(s"$desServicePrefix.token")
-  override lazy val desContext: String = configuration.getString(s"$desServicePrefix.context")
-  override lazy val desStubUrl: String = configuration.baseUrl("desStub")
+  override lazy val desToken: String       = configuration.getString(s"$desServicePrefix.token")
+  override lazy val desContext: String     = configuration.getString(s"$desServicePrefix.context")
+  override lazy val desStubUrl: String     = configuration.baseUrl("desStub")
   override lazy val desStubContext: String = configuration.getString(desStubContextKey)
-  override lazy val features: Features = new Features
+  override lazy val features: Features     = new Features
 }

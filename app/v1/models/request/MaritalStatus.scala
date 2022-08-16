@@ -22,7 +22,7 @@ sealed trait MaritalStatus {
   val value: String
 }
 
-object MaritalStatus extends Logging{
+object MaritalStatus extends Logging {
   private[models] val allStatuses: Map[String, MaritalStatus] = Seq(
     MARRIAGE_TERMINATED,
     MARRIAGE_ANNULLED,
@@ -38,24 +38,22 @@ object MaritalStatus extends Logging{
     CIVIL_PARTNERSHIP_ANNULLED
   ).map(status => status.value -> status).toMap
 
-  val maritalStatusErrorMessage = "Marital Status is invalid. Please check against valid types."
-  val maritalStatusError = new JsonValidationError(Seq(maritalStatusErrorMessage))
+  val maritalStatusErrorMessage                               = "Marital Status is invalid. Please check against valid types."
+  val maritalStatusError                                      = new JsonValidationError(Seq(maritalStatusErrorMessage))
 
   def validateMaritalStatus(maritalStatus: String): Boolean = {
     val passedValidation = allStatuses.values.map(_.value).toSeq.contains(maritalStatus)
 
-    if(!passedValidation) logger.info(s"[MaritalStatus][validateMaritalStatus] $maritalStatusErrorMessage")
+    if (!passedValidation) logger.info(s"[MaritalStatus][validateMaritalStatus] $maritalStatusErrorMessage")
 
     passedValidation
   }
 
   implicit val reads: Reads[MaritalStatus] = for {
     maritalStatusValue <- __.read[String].filter(maritalStatusError)(validateMaritalStatus)
-  } yield {
-    allStatuses(maritalStatusValue)
-  }
+  } yield allStatuses(maritalStatusValue)
 
-  implicit val writes: Writes[MaritalStatus] = Writes { model => JsString(model.value) }
+  implicit val writes: Writes[MaritalStatus] = Writes(model => JsString(model.value))
 }
 
 case object MARRIAGE_TERMINATED extends MaritalStatus {

@@ -20,20 +20,20 @@ import play.api.libs.functional.syntax._
 import play.api.libs.json.{Json, Reads, _}
 
 final case class LastEUAddress(
-                          addressLine1: Option[AddressLine] = None,
-                          addressLine2: Option[AddressLine] = None,
-                          addressLine3: Option[AddressLine] = None,
-                          addressLine4: Option[AddressLine] = None,
-                          addressLine5: Option[AddressLine] = None
-                        )
+  addressLine1: Option[AddressLine] = None,
+  addressLine2: Option[AddressLine] = None,
+  addressLine3: Option[AddressLine] = None,
+  addressLine4: Option[AddressLine] = None,
+  addressLine5: Option[AddressLine] = None
+)
 
 object LastEUAddress {
   implicit val reads: Reads[LastEUAddress] = (
     (__ \ "line1").readNullable[AddressLine] and
-    (__ \ "line2").readNullable[AddressLine] and
-    (__ \ "line3").readNullable[AddressLine] and
-    (__ \ "line4").readNullable[AddressLine] and
-    (__ \ "line5").readNullable[AddressLine]
+      (__ \ "line2").readNullable[AddressLine] and
+      (__ \ "line3").readNullable[AddressLine] and
+      (__ \ "line4").readNullable[AddressLine] and
+      (__ \ "line5").readNullable[AddressLine]
   )(LastEUAddress.apply _)
 
   implicit val writes: Writes[LastEUAddress] = Json.writes[LastEUAddress]

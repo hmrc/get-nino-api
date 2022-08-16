@@ -28,20 +28,21 @@ import v1.models.errors.{InvalidAcceptHeaderError, UnsupportedVersionError}
 import javax.inject.{Inject, Singleton}
 
 @Singleton
-class VersionRoutingRequestHandler @Inject()(versionRoutingMap: VersionRoutingMap,
-                                             errorHandler: ErrorHandler,
-                                             httpConfiguration: HttpConfiguration,
-                                             config: AppConfig,
-                                             filters: HttpFilters,
-                                             action: DefaultActionBuilder)
-  extends DefaultHttpRequestHandler(
-    webCommands = new DefaultWebCommands,
-    optDevContext = None,
-    router = versionRoutingMap.defaultRouter,
-    errorHandler = errorHandler,
-    configuration = httpConfiguration,
-    filters = filters.filters
-  ) {
+class VersionRoutingRequestHandler @Inject() (
+  versionRoutingMap: VersionRoutingMap,
+  errorHandler: ErrorHandler,
+  httpConfiguration: HttpConfiguration,
+  config: AppConfig,
+  filters: HttpFilters,
+  action: DefaultActionBuilder
+) extends DefaultHttpRequestHandler(
+      webCommands = new DefaultWebCommands,
+      optDevContext = None,
+      router = versionRoutingMap.defaultRouter,
+      errorHandler = errorHandler,
+      configuration = httpConfiguration,
+      filters = filters.filters
+    ) {
 
   private val featureSwitch = FeatureSwitch(config.featureSwitch)
 
@@ -53,9 +54,9 @@ class VersionRoutingRequestHandler @Inject()(versionRoutingMap: VersionRoutingMa
       case Some(version) =>
         versionRoutingMap.versionRouter(version) match {
           case Some(versionRouter) if featureSwitch.isVersionEnabled(version) => routeWith(versionRouter)(request)
-          case _ => Some(action(UnsupportedVersionError.result))
+          case _                                                              => Some(action(UnsupportedVersionError.result))
         }
-      case None =>
+      case None          =>
         Some(action(InvalidAcceptHeaderError.result))
     }
 

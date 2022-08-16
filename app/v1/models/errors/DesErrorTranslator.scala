@@ -18,10 +18,11 @@ package v1.models.errors
 
 object DesErrorTranslator {
   def translate(desError: DesError): DownstreamValidationError = desError match {
-    case DesError("INVALID_ENTRY_DATE", _) => DownstreamValidationError(
-      "INVALID_ENTRY_DATE",
-      "Validation Error: the applicant is less than 13 years of age at the date of entry"
-    )
-    case DesError(code, reason) => DownstreamValidationError(code, reason)
+    case DesError("INVALID_ENTRY_DATE", _) =>
+      DownstreamValidationError(
+        "INVALID_ENTRY_DATE",
+        "Validation Error: the applicant is less than 13 years of age at the date of entry"
+      )
+    case DesError(code, reason)            => DownstreamValidationError(code, reason)
   }
 }

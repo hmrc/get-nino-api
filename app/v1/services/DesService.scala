@@ -27,20 +27,20 @@ import v1.models.request.NinoApplication
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class DesService @Inject()(
-                            desConnector: DesConnector
-                          ) extends Logging{
+class DesService @Inject() (
+  desConnector: DesConnector
+) extends Logging {
 
-  def registerNino(ninoApplication: NinoApplication)
-                  (implicit hc: HeaderCarrier, ec: ExecutionContext): Future[HttpPostResponse] = {
+  def registerNino(
+    ninoApplication: NinoApplication
+  )(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[HttpPostResponse] =
     desConnector.sendRegisterRequest(ninoApplication).recover {
       case ex: GatewayTimeoutException =>
         logger.warn(s"[DesService][registerNino] Message to DES timed out. GatewayTimeoutException: $ex")
         Left(ServiceUnavailableError)
-      case ex: BadGatewayException =>
+      case ex: BadGatewayException     =>
         logger.warn(s"[DesService][registerNino] Message to DES failed. BadGatewayException: $ex")
         Left(ServiceUnavailableError)
     }
-  }
 
 }

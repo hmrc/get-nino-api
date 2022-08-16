@@ -28,14 +28,15 @@ import uk.gov.hmrc.play.http.HeaderCarrierConverter
 import v1.models.errors.{ServiceUnavailableError, UnauthorisedError}
 import scala.concurrent.{ExecutionContext, Future}
 
-
 @Singleton
-class PrivilegedApplicationPredicate @Inject()(
-                                                val authConnector: AuthConnector,
-                                                val controllerComponents: ControllerComponents,
-                                                override implicit val executionContext: ExecutionContext
-                                              )
-  extends ActionBuilder[Request, AnyContent] with AuthorisedFunctions with BaseController with Logging{
+class PrivilegedApplicationPredicate @Inject() (
+  val authConnector: AuthConnector,
+  val controllerComponents: ControllerComponents,
+  override implicit val executionContext: ExecutionContext
+) extends ActionBuilder[Request, AnyContent]
+    with AuthorisedFunctions
+    with BaseController
+    with Logging {
 
   override def invokeBlock[A](request: Request[A], block: Request[A] => Future[Result]): Future[Result] = {
     implicit val hc: HeaderCarrier = HeaderCarrierConverter.fromRequest(request)
@@ -49,7 +50,7 @@ class PrivilegedApplicationPredicate @Inject()(
       case error: AuthorisationException =>
         logger.debug(s"Authorization failed. Bearer token sent: ${hc.authorization}")
         UnauthorisedError(error.reason).result
-      case ex =>
+      case ex                            =>
         logger.warn(s"Auth request failed with unexpected exception: $ex")
         ServiceUnavailableError.result
     }

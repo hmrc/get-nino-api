@@ -31,41 +31,48 @@ import v1.utils.JsonBodyUtil
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class RegisterNinoController @Inject()(
-                                        cc: ControllerComponents,
-                                        desService: DesService,
-                                        privilegedApplicationPredicate: PrivilegedApplicationPredicate,
-                                        correlationIdPredicate: CorrelationIdPredicate,
-                                        originatorIdPredicate: OriginatorIdPredicate,
-                                        appConfig: AppConfig
-                                      )
-                                      (implicit val ec: ExecutionContext) extends BackendController(cc) with JsonBodyUtil with Logging{
+class RegisterNinoController @Inject() (
+  cc: ControllerComponents,
+  desService: DesService,
+  privilegedApplicationPredicate: PrivilegedApplicationPredicate,
+  correlationIdPredicate: CorrelationIdPredicate,
+  originatorIdPredicate: OriginatorIdPredicate,
+  appConfig: AppConfig
+)(implicit val ec: ExecutionContext)
+    extends BackendController(cc)
+    with JsonBodyUtil
+    with Logging {
 
-  def register(): Action[AnyContent] = (privilegedApplicationPredicate andThen originatorIdPredicate andThen correlationIdPredicate).async { implicit request =>
-    val optionalOriginatorId = request.headers.get("OriginatorId")
-    val optionalCorrelationId = request.headers.get("CorrelationId")
+  def register(): Action[AnyContent] =
+    (privilegedApplicationPredicate andThen originatorIdPredicate andThen correlationIdPredicate).async {
+      implicit request =>
+        val optionalOriginatorId  = request.headers.get("OriginatorId")
+        val optionalCorrelationId = request.headers.get("CorrelationId")
 
-    val hcWithOriginatorIdAndCorrelationId = (optionalOriginatorId, optionalCorrelationId) match {
-      case (Some(originatorId), Some(correlationId)) =>
-        hc.withExtraHeaders("OriginatorId" -> originatorId, "CorrelationId" -> correlationId)
-      case _ => hc
+        val hcWithOriginatorIdAndCorrelationId = (optionalOriginatorId, optionalCorrelationId) match {
+          case (Some(originatorId), Some(correlationId)) =>
+            hc.withExtraHeaders("OriginatorId" -> originatorId, "CorrelationId" -> correlationId)
+          case _                                         => hc
+        }
+
+        if (appConfig.features.logDwpJson()) request.body match {
+          case jsonContent: AnyContentAsJson =>
+            logger.info(
+              s"[RegisterNinoController][register] Logging JSON body of incoming request: ${jsonContent.json}"
+            )
+          case _                             =>
+            logger.warn("[RegisterNinoController][register] Incoming request did not have a JSON body.")
+        }
+
+        Future(parsedJsonBody[NinoApplication]).flatMap {
+          case Right(ninoModel) =>
+            desService.registerNino(ninoModel)(hcWithOriginatorIdAndCorrelationId, ec).map {
+              case Right(_)    => Accepted
+              case Left(error) => logErrorResult(error)
+            }
+          case Left(error)      => Future.successful(logErrorResult(error))
+        }
     }
-
-    if (appConfig.features.logDwpJson()) request.body match {
-      case jsonContent: AnyContentAsJson =>
-        logger.info(s"[RegisterNinoController][register] Logging JSON body of incoming request: ${jsonContent.json}")
-      case _ =>
-        logger.warn("[RegisterNinoController][register] Incoming request did not have a JSON body.")
-    }
-
-    Future(parsedJsonBody[NinoApplication]).flatMap {
-      case Right(ninoModel) => desService.registerNino(ninoModel)(hcWithOriginatorIdAndCorrelationId, ec).map {
-        case Right(_) => Accepted
-        case Left(error) => logErrorResult(error)
-      }
-      case Left(error) => Future.successful(logErrorResult(error))
-    }
-  }
 
   private def logErrorResult(error: v1.models.errors.ErrorResponse)(implicit hc: HeaderCarrier): Result = {
     logger.debug(s"[RegisterNinoController][logErrorResult] Header Carrier for failed request: $hc")

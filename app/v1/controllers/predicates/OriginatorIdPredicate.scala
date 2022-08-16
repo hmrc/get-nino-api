@@ -23,25 +23,27 @@ import v1.models.errors.{OriginatorIdIncorrectError, OriginatorIdMissingError}
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-class OriginatorIdPredicate @Inject()(
-                                       ec: ExecutionContext,
-                                       val controllerComponents: ControllerComponents
-                                     ) extends ActionFilter[Request] with BaseController with Logging{
+class OriginatorIdPredicate @Inject() (
+  ec: ExecutionContext,
+  val controllerComponents: ControllerComponents
+) extends ActionFilter[Request]
+    with BaseController
+    with Logging {
 
-  override protected def filter[A](request: Request[A]): Future[Option[Result]] = {
+  override protected def filter[A](request: Request[A]): Future[Option[Result]] =
     request.headers.get("OriginatorId") match {
-      case Some(originatorId) => if (originatorId == "DA2_DWP_REG") {
-        Future.successful(None)
-      } else {
-        logger.warn("[OriginatorIdPredicate][Filter] - OriginatorId does not match regex")
-        Future.successful(Some(OriginatorIdIncorrectError.result))
-      }
+      case Some(originatorId) =>
+        if (originatorId == "DA2_DWP_REG") {
+          Future.successful(None)
+        } else {
+          logger.warn("[OriginatorIdPredicate][Filter] - OriginatorId does not match regex")
+          Future.successful(Some(OriginatorIdIncorrectError.result))
+        }
 
       case None =>
         logger.warn("[OriginatorIdPredicate][Filter] - OriginatorId is missing")
         Future.successful(Some(OriginatorIdMissingError.result))
     }
-  }
 
   override protected def executionContext: ExecutionContext = ec
 }

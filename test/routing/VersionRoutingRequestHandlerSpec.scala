@@ -17,16 +17,16 @@
 package routing
 
 import akka.actor.ActorSystem
-import akka.stream.{ActorMaterializer, Materializer}
+import akka.stream.Materializer
 import com.typesafe.config.ConfigFactory
 import mocks.MockAppConfig
-import org.scalamock.handlers.CallHandler1
 import org.scalamock.scalatest.MockFactory
+import org.scalatest.Inside
 import org.scalatest.matchers.should.Matchers
-import org.scalatest.{Ignore, Inside}
 import play.api.Configuration
 import play.api.http.HeaderNames.ACCEPT
 import play.api.http.{HttpConfiguration, HttpFilters}
+import play.api.libs.json.JsValue
 import play.api.mvc._
 import play.api.routing.Router
 import play.api.test.FakeRequest
@@ -35,82 +35,79 @@ import support.UnitSpec
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 import uk.gov.hmrc.play.bootstrap.config.HttpAuditEvent
 import utils.ErrorHandler
-import v1.models.errors.{InvalidAcceptHeaderError, UnsupportedVersionError}
+import v1.models.errors.{ErrorResponse, InvalidAcceptHeaderError, UnsupportedVersionError}
 
 import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.Future
 
-/*
- TODO these tests started failing following Play 2.7 upgrade
-
- the method `mock$handlerFor$0` can't be found when scalamock macro is looking it up via Reflection.
-
-error looks something like this:
-
-```
-routing.VersionRoutingRequestHandlerSpec$$anon$1.mock$handlerFor$0()
-java.lang.NoSuchMethodException: routing.VersionRoutingRequestHandlerSpec$$anon$1.mock$handlerFor$0()
-	at java.base/java.lang.Class.getMethod(Class.java:2109)
-	at routing.VersionRoutingRequestHandlerSpec$Test.stubHandling(VersionRoutingRequestHandlerSpec.scala:82)
-	at routing.VersionRoutingRequestHandlerSpec$$anon$12.<init>(VersionRoutingRequestHandlerSpec.scala:178)
-	at routing.VersionRoutingRequestHandlerSpec.$anonfun$handleWithDefaultRoutes$3(VersionRoutingRequestHandlerSpec.scala:176)
-	at org.scalatest.OutcomeOf.outcomeOf(OutcomeOf.scala:85)
-```
-
-This is the line that throws NoSuchMethodException, and specifically the `(router.handlerFor _)` as it's getting converted to MockFunction1 by an implicit conversion from scalamock library.
-
-```scala
-(router.handlerFor _).expects(where { r: RequestHeader => r.path == path }).returns(handler)
-```
-
-I don't know if it's a scalamock issue or a Play issue, but all the other tests that do NOT try to mock out Play-internals are passing fine.
-
- */
-@Ignore
 class VersionRoutingRequestHandlerSpec extends UnitSpec with Matchers with MockFactory with Inside with MockAppConfig {
   test =>
 
   implicit private val actorSystem: ActorSystem = ActorSystem("test")
-  implicit private val mat: Materializer = ActorMaterializer()
+  implicit private val mat: Materializer        = Materializer(actorSystem)
 
   private val defaultRouter = mock[Router]
-  private val v1Router = mock[Router]
-  private val v2Router = mock[Router]
-  private val v3Router = mock[Router]
+  private val v1Router      = mock[Router]
+  private val v2Router      = mock[Router]
+  private val v3Router      = mock[Router]
 
   private val routingMap = new VersionRoutingMap {
-    override val defaultRouter: Router = test.defaultRouter
-    override val map = Map("1.0" -> v1Router, "2.0" -> v2Router, "3.0" -> v3Router)
+    override val defaultRouter: Router    = test.defaultRouter
+    override val map: Map[String, Router] = Map("1.0" -> v1Router, "2.0" -> v2Router, "3.0" -> v3Router)
   }
 
   class Test(implicit acceptHeader: Option[String]) {
     val httpConfiguration: HttpConfiguration = HttpConfiguration("context")
-    val auditConnector: AuditConnector = mock[AuditConnector]
-    val httpAuditEvent: HttpAuditEvent = mock[HttpAuditEvent]
-    val configuration: Configuration =
-      Configuration("appName" -> "myApp", "bootstrap.errorHandler.warnOnly.statusCodes" -> Seq.empty[Int])
+    val auditConnector: AuditConnector       = mock[AuditConnector]
+    val httpAuditEvent: HttpAuditEvent       = mock[HttpAuditEvent]
+    val configuration: Configuration         =
+      Configuration(
+        "appName"                                         -> "myApp",
+        "bootstrap.errorHandler.warnOnly.statusCodes"     -> Seq.empty[Int],
+        "metrics.enabled"                                 -> false,
+        "bootstrap.errorHandler.suppress4xxErrorMessages" -> false,
+        "bootstrap.errorHandler.suppress5xxErrorMessages" -> false
+      )
 
     private val errorHandler = new ErrorHandler(configuration, auditConnector, httpAuditEvent)
-    private val filters = mock[HttpFilters]
+    private val filters      = mock[HttpFilters]
     (filters.filters _).stubs().returns(Seq.empty)
 
     private val actionBuilder: DefaultActionBuilder = DefaultActionBuilder(new play.api.mvc.BodyParsers.Default())
 
-    MockedAppConfig.featureSwitch.returns(Some(Configuration(ConfigFactory.parseString(
-      """
+    MockedAppConfig.featureSwitch.returns(Some(Configuration(ConfigFactory.parseString("""
         |version-1.enabled = true
         |version-2.enabled = true
       """.stripMargin))))
 
-    //noinspection ScalaDeprecation
     val requestHandler: VersionRoutingRequestHandler =
-      new VersionRoutingRequestHandler(routingMap, errorHandler, httpConfiguration, mockAppConfig, filters, actionBuilder)
+      new VersionRoutingRequestHandler(
+        routingMap,
+        errorHandler,
+        httpConfiguration,
+        mockAppConfig,
+        filters,
+        actionBuilder
+      )
 
-    def stubHandling(router: Router, path: String)(handler: Option[Handler]): CallHandler1[RequestHeader, Option[Handler]] =
-      (router.handlerFor _)
-        .expects(where { r: RequestHeader =>
-          r.path == path
-        })
-        .returns(handler)
+    def stubHandling(router: Router, path: String, handler: Option[Handler]): Unit = {
+      val routes = new PartialFunction[RequestHeader, Handler] {
+        //NOT USED but required to be override
+        override def isDefinedAt(x: RequestHeader): Boolean = throw new IllegalArgumentException(
+          "This method is not used"
+        )
+        override def apply(v1: RequestHeader): Handler      = throw new IllegalArgumentException("This method is not used")
+        //USED
+        override def lift: RequestHeader => Option[Handler] = requestHeader =>
+          if (requestHeader.path == path) handler else None
+      }
+
+      (router.routes _)
+        .expects()
+        .returns(routes)
+
+      ()
+    }
 
     def buildRequest(path: String): RequestHeader =
       acceptHeader
@@ -118,6 +115,9 @@ class VersionRoutingRequestHandlerSpec extends UnitSpec with Matchers with MockF
           req.withHeaders((ACCEPT, accept))
         }
   }
+
+  def errorToJson(error: ErrorResponse): JsValue =
+    contentAsJson(Future.successful(error.result))
 
   "Routing requests with no version" should {
     implicit val acceptHeader: None.type = None
@@ -135,15 +135,14 @@ class VersionRoutingRequestHandlerSpec extends UnitSpec with Matchers with MockF
     implicit val acceptHeader: None.type = None
 
     "return 406" in new Test {
-      stubHandling(defaultRouter, "path")(None)
+      stubHandling(defaultRouter, "path", None)
 
       val request: RequestHeader = buildRequest("path")
-      inside(requestHandler.routeRequest(request)) {
-        case Some(a: EssentialAction) =>
-          val result = a.apply(request)
+      inside(requestHandler.routeRequest(request)) { case Some(a: EssentialAction) =>
+        val result = a.apply(request)
 
-          status(result) shouldBe NOT_ACCEPTABLE
-          contentAsJson(result) shouldBe InvalidAcceptHeaderError
+        status(result)        shouldBe NOT_ACCEPTABLE
+        contentAsJson(result) shouldBe errorToJson(InvalidAcceptHeaderError)
       }
     }
   }
@@ -163,16 +162,15 @@ class VersionRoutingRequestHandlerSpec extends UnitSpec with Matchers with MockF
     implicit val acceptHeader: Some[String] = Some("application/vnd.hmrc.5.0+json")
 
     "return 404" in new Test {
-      stubHandling(defaultRouter, "path")(None)
+      stubHandling(defaultRouter, "path", None)
 
       private val request = buildRequest("path")
 
-      inside(requestHandler.routeRequest(request)) {
-        case Some(a: EssentialAction) =>
-          val result = a.apply(request)
+      inside(requestHandler.routeRequest(request)) { case Some(a: EssentialAction) =>
+        val result = a.apply(request)
 
-          status(result) shouldBe NOT_FOUND
-          contentAsJson(result) shouldBe UnsupportedVersionError
+        status(result)        shouldBe NOT_FOUND
+        contentAsJson(result) shouldBe errorToJson(UnsupportedVersionError)
       }
     }
   }
@@ -182,27 +180,26 @@ class VersionRoutingRequestHandlerSpec extends UnitSpec with Matchers with MockF
 
     "the version has a route for the resource" must {
       "return 404 Not Found" in new Test {
-        stubHandling(defaultRouter, "path")(None)
+        stubHandling(defaultRouter, "path", None)
 
         private val request = buildRequest("path")
-        inside(requestHandler.routeRequest(request)) {
-          case Some(a: EssentialAction) =>
-            val result = a.apply(request)
+        inside(requestHandler.routeRequest(request)) { case Some(a: EssentialAction) =>
+          val result = a.apply(request)
 
-            status(result) shouldBe NOT_FOUND
-            contentAsJson(result) shouldBe UnsupportedVersionError
+          status(result)        shouldBe NOT_FOUND
+          contentAsJson(result) shouldBe errorToJson(UnsupportedVersionError)
 
         }
       }
     }
   }
 
-  private def handleWithDefaultRoutes(router: Router)(implicit acceptHeader: Option[String]): Unit = {
+  private def handleWithDefaultRoutes(router: Router)(implicit acceptHeader: Option[String]): Unit =
     "if the request ends with a trailing slash" when {
       "handler found" should {
         "use it" in new Test {
           val handler: Handler = mock[Handler]
-          stubHandling(router, "path/")(Some(handler))
+          stubHandling(router, "path/", Some(handler))
 
           requestHandler.routeRequest(buildRequest("path/")) shouldBe Some(handler)
         }
@@ -212,25 +209,24 @@ class VersionRoutingRequestHandlerSpec extends UnitSpec with Matchers with MockF
         "try without the trailing slash" in new Test {
           val handler: Handler = mock[Handler]
           inSequence {
-            stubHandling(router, "path/")(None)
-            stubHandling(router, "path")(Some(handler))
+            stubHandling(router, "path/", None)
+            stubHandling(router, "path", Some(handler))
           }
 
           requestHandler.routeRequest(buildRequest("path/")) shouldBe Some(handler)
         }
       }
     }
-  }
 
-  private def handleWithVersionRoutes(router: Router)(implicit acceptHeader: Option[String]): Unit = {
+  private def handleWithVersionRoutes(router: Router)(implicit acceptHeader: Option[String]): Unit =
     "if the request ends with a trailing slash" when {
       "handler found" should {
         "use it" in new Test {
           val handler: Handler = mock[Handler]
 
-          stubHandling(defaultRouter, "path/")(None)
-          stubHandling(defaultRouter, "path")(None)
-          stubHandling(router, "path/")(Some(handler))
+          stubHandling(defaultRouter, "path/", None)
+          stubHandling(defaultRouter, "path", None)
+          stubHandling(router, "path/", Some(handler))
 
           requestHandler.routeRequest(buildRequest("path/")) shouldBe Some(handler)
         }
@@ -240,16 +236,15 @@ class VersionRoutingRequestHandlerSpec extends UnitSpec with Matchers with MockF
         "try without the trailing slash" in new Test {
           val handler: Handler = mock[Handler]
 
-          stubHandling(defaultRouter, "path/")(None)
-          stubHandling(defaultRouter, "path")(None)
+          stubHandling(defaultRouter, "path/", None)
+          stubHandling(defaultRouter, "path", None)
           inSequence {
-            stubHandling(router, "path/")(None)
-            stubHandling(router, "path")(Some(handler))
+            stubHandling(router, "path/", None)
+            stubHandling(router, "path", Some(handler))
           }
 
           requestHandler.routeRequest(buildRequest("path/")) shouldBe Some(handler)
         }
       }
     }
-  }
 }

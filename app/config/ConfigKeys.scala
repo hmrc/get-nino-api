@@ -18,9 +18,9 @@ package config
 
 object ConfigKeys {
   val featureSwitchKey = "feature-switch"
-  val servicesKey = "microservice.services"
+  val servicesKey      = "microservice.services"
 
-  val useDesStubKey = s"$featureSwitchKey.useDesStub"
+  val useDesStubKey     = s"$featureSwitchKey.useDesStub"
   val desStubContextKey = s"$servicesKey.desStub.context"
 
   val logDesJsonKey = s"$featureSwitchKey.logDesJson"

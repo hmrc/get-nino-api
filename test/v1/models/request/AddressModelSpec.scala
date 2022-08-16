@@ -30,39 +30,37 @@ class AddressModelSpec extends AnyWordSpec with Matchers {
     val line1Path = if (isReads) "line1" else "addressLine1"
 
     Json.obj(
-      line1Path -> "1234 Test Avenue",
+      line1Path     -> "1234 Test Avenue",
       "countryCode" -> "USA"
     )
   }
 
   def maximumAddressJson: Boolean => JsValue = isReads => {
     val addressLinePrefix = (lineNo: Int) => if (isReads) s"line$lineNo" else s"addressLine$lineNo"
-    val postCode = if (isReads) s"postcode" else s"postCode"
+    val postCode          = if (isReads) s"postcode" else s"postCode"
     Json.obj(
-      "addressType" -> "RESIDENTIAL",
+      "addressType"        -> "RESIDENTIAL",
       addressLinePrefix(1) -> "1234 Test Avenue",
       addressLinePrefix(2) -> "Test Line 2",
       addressLinePrefix(3) -> "Test Line 3",
       addressLinePrefix(4) -> "Test Line 4",
       addressLinePrefix(5) -> "Test Line 5",
-      postCode -> "TE5 5LN",
-      "countryCode" -> "GBR"
+      postCode             -> "TE5 5LN",
+      "countryCode"        -> "GBR"
     ) ++ (if (isReads) {
-      Json.obj(
-        "startDate" -> "01-01-2019",
-        "endDate" -> "31-12-2019"
-      )
-    }
-    else {
-      Json.obj(
-        "startDate" -> "2019-01-01",
-        "endDate" -> "2019-12-31"
-      )
-    })
+            Json.obj(
+              "startDate" -> "01-01-2019",
+              "endDate"   -> "31-12-2019"
+            )
+          } else {
+            Json.obj(
+              "startDate" -> "2019-01-01",
+              "endDate"   -> "2019-12-31"
+            )
+          })
   }
 
-
-  val minimumAddressModel =
+  val minimumAddressModel: AddressModel =
     AddressModel(
       addressType = None,
       addressLine1 = AddressLine("1234 Test Avenue"),
@@ -76,7 +74,7 @@ class AddressModelSpec extends AnyWordSpec with Matchers {
       endDate = None
     )
 
-  val maximumAddressModel =
+  val maximumAddressModel: AddressModel =
     AddressModel(
       addressType = Some(Residential),
       addressLine1 = AddressLine("1234 Test Avenue"),
@@ -89,7 +87,6 @@ class AddressModelSpec extends AnyWordSpec with Matchers {
       startDate = Some(DateModel("01-01-2019")),
       endDate = Some(DateModel("31-12-2019"))
     )
-
 
   "Reading an AddressModel" when {
 
@@ -115,14 +112,14 @@ class AddressModelSpec extends AnyWordSpec with Matchers {
 
         val missingPostcodeAddressJson: JsValue = Json.obj(
           "addressType" -> "RESIDENTIAL",
-          "line1" -> "1234 Test Avenue",
-          "line2" -> "Test Line 2",
-          "line3" -> "Test Line 3",
-          "line4" -> "Test Line 4",
-          "line5" -> "Test Line 5",
+          "line1"       -> "1234 Test Avenue",
+          "line2"       -> "Test Line 2",
+          "line3"       -> "Test Line 3",
+          "line4"       -> "Test Line 4",
+          "line5"       -> "Test Line 5",
           "countryCode" -> "GBR",
-          "startDate" -> "01-01-2019",
-          "endDate" -> "31-12-2019"
+          "startDate"   -> "01-01-2019",
+          "endDate"     -> "31-12-2019"
         )
 
         missingPostcodeAddressJson.validate[AddressModel].isError shouldBe true
@@ -249,7 +246,7 @@ class AddressModelSpec extends AnyWordSpec with Matchers {
       "only one or neither date is provided" in {
         AddressModel.validateDateAsPriorDate(Some(currentDate), None) shouldBe true
         AddressModel.validateDateAsPriorDate(None, Some(currentDate)) shouldBe true
-        AddressModel.validateDateAsPriorDate(None, None) shouldBe true
+        AddressModel.validateDateAsPriorDate(None, None)              shouldBe true
       }
 
       "the first date provided is before the second" in {

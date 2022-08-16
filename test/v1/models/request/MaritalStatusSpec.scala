@@ -21,7 +21,7 @@ import support.UnitSpec
 
 class MaritalStatusSpec extends UnitSpec {
 
-  val validMaritalStatusString = "MARRIED"
+  val validMaritalStatusString   = "MARRIED"
   val invalidMaritalStatusString = "NOT_A_VALID_MARRIAGE"
 
   "MaritalStatus" should {
@@ -38,7 +38,7 @@ class MaritalStatusSpec extends UnitSpec {
       "an incorrect JsString is parsed" in {
         val result = JsString(invalidMaritalStatusString).validate[MaritalStatus].asEither
 
-        result.isLeft shouldBe true
+        result.isLeft                shouldBe true
         result.left.get.head._2.head shouldBe MaritalStatus.maritalStatusError
       }
     }

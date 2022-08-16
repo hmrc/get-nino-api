@@ -22,11 +22,12 @@ import v1.models.errors.{CorrelationIdIncorrectError, CorrelationIdMissingError}
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-
-class CorrelationIdPredicate @Inject()(
-                                        ec: ExecutionContext,
-                                        val controllerComponents: ControllerComponents
-                                      ) extends ActionFilter[Request] with BaseController with Logging{
+class CorrelationIdPredicate @Inject() (
+  ec: ExecutionContext,
+  val controllerComponents: ControllerComponents
+) extends ActionFilter[Request]
+    with BaseController
+    with Logging {
 
   val CORRELATION_ID = "CorrelationId"
 
@@ -36,13 +37,14 @@ class CorrelationIdPredicate @Inject()(
     val correlationId = request.headers.get(CORRELATION_ID)
 
     correlationId match {
-      case Some(id) => if (id.matches(correlationIdRegex)) {
-        Future.successful(None)
-      } else {
-        logger.warn("[CorrelationIdPredicate][Filter] - CorrelationId does not match regex")
-        Future.successful(Some(CorrelationIdIncorrectError.result))
-      }
-      case _ =>
+      case Some(id) =>
+        if (id.matches(correlationIdRegex)) {
+          Future.successful(None)
+        } else {
+          logger.warn("[CorrelationIdPredicate][Filter] - CorrelationId does not match regex")
+          Future.successful(Some(CorrelationIdIncorrectError.result))
+        }
+      case _        =>
         logger.warn("[CorrelationIdPredicate][Filter] - CorrelationId is missing")
         Future.successful(Some(CorrelationIdMissingError.result))
     }

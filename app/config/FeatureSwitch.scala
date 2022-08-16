@@ -18,7 +18,7 @@ package config
 
 import play.api.{Configuration, Logging}
 
-final case class FeatureSwitch(value: Option[Configuration]) extends Logging{
+final case class FeatureSwitch(value: Option[Configuration]) extends Logging {
 
   private val versionRegex = """(\d)\.\d""".r
 
@@ -26,16 +26,15 @@ final case class FeatureSwitch(value: Option[Configuration]) extends Logging{
     val versionNumber: Option[String] =
       version match {
         case versionRegex(ver) => Some(ver)
-        case _ => {
+        case _                 =>
           logger.warn("[FeatureSwitch][isVersionEnabled] - version found does not match regex")
           None
-        }
       }
 
     val enabled = for {
       versionNum <- versionNumber
-      config <- value
-      enabled <- config.getOptional[Boolean](s"version-$versionNum.enabled")
+      config     <- value
+      enabled    <- config.getOptional[Boolean](s"version-$versionNum.enabled")
     } yield enabled
 
     enabled.getOrElse(false)

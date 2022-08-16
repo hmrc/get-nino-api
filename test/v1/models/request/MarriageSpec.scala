@@ -26,22 +26,22 @@ class MarriageSpec extends AnyWordSpec with Matchers {
     if (isReads) {
       Json.obj(
         "maritalStatus" -> "DIVORCED",
-        "startDate" -> "01-01-1990",
-        "endDate" -> "01-01-2000",
-        "partnerNino" -> "AA000000B",
-        "birthDate" -> "01-01-1970",
-        "forename" -> "Testforename",
-        "surname" -> "Testsurname"
+        "startDate"     -> "01-01-1990",
+        "endDate"       -> "01-01-2000",
+        "partnerNino"   -> "AA000000B",
+        "birthDate"     -> "01-01-1970",
+        "forename"      -> "Testforename",
+        "surname"       -> "Testsurname"
       )
     } else {
       Json.obj(
-        "maritalStatus" -> "DIVORCED",
-        "startDate" -> "1990-01-01",
-        "endDate" -> "2000-01-01",
-        "spouseNino" -> "AA000000B",
+        "maritalStatus"     -> "DIVORCED",
+        "startDate"         -> "1990-01-01",
+        "endDate"           -> "2000-01-01",
+        "spouseNino"        -> "AA000000B",
         "spouseDateOfBirth" -> "1970-01-01",
-        "spouseFirstName" -> "Testforename",
-        "spouseSurname" -> "Testsurname"
+        "spouseFirstName"   -> "Testforename",
+        "spouseSurname"     -> "Testsurname"
       )
     }
 
@@ -58,7 +58,6 @@ class MarriageSpec extends AnyWordSpec with Matchers {
   )
 
   private lazy val minMarriageModel: Marriage = Marriage()
-
 
   "Marriage .reads" when {
 
@@ -134,7 +133,10 @@ class MarriageSpec extends AnyWordSpec with Matchers {
 
       "return false" in {
 
-        val result = Marriage.stringValidation(item = Some("thisnameisunfortunatelytoolongfortheregexthatitwillbematchingagainst"), itemName = "example")
+        val result = Marriage.stringValidation(
+          item = Some("thisnameisunfortunatelytoolongfortheregexthatitwillbematchingagainst"),
+          itemName = "example"
+        )
 
         result shouldBe false
 

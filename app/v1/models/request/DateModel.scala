@@ -23,24 +23,22 @@ import play.api.Logging
 import play.api.libs.json._
 
 final case class DateModel(
-                      dateString: String
-                    ) {
+  dateString: String
+) {
   def asLocalDate: LocalDate = LocalDate.parse(dateString, DateTimeFormatter.ofPattern("dd-MM-yyyy"))
 }
 
-object DateModel extends Logging{
+object DateModel extends Logging {
 
   private val dwpDateRegex: String = """^\d{2}-\d{2}-\d{4}$"""
   private val npsDateRegex: String =
     """^(((19|20)([2468][048]|[13579][26]|0[48])|2000)[-]02[-]29|((19|20)[0-9]{2}[-]
       |(0[469]|11)[-](0[1-9]|1[0-9]|2[0-9]|30)|(19|20)[0-9]{2}[-](0[13578]|1[02])[-]
-      |(0[1-9]|[12][0-9]|3[01])|(19|20)[0-9]{2}[-]02[-](0[1-9]|1[0-9]|2[0-8])))$"""
-      .stripMargin
+      |(0[1-9]|[12][0-9]|3[01])|(19|20)[0-9]{2}[-]02[-](0[1-9]|1[0-9]|2[0-8])))$""".stripMargin
       .filter(_ >= ' ')
 
-  private def changeDateToNpsFormat(dateInput: String): String = {
+  private def changeDateToNpsFormat(dateInput: String): String =
     dateInput.split("-").reverse.mkString("-")
-  }
 
   private def validateDwpDate(dateInput: Reads[String]): Reads[String] = {
     val isValidDwpDate: String => Boolean = dateInput => {
@@ -65,9 +63,7 @@ object DateModel extends Logging{
 
   implicit val reads: Reads[DateModel] = for {
     dateString <- validateDwpDate(__.read[String])
-  } yield {
-    DateModel(dateString)
-  }
+  } yield DateModel(dateString)
 
   implicit val writes: Writes[DateModel] = Writes[DateModel] { model =>
     JsString(changeDateToNpsFormat(model.dateString))
