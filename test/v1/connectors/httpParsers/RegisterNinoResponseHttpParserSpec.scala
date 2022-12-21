@@ -16,41 +16,72 @@
 
 package v1.connectors.httpParsers
 
-import play.api.http.Status
+import play.api.http.Status._
 import play.api.libs.json.Json
 import support.UnitSpec
 import uk.gov.hmrc.http.HttpResponse
 import v1.connectors.httpParsers.RegisterNinoResponseHttpParser._
-import v1.models.errors.ServiceUnavailableError
+import v1.models.errors.{DownstreamValidationError, ServiceUnavailableError}
 
 class RegisterNinoResponseHttpParserSpec extends UnitSpec {
 
-  val successfulResponse: HttpResponse = HttpResponse(Status.ACCEPTED, "")
+  private val successfulResponse: HttpResponse = HttpResponse(ACCEPTED, "")
 
-  val invalidModelJson: HttpResponse = HttpResponse(Status.OK, json = Json.obj("notMessage" -> 5), Map.empty)
-
-  val unsuccessfulResponse: HttpResponse = HttpResponse(
-    Status.INTERNAL_SERVER_ERROR,
+  private def unsuccessfulResponse(status: Int = FORBIDDEN, code: String, reason: String): HttpResponse = HttpResponse(
+    status,
     json = Json.obj(
-      "code"   -> "INVALID_DATE_OF_BIRTH",
-      "reason" -> "The remote endpoint has indicated that the name Type needs to be different."
+      "code"   -> code,
+      "reason" -> reason
     ),
     Map.empty
   )
 
   "The RegisterNinoResponseHttpParser" should {
-    "return a NpsResponseModel" when {
-      "NPS returns an Accepted" in {
+    "return successful response model" when {
+      "DES returns 202 ACCEPTED" in {
         RegisterNinoResponseReads.read("", "", successfulResponse) shouldBe Right(())
       }
     }
-    "return an error model" when {
-      "an unknown status is returned" in {
+
+    "return DownstreamValidationError model" when {
+      def test(desCode: String, desReason: String, expectedReason: String): Unit =
+        s"DES returns 403 FORBIDDEN with code $desCode" in {
+          RegisterNinoResponseReads
+            .read(
+              method = "",
+              url = "",
+              response = unsuccessfulResponse(code = desCode, reason = desReason)
+            ) shouldBe Left(DownstreamValidationError(desCode, expectedReason))
+        }
+
+      val inputArgs = Seq(
+        (
+          "ACCOUNT_ALREADY_EXISTS",
+          "The remote endpoint has indicated that the account already exists.",
+          "The remote endpoint has indicated that the account already exists."
+        ),
+        (
+          "INVALID_ENTRY_DATE",
+          "The remote endpoint has indicated that the entry date for the customer is less than 13 years.",
+          "Validation Error: the applicant is less than 13 years of age at the date of entry"
+        )
+      )
+
+      inputArgs.foreach(args => (test _).tupled(args))
+    }
+
+    "return ServiceUnavailableError model" when {
+      "DES returns 503 SERVICE_UNAVAILABLE with code SERVICE_UNAVAILABLE" in {
         RegisterNinoResponseReads
-          .read("", "", unsuccessfulResponse)
-          .shouldBe(
-            Left(ServiceUnavailableError)
-          )
+          .read(
+            method = "",
+            url = "",
+            response = unsuccessfulResponse(
+              status = SERVICE_UNAVAILABLE,
+              code = "SERVICE_UNAVAILABLE",
+              reason = "Dependent systems are currently not responding."
+            )
+          ) shouldBe Left(ServiceUnavailableError)
       }
     }
   }

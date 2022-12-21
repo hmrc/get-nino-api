@@ -1,0 +1,537 @@
+openapi: 3.0.3
+info:
+  title: Register NINO
+  version: '1.0'
+servers:
+  - url: https://test-api.service.hmrc.gov.uk
+    description: Sandbox
+  - url: https://api.service.hmrc.gov.uk
+    description: Production
+paths:
+  /misc/register-nino/process-nino:
+    post:
+      summary: Register NINO API
+      description: Sends data down to NPS to register a NINO
+      operationId: registerNinoApi
+      parameters:
+        - $ref: '#/components/parameters/acceptHeader'
+        - $ref: '#/components/parameters/contentTypeHeader'
+        - $ref: '#/components/parameters/correlationIdHeader'
+        - $ref: '#/components/parameters/originatorIdHeader'
+        - $ref: '#/components/parameters/authorizationHeader'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              allOf:
+                - $ref: '#/components/schemas/postAccountCreationRequestSchema'
+            examples:
+              example-1:
+                description: The maximum possible payload in a request
+                value:
+                  nino: GW629902A
+                  gender: MALE
+                  entryDate: 02-03-2020
+                  birthDate: 15-11-1974
+                  birthDateVerification: VERIFIED
+                  officeNumber: '123456'
+                  contactNumber: '1234567890'
+                  nationalityCode: FRA
+                  names:
+                    - nameType: REGISTERED
+                      title: MR
+                      forename: AForename
+                      secondForename: AMiddle name
+                      surname: ASurname
+                      startDate: 03-04-2020
+                      endDate: 17-08-2020
+                  historicNames:
+                    - nameType: REGISTERED
+                      title: MRS
+                      forename: AForename
+                      secondForename: AMiddle name
+                      surname: ASurname
+                      startDate: 17-03-2019
+                      endDate: 02-04-2020
+                    - nameType: REGISTERED
+                      title: MISS
+                      forename: AForename
+                      secondForename: AMiddle name
+                      surname: ASurname
+                      startDate: 09-07-2016
+                      endDate: 16-03-2019
+                  addresses:
+                    - addressType: RESIDENTIAL
+                      line1: 4 AStreetName
+                      line2: Town
+                      line3: Place
+                      line4: Area
+                      line5: Province
+                      postcode: AA1 1AA
+                      countryCode: GBR
+                      startDate: 25-04-2020
+                      endDate: 27-07-2020
+                  historicAddresses:
+                    - addressType: RESIDENTIAL
+                      line1: 1 AStreetName
+                      line2: Town
+                      line3: Place
+                      line4: Area
+                      line5: Province
+                      postcode: AA1 1AA
+                      countryCode: GBR
+                      startDate: 29-03-2003
+                      endDate: 23-04-2020
+                    - addressType: RESIDENTIAL
+                      line1: 2 AStreetName
+                      line2: Town
+                      line3: Place
+                      line4: Area
+                      line5: Province
+                      countryCode: ZAF
+                      startDate: 02-05-1998
+                      endDate: 28-03-2003
+                  marriages:
+                    - maritalStatus: MARRIAGE-TERMINATED
+                      startDate: 04-02-2017
+                      endDate: 05-08-2019
+                      partnerNino: AA000001D
+                      birthDate: 11-10-1954
+                      forename: Partner forename
+                      surname: Partner surname
+                    - maritalStatus: CIVIL-PARTNERSHIP-TERMINATED
+                      startDate: 02-06-2006
+                      endDate: 01-04-2007
+                      partnerNino: AA000002B
+                      birthDate: 08-09-1970
+                      forename: Partner forename
+                      surname: Partner surname
+                  originData:
+                    birthTown: ATown
+                    birthProvince: SomeProvince
+                    birthCountryCode: CAN
+                    birthSurname: ASurname
+                    maternalForename: MotherForename
+                    maternalSurname: AnotherSurname
+                    paternalForename: AForename
+                    paternalSurname: ASurname
+                    foreignSocialSecurity: 1234567890AB
+                    lastEUAddress:
+                      line1: 3 AStreetName
+                      line2: Town
+                      line3: Place
+                      line4: Area
+                      line5: Province
+                  priorResidency:
+                    - priorStartDate: 08-02-2001
+                      priorEndDate: 03-03-2001
+                    - priorStartDate: 14-11-2007
+                      priorEndDate: 17-06-2008
+              example-2:
+                description: The minimum possible payload in a request
+                value:
+                  nino: GW629902A
+                  gender: MALE
+                  entryDate: 08-06-2020
+                  birthDate: 02-10-1967
+                  officeNumber: '123456'
+                  names:
+                    - nameType: REGISTERED
+                      surname: ASurname
+                  addresses:
+                    - addressType: RESIDENTIAL
+                      line1: 4 AStreetName
+                      countryCode: NGA
+        required: true
+      responses:
+        '202':
+          description: Accepted
+      deprecated: false
+      security:
+        - user-restricted:
+            - read:register-nino
+components:
+  parameters:
+    acceptHeader:
+      name: Accept
+      in: header
+      description: Specifies the response format and the [version](/api-documentation/docs/reference-guide#versioning) of the API to be used.
+      style: simple
+      schema:
+        type: string
+        enum:
+          - application/vnd.hmrc.1.0+json
+      required: true
+    contentTypeHeader:
+      name: Content-Type
+      in: header
+      description: Specifies the format of the request body, which must be JSON.
+      style: simple
+      schema:
+        type: string
+        enum:
+          - application/json
+      required: true
+    correlationIdHeader:
+      name: CorrelationId
+      in: header
+      description: A UUID identifier of the transaction.
+      style: simple
+      schema:
+        type: string
+        example: a1e8057e-fbbc-47a8-a8b4-78d9f015c253
+        pattern: ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$
+      required: true
+    originatorIdHeader:
+      name: OriginatorId
+      in: header
+      description: Mandatory Consumer ID.
+      style: simple
+      schema:
+        type: string
+        enum:
+          - DA2_DWP_REG
+      required: true
+    authorizationHeader:
+      name: Authorization
+      in: header
+      description: An [OAuth 2.0 Bearer Token](/api-documentation/docs/authorisation/user-restricted-endpoints) with the `read:register-nino` scope.
+      style: simple
+      schema:
+        type: string
+        example: Bearer bb7fed3fe10dd235a2ccda3d50fb
+      required: true
+  securitySchemes:
+    user-restricted:
+      type: oauth2
+      description: HMRC supports OAuth 2.0 for authenticating [user-restricted](https://developer.service.hmrc.gov.uk/api-documentation/docs/authorisation/user-restricted-endpoints) API requests using an OAuth 2.0 Bearer Token in the Authorization header.
+      flows:
+        authorizationCode:
+          authorizationUrl: https://api.service.hmrc.gov.uk/oauth/authorize
+          tokenUrl: https://api.service.hmrc.gov.uk/oauth/token
+          refreshUrl: https://api.service.hmrc.gov.uk/oauth/refresh
+          scopes:
+            read:register-nino: Register NINO
+  schemas:
+    name:
+      title: name
+      required:
+        - nameType
+        - surname
+      type: object
+      properties:
+        nameType:
+          enum:
+            - REGISTERED
+            - ALIAS
+          type: string
+          description: Type of name provided
+        title:
+          enum:
+            - NOT KNOWN
+            - MR
+            - MRS
+            - MISS
+            - MS
+            - DR
+            - REV
+          type: string
+          description: Name Title String
+        forename:
+          pattern: ^(?=.{1,99}$)([A-Z]([-'. ]{0,1}[A-Za-z ]+)*[A-Za-z]?)$
+          type: string
+          description: The individual's primary forename string
+        secondForename:
+          pattern: ^(?=.{1,99}$)([A-Z]([-'. ]{0,1}[A-Za-z ]+)*[A-Za-z]?)$
+          type: string
+          description: The individual's secondary forename string
+        surname:
+          pattern: ^(?=.{1,99}$)([A-Z]([-'. ]{0,1}[A-Za-z ]+)*[A-Za-z]?)$
+          type: string
+          description: The individual's surname string
+        startDate:
+          pattern: ^([0-2][0-9]|(3)[0-1])(\-)(((0)[0-9])|((1)[0-2]))(\-)\d{4}$
+          type: string
+          description: The individual's name record start date
+        endDate:
+          pattern: ^([0-2][0-9]|(3)[0-1])(\-)(((0)[0-9])|((1)[0-2]))(\-)\d{4}$
+          type: string
+          description: The individual's name record end date
+    address:
+      title: address
+      required:
+        - addressType
+        - line1
+        - countryCode
+      type: object
+      properties:
+        addressType:
+          enum:
+            - RESIDENTIAL
+            - CORRESPONDENCE
+          type: string
+          description: The type of address provided
+        line1:
+          pattern: ^(?=.{1,35}$)([A-Za-z0-9]([-'.& ]?[A-Za-z0-9 ]+)*)$
+          type: string
+          description: The first line of the address
+        line2:
+          pattern: ^(?=.{1,35}$)([A-Za-z0-9]([-'.& ]?[A-Za-z0-9 ]+)*)$
+          type: string
+          description: The second line of the address
+        line3:
+          pattern: ^(?=.{1,35}$)([A-Za-z0-9]([-'.& ]?[A-Za-z0-9 ]+)*)$
+          type: string
+          description: The third line of the address
+        line4:
+          pattern: ^(?=.{1,35}$)([A-Za-z0-9]([-'.& ]?[A-Za-z0-9 ]+)*)$
+          type: string
+          description: The fourth line of the address
+        line5:
+          pattern: ^(?=.{1,35}$)([A-Za-z0-9]([-'.& ]?[A-Za-z0-9 ]+)*)$
+          type: string
+          description: The fifth line of the address
+        postcode:
+          pattern: ^(([A-Z]{1,2}[0-9][0-9A-Z]? [0-9][A-Z]{2})|(BFPO ?[0-9]{1,4}))$
+          type: string
+          description: The address postcode - this will be mandatory if the countryCode field has the value 'GBR', and optional otherwise
+        countryCode:
+          pattern: ^[A-Z]{3}$
+          type: string
+          description: The address country code
+        startDate:
+          pattern: ^([0-2][0-9]|(3)[0-1])(\-)(((0)[0-9])|((1)[0-2]))(\-)\d{4}$
+          type: string
+          description: The individual's address record start date
+        endDate:
+          pattern: ^([0-2][0-9]|(3)[0-1])(\-)(((0)[0-9])|((1)[0-2]))(\-)\d{4}$
+          type: string
+          description: The individual's address record end date
+    lastEUAddress:
+      title: lastEUAddress
+      type: object
+      properties:
+        line1:
+          pattern: ^(?=.{1,35}$)([A-Za-z0-9]([-'.& ]?[A-Za-z0-9 ]+)*)$
+          type: string
+          description: The first line of the address
+        line2:
+          pattern: ^(?=.{1,35}$)([A-Za-z0-9]([-'.& ]?[A-Za-z0-9 ]+)*)$
+          type: string
+          description: The second line of the address
+        line3:
+          pattern: ^(?=.{1,35}$)([A-Za-z0-9]([-'.& ]?[A-Za-z0-9 ]+)*)$
+          type: string
+          description: The third line of the address
+        line4:
+          pattern: ^(?=.{1,35}$)([A-Za-z0-9]([-'.& ]?[A-Za-z0-9 ]+)*)$
+          type: string
+          description: The fourth line of the address
+        line5:
+          pattern: ^(?=.{1,35}$)([A-Za-z0-9]([-'.& ]?[A-Za-z0-9 ]+)*)$
+          type: string
+          description: The fifth line of the address
+      description: The individual's last non-UK address details
+    marriage:
+      title: marriage
+      type: object
+      properties:
+        maritalStatus:
+          enum:
+            - MARRIAGE-TERMINATED
+            - MARRIAGE-ANNULLED
+            - VOID
+            - DIVORCED
+            - WIDOWED
+            - MARRIED
+            - SINGLE
+            - CIVIL-PARTNERSHIP
+            - CIVIL-PARTNERSHIP-DISSOLVED
+            - SURVIVING-CIVIL-PARTNERSHIP
+            - CIVIL-PARTNERSHIP-TERMINATED
+            - CIVIL-PARTNERSHIP-ANNULLED
+          type: string
+          description: Marital status enumeration
+        startDate:
+          pattern: ^([0-2][0-9]|(3)[0-1])(\-)(((0)[0-9])|((1)[0-2]))(\-)\d{4}$
+          type: string
+          description: The marriage record start date
+        endDate:
+          pattern: ^([0-2][0-9]|(3)[0-1])(\-)(((0)[0-9])|((1)[0-2]))(\-)\d{4}$
+          type: string
+          description: The marriage record end date
+        partnerNino:
+          pattern: ^((?!(BG|GB|KN|NK|NT|TN|ZZ)|(D|F|I|Q|U|V)[A-Z]|[A-Z](D|F|I|O|Q|U|V))[A-Z]{2})[0-9]{6}[A-D]$
+          type: string
+          description: The spouse's primary account identifier
+        birthDate:
+          pattern: ^([0-2][0-9]|(3)[0-1])(\-)(((0)[0-9])|((1)[0-2]))(\-)\d{4}$
+          type: string
+          description: The spouse's date of birth
+        forename:
+          pattern: ^(?=.{1,99}$)([A-Z]([-'. ]{0,1}[A-Za-z ]+)*[A-Za-z]?)$
+          type: string
+          description: The spouse's primary forename string
+        surname:
+          pattern: ^(?=.{1,99}$)([A-Z]([-'. ]{0,1}[A-Za-z ]+)*[A-Za-z]?)$
+          type: string
+          description: The spouse's surname string
+    origins:
+      title: origins
+      type: object
+      properties:
+        birthTown:
+          pattern: ^(?=.{1,35}$)([A-Z]([-'.&\/ ]{0,1}[A-Za-z ]+)*[A-Za-z]?)$
+          type: string
+          description: The individual's birth town
+        birthProvince:
+          pattern: ^(?=.{1,35}$)([A-Z]([-'.&\/ ]{0,1}[A-Za-z ]+)*[A-Za-z]?)$
+          type: string
+          description: The individual's birth province
+        birthCountryCode:
+          pattern: ^[A-Z]{3}$
+          type: string
+          description: The individual's birth country code
+        birthSurname:
+          pattern: ^(?=.{1,99}$)([A-Z]([-'. ]{0,1}[A-Za-z ]+)*[A-Za-z]?)$
+          type: string
+          description: The individual's surname at birth
+        maternalForename:
+          pattern: ^(?=.{1,99}$)([A-Z]([-'. ]{0,1}[A-Za-z ]+)*[A-Za-z]?)$
+          type: string
+          description: The individual's maternal parent's forename
+        maternalSurname:
+          pattern: ^(?=.{1,99}$)([A-Z]([-'. ]{0,1}[A-Za-z ]+)*[A-Za-z]?)$
+          type: string
+          description: The individual's maternal parent's surname
+        paternalForename:
+          pattern: ^(?=.{1,99}$)([A-Z]([-'. ]{0,1}[A-Za-z ]+)*[A-Za-z]?)$
+          type: string
+          description: The individual's paternal parent's forename
+        paternalSurname:
+          pattern: ^(?=.{1,99}$)([A-Z]([-'. ]{0,1}[A-Za-z ]+)*[A-Za-z]?)$
+          type: string
+          description: The individual's paternal parent's surname
+        foreignSocialSecurity:
+          pattern: ^(?=.{1,29}$)([A-Za-z0-9]([-'.&\/ ]{0,1}[A-Za-z0-9]+)*)$
+          type: string
+          description: The individual's previous, non-UK social security reference
+        lastEUAddress:
+          allOf:
+            - $ref: '#/components/schemas/lastEUAddress'
+      description: The individual's origin details
+    priorResidency:
+      title: priorResidency
+      type: object
+      properties:
+        priorStartDate:
+          pattern: ^([0-2][0-9]|(3)[0-1])(\-)(((0)[0-9])|((1)[0-2]))(\-)\d{4}$
+          type: string
+          description: The prior UK residency period start date
+        priorEndDate:
+          pattern: ^([0-2][0-9]|(3)[0-1])(\-)(((0)[0-9])|((1)[0-2]))(\-)\d{4}$
+          type: string
+          description: The prior UK residency period end date
+    postAccountCreationRequestSchema:
+      title: postAccountCreationRequestSchema
+      required:
+        - nino
+        - gender
+        - entryDate
+        - birthDate
+        - officeNumber
+        - names
+        - addresses
+      type: object
+      properties:
+        nino:
+          pattern: ^((?!(BG|GB|KN|NK|NT|TN|ZZ)|(D|F|I|Q|U|V)[A-Z]|[A-Z](D|F|I|O|Q|U|V))[A-Z]{2})[0-9]{6}[A-D]$
+          type: string
+          description: The primary identifier for the account creation request with suffix
+        gender:
+          enum:
+            - MALE
+            - FEMALE
+            - NOT-KNOWN
+          type: string
+          description: The individual's gender
+        entryDate:
+          pattern: ^([0-2][0-9]|(3)[0-1])(\-)(((0)[0-9])|((1)[0-2]))(\-)\d{4}$
+          type: string
+          description: The date of entry into the account registration process
+        birthDate:
+          pattern: ^([0-2][0-9]|(3)[0-1])(\-)(((0)[0-9])|((1)[0-2]))(\-)\d{4}$
+          type: string
+          description: The individual's date of birth
+        birthDateVerification:
+          enum:
+            - UNVERIFIED
+            - VERIFIED
+            - NOT KNOWN
+            - COEG CONFIRMED
+          type: string
+          description: The verification level relating to individual's date of birth
+        officeNumber:
+          pattern: ^([0-9]{1,6})$
+          type: string
+          description: Related DWP Office Number
+        contactNumber:
+          pattern: ^([+]{0,1}[0-9 ]{1,70}[0-9])$
+          type: string
+          description: The individual's contact number
+        nationalityCode:
+          pattern: ^[A-Z]{3}$
+          type: string
+          description: The individual's nationality
+        names:
+          maxItems: 2
+          minItems: 1
+          uniqueItems: true
+          type: array
+          items:
+            $ref: '#/components/schemas/name'
+          description: One of an individual's currently valid names.
+        historicNames:
+          maxItems: 5
+          minItems: 1
+          uniqueItems: true
+          type: array
+          items:
+            $ref: '#/components/schemas/name'
+          description: A list of historic name details for the individual
+        addresses:
+          maxItems: 2
+          minItems: 1
+          uniqueItems: true
+          type: array
+          items:
+            $ref: '#/components/schemas/address'
+          description: Details of one of an individual's current valid addresses
+        historicAddresses:
+          maxItems: 5
+          minItems: 1
+          uniqueItems: true
+          type: array
+          items:
+            $ref: '#/components/schemas/address'
+          description: A list of historic address details for the individual
+        marriages:
+          maxItems: 5
+          minItems: 1
+          uniqueItems: true
+          type: array
+          items:
+            $ref: '#/components/schemas/marriage'
+          description: A list of marriage details for the individual
+        originData:
+          allOf:
+            - $ref: '#/components/schemas/origins'
+        priorResidency:
+          maxItems: 5
+          minItems: 1
+          uniqueItems: true
+          type: array
+          items:
+            $ref: '#/components/schemas/priorResidency'
+          description: A list of prior UK residency periods (longer than 30 days)
+      description: JSON representation of POST Account Creation Request Payload

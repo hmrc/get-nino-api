@@ -22,74 +22,63 @@ import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 
 class AppConfigSpec extends UnitSpec {
 
-  trait Test {
+  private trait Test {
     implicit lazy val mockServiceConfig: ServicesConfig = mock[ServicesConfig]
     implicit lazy val mockConfig: Configuration         = mock[Configuration]
 
-    lazy val target: AppConfigImpl = {
-      new AppConfigImpl
-    }
+    lazy val target: AppConfigImpl = new AppConfigImpl
   }
 
-  "calling desBaseUrl" should {
-    "retrieve the DES URL" in new Test {
-
-      val url = "http://des-host"
-
-      (mockServiceConfig
-        .baseUrl(_: String))
-        .expects("des")
-        .returns(url)
-
-      target.desBaseUrl shouldBe url
-    }
-  }
-
-  "calling desEnvironment" when {
-
-    "a value is added to the configuration" should {
-      "return the business details env" in new Test {
-
-        val env = "TEST_ENV"
-
+  "AppConfigImpl" when {
+    ".desBaseUrl" should {
+      "retrieve the DES URL" in new Test {
         (mockServiceConfig
-          .getString(_: String))
-          .stubs("microservice.services.des.env")
-          .returns(env)
+          .baseUrl(_: String))
+          .expects("des")
+          .returns("http://des-host")
 
-        target.desEnvironment shouldBe env
+        target.desBaseUrl shouldBe "http://des-host"
       }
     }
 
-    "no value added to the configuration" should {
-      "return the run time exception" in new Test {
-        intercept[RuntimeException] {
-          target.desEnvironment
+    ".desEnvironment" should {
+      "return the des env" when {
+        "a value is added to the configuration" in new Test {
+          (mockServiceConfig
+            .getString(_: String))
+            .stubs("microservice.services.des.env")
+            .returns("TEST_ENV")
+
+          target.desEnvironment shouldBe "TEST_ENV"
+        }
+      }
+
+      "return a runtime exception" when {
+        "no value is added to the configuration" in new Test {
+          intercept[RuntimeException] {
+            target.desEnvironment
+          }
         }
       }
     }
-  }
 
-  "calling desToken" when {
+    ".desToken" should {
+      "return the DES token" when {
+        "token is added to the configuration" in new Test {
+          (mockServiceConfig
+            .getString(_: String))
+            .stubs("microservice.services.des.token")
+            .returns("some-token")
 
-    "token is added to the configuration" should {
-      "return the DES token" in new Test {
-
-        val token = "some-token"
-
-        (mockServiceConfig
-          .getString(_: String))
-          .stubs("microservice.services.des.token")
-          .returns(token)
-
-        target.desToken shouldBe token
+          target.desToken shouldBe "some-token"
+        }
       }
-    }
 
-    "no value added to the configuration" should {
-      "return the run time exception" in new Test {
-        intercept[RuntimeException] {
-          target.desToken
+      "return a runtime exception" when {
+        "no value is added to the configuration" in new Test {
+          intercept[RuntimeException] {
+            target.desToken
+          }
         }
       }
     }

@@ -16,15 +16,16 @@
 
 package v1.models.request
 
-import org.scalatest.matchers.should.Matchers
-import org.scalatest.wordspec.AnyWordSpec
 import play.api.libs.json.{JsObject, Json}
+import support.UnitSpec
 
-class OriginDataSpec extends AnyWordSpec with Matchers {
+class OriginDataSpec extends UnitSpec {
 
-  val minOriginDataJson: JsObject = Json.obj()
+  private val (lineNo1, lineNo2, lineNo3, lineNo4, lineNo5): (Int, Int, Int, Int, Int) = (1, 2, 3, 4, 5)
 
-  val maxOriginDataJson: Boolean => JsObject = isWrite => {
+  private val minOriginDataJson: JsObject = JsObject.empty
+
+  private val maxOriginDataJson: Boolean => JsObject = isWrite => {
     val addressLinePrefix = (lineNo: Int) => if (isWrite) s"addressLine$lineNo" else s"line$lineNo"
     Json.obj(
       "birthTown"             -> "Birth town value",
@@ -37,16 +38,18 @@ class OriginDataSpec extends AnyWordSpec with Matchers {
       "paternalSurname"       -> "Paternal surname value",
       "foreignSocialSecurity" -> "Foreign social security value",
       "lastEUAddress"         -> Json.obj(
-        addressLinePrefix(1) -> "1 line value",
-        addressLinePrefix(2) -> "2 line value",
-        addressLinePrefix(3) -> "3 line value",
-        addressLinePrefix(4) -> "4 line value",
-        addressLinePrefix(5) -> "5 line value"
+        addressLinePrefix(lineNo1) -> "1 line value",
+        addressLinePrefix(lineNo2) -> "2 line value",
+        addressLinePrefix(lineNo3) -> "3 line value",
+        addressLinePrefix(lineNo4) -> "4 line value",
+        addressLinePrefix(lineNo5) -> "5 line value"
       )
     )
   }
 
-  val maxOriginDataModel: OriginData = OriginData(
+  private val minOriginDataModel: OriginData = OriginData()
+
+  private val maxOriginDataModel: OriginData = OriginData(
     birthTown = Some("Birth town value"),
     birthProvince = Some("Birth province value"),
     birthCountryCode = Some("GBR"),
@@ -67,136 +70,169 @@ class OriginDataSpec extends AnyWordSpec with Matchers {
     )
   )
 
-  "OriginData.reads" when {
+  "OriginData" when {
+    ".reads" should {
+      "return an OriginData model" when {
+        "provided with the maximum number of data items" in {
+          maxOriginDataJson(false).as[OriginData] shouldBe maxOriginDataModel
+        }
 
-    "provided with the maximum number of data items" should {
-
-      "return an OriginData model" in {
-
-        maxOriginDataJson(false).as[OriginData] shouldBe maxOriginDataModel
+        "provided with the minimum number of data items" in {
+          minOriginDataJson.as[OriginData] shouldBe minOriginDataModel
+        }
       }
     }
 
-    "provided with the minimum number of data items" should {
+    ".writes" should {
+      "correctly parse to json" when {
+        "provided with the maximum number of data items" in {
+          Json.toJson(maxOriginDataModel) shouldBe maxOriginDataJson(true)
+        }
 
-      "return an OriginData model" in {
-
-        minOriginDataJson.as[OriginData] shouldBe OriginData()
-
-      }
-    }
-  }
-
-  "OriginData.writes" when {
-
-    "provided with the maximum number of data items" should {
-
-      "correctly parse to json" in {
-        Json.toJson(maxOriginDataModel) shouldBe maxOriginDataJson(true)
+        "provided with the minimum number of data items" in {
+          Json.toJson(OriginData()) shouldBe minOriginDataJson
+        }
       }
     }
 
-    "provided with the minimum number of data items" should {
+    ".nameElementValidation" should {
+      "return true" when {
+        "provided with the optional string" which {
+          "matches the supplied regex" in {
+            val result: Boolean = OriginData.nameElementValidation(Some("Example value"), "Example value")
 
-      "correctly parse to json" in {
+            result shouldBe true
+          }
+        }
 
-        Json.toJson(OriginData()) shouldBe minOriginDataJson
-      }
-    }
-  }
-
-  "OriginData.nameElementValidation" when {
-
-    "provided with the optional string" which {
-
-      "matches the supplied regex" should {
-
-        "return true" in {
-
-          val result = OriginData.nameElementValidation(Some("Example value"), "Example value")
+        "optional string is not provided" in {
+          val result: Boolean = OriginData.nameElementValidation(None, "Example value")
 
           result shouldBe true
         }
       }
 
-      "the string is too long" should {
+      "return false" when {
+        "provided with the optional string" which {
+          "is too long" in {
+            val result: Boolean = OriginData.nameElementValidation(
+              Some("this example is far too long for the regex this in unfortunate"),
+              "Example value"
+            )
 
-        "return false" in {
+            result shouldBe false
+          }
 
-          val result = OriginData.nameElementValidation(
-            Some("this example is far too long for the regex this in unfortunate"),
-            "Example value"
-          )
+          "has an invalid character" in {
+            val result: Boolean = OriginData.nameElementValidation(Some("!nvalid example"), "Example value")
 
-          result shouldBe false
-        }
-      }
-
-      "does not start with a valid character" should {
-
-        "return false" in {
-
-          val result = OriginData.nameElementValidation(Some("!nvalid example"), "Example value")
-
-          result shouldBe false
+            result shouldBe false
+          }
         }
       }
     }
 
-    "not provided with the optional string" should {
+    ".countryCodeValidation" should {
+      "return true" when {
+        "provided with the optional string" which {
+          "matches the supplied regex" in {
+            val result: Boolean = OriginData.countryCodeValidation(Some("CAN"))
 
-      "return true" in {
+            result shouldBe true
+          }
+        }
 
-        val result = OriginData.nameElementValidation(None, "Example value")
-
-        result shouldBe true
-      }
-    }
-  }
-
-  "OriginData.countryCodeValidation" when {
-
-    "provided with the optional String" which {
-
-      "passes the regex" should {
-
-        "return true" in {
-
-          val result = OriginData.countryCodeValidation(Some("ABC"))
+        "optional string is not provided" in {
+          val result: Boolean = OriginData.countryCodeValidation(None)
 
           result shouldBe true
         }
       }
 
-      "has too many characters to pass the regex" should {
+      "return false" when {
+        "provided with the optional string" which {
+          "is too long" in {
+            val result: Boolean = OriginData.countryCodeValidation(Some("ABCD"))
 
-        "return false" in {
+            result shouldBe false
+          }
 
-          val result = OriginData.countryCodeValidation(Some("ABCD"))
+          "is too short" in {
+            val result: Boolean = OriginData.countryCodeValidation(Some("AB"))
 
-          result shouldBe false
-        }
-      }
-
-      "has too few characters to pass the regex" should {
-
-        "return false" in {
-
-          val result = OriginData.countryCodeValidation(Some("AB"))
-
-          result shouldBe false
+            result shouldBe false
+          }
         }
       }
     }
 
-    "is not provided with the optional String" should {
+    ".foreignSocialSecurityValidation" should {
+      "return true" when {
+        "provided with the optional string" which {
+          "matches the supplied regex" in {
+            val result: Boolean = OriginData.foreignSocialSecurityValidation(Some("1234567890AB"))
 
-      "return true" in {
+            result shouldBe true
+          }
+        }
 
-        val result = OriginData.countryCodeValidation(None)
+        "optional string is not provided" in {
+          val result: Boolean = OriginData.foreignSocialSecurityValidation(None)
 
-        result shouldBe true
+          result shouldBe true
+        }
+      }
 
+      "return false" when {
+        "provided with the optional string" which {
+          "is too long" in {
+            val result: Boolean =
+              OriginData.foreignSocialSecurityValidation(Some("this example is far too long for the regex"))
+
+            result shouldBe false
+          }
+
+          "has an invalid character" in {
+            val result: Boolean = OriginData.foreignSocialSecurityValidation(Some("!ABC"))
+
+            result shouldBe false
+          }
+        }
+      }
+    }
+
+    ".birthTownProvinceValidation" should {
+      "return true" when {
+        "provided with the optional string" which {
+          "matches the supplied regex" in {
+            val result: Boolean = OriginData.birthTownProvinceValidation(Some("ATown"), "birth town")
+
+            result shouldBe true
+          }
+        }
+
+        "optional string is not provided" in {
+          val result: Boolean = OriginData.birthTownProvinceValidation(None, "birth province")
+
+          result shouldBe true
+        }
+      }
+
+      "return false" when {
+        "provided with the optional string" which {
+          "is too long" in {
+            val result: Boolean =
+              OriginData.birthTownProvinceValidation(Some("this example is far too long for the regex"), "birth town")
+
+            result shouldBe false
+          }
+
+          "has an invalid character" in {
+            val result: Boolean = OriginData.birthTownProvinceValidation(Some("!province"), "birth province")
+
+            result shouldBe false
+          }
+        }
       }
     }
   }

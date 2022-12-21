@@ -19,10 +19,9 @@ package v1.connectors
 import com.github.tomakehurst.wiremock.client.WireMock._
 import com.github.tomakehurst.wiremock.stubbing.StubMapping
 import config.AppConfig
-import play.api.http.Status
+import play.api.http.Status._
 import support.IntegrationBaseSpec
-import uk.gov.hmrc.http.HeaderCarrier
-import uk.gov.hmrc.http.HttpClient
+import uk.gov.hmrc.http._
 import utils.ItNinoApplicationTestData._
 import v1.connectors.httpParsers.HttpResponseTypes.HttpPostResponse
 import v1.models.errors.ServiceUnavailableError
@@ -33,113 +32,132 @@ import scala.concurrent.ExecutionContext.Implicits.global
 class DesConnectorISpec extends IntegrationBaseSpec {
 
   implicit lazy val appConfig: AppConfig = app.injector.instanceOf[AppConfig]
-  implicit lazy val http: HttpClient = app.injector.instanceOf[HttpClient]
-  implicit lazy val hc: HeaderCarrier = HeaderCarrier()
+  implicit lazy val http: HttpClient     = app.injector.instanceOf[HttpClient]
+  implicit lazy val hc: HeaderCarrier    = HeaderCarrier()
 
-  lazy val connector = new DesConnector(http, appConfig)
+  private val uuid: String                 = "123f4567-g89c-42c3-b456-557742330000"
+  private lazy val connector: DesConnector = new DesConnector(http, appConfig) {
+    override def generateNewUUID: String = uuid
+  }
 
   private trait Test {
+    def stubSuccess(url: String): StubMapping =
+      stubFor(
+        post(url)
+          .willReturn(
+            aResponse()
+              .withStatus(ACCEPTED)
+          )
+      )
 
-    def stubSuccess(url: String): StubMapping = {
-      stubFor(post(url)
-        .willReturn(
-          aResponse()
-            .withStatus(Status.ACCEPTED)
-        ))
-    }
-
-    def stubFailure(url: String): StubMapping = {
-      stubFor(post(url)
-        .willReturn(
-          aResponse()
-            .withHeader("Content-Type", "application/json")
-            .withStatus(Status.INTERNAL_SERVER_ERROR)
-        ))
-    }
-
+    def stubFailure(url: String): StubMapping =
+      stubFor(
+        post(url)
+          .willReturn(
+            aResponse()
+              .withHeader("Content-Type", "application/json")
+              .withStatus(INTERNAL_SERVER_ERROR)
+          )
+      )
   }
 
-  ".sendRegisterRequest" when {
+  "DesConnector" when {
+    ".correlationId" when {
+      "requestID is present in the headerCarrier" should {
+        "return new ID pre-appending the requestID when the requestID matches the format(8-4-4-4)" in {
+          val requestId: String   = "dcba0000-ij12-df34-jk56"
+          val uuidBeginIndex: Int = 24
 
-    "the feature switch is on" should {
+          connector.correlationId(HeaderCarrier(requestId = Some(RequestId(requestId)))) shouldBe
+            s"$requestId-${uuid.substring(uuidBeginIndex)}"
+        }
 
-      "send an Environment header in the request" in new Test {
-        AuditStub.audit()
-        stubSuccess("/register")
+        "return new ID when the requestID does not match the format(8-4-4-4)" in {
+          val requestId: String = "1a2b-ij12-df34-jk56"
 
-        appConfig.features.useDesStub(true)
-        await(connector.sendRegisterRequest(maxRegisterNinoRequestModel))
-
-        verify(postRequestedFor(urlEqualTo("/register")).withHeader("Environment", equalTo("local")))
+          connector.correlationId(HeaderCarrier(requestId = Some(RequestId(requestId)))) shouldBe uuid
+        }
       }
 
-      "return a DesResponse model" when {
+      "requestID is not present in the headerCarrier should return a new ID" should {
+        "return the uuid" in {
+          connector.correlationId(HeaderCarrier()) shouldBe uuid
+        }
+      }
+    }
 
-        "the request is successful" in new Test {
+    ".sendRegisterRequest" when {
+      "the feature switch is on" should {
+        "send an Environment header in the request" in new Test {
+          AuditStub.audit()
           stubSuccess("/register")
 
-          AuditStub.audit()
+          appConfig.features.useDesStub(true)
+          appConfig.features.logDesJson(true)
 
-          val response: HttpPostResponse = {
+          await(connector.sendRegisterRequest(maxRegisterNinoRequestModel))
+
+          verify(postRequestedFor(urlEqualTo("/register")).withHeader("Environment", equalTo("local")))
+        }
+
+        "return a DesResponse model" when {
+          "the request is successful" in new Test {
+            stubSuccess("/register")
+            AuditStub.audit()
+
             appConfig.features.useDesStub(true)
-            await(connector.sendRegisterRequest(maxRegisterNinoRequestModel))
+            appConfig.features.logDesJson(true)
+
+            val response: HttpPostResponse = await(connector.sendRegisterRequest(maxRegisterNinoRequestModel))
+
+            response shouldBe Right(())
           }
-
-          response shouldBe Right(())
         }
-      }
-      "return an Error model" when {
 
-        "the request is unsuccessful" in new Test {
-          stubFailure("/register")
+        "return an Error model" when {
+          "the request is unsuccessful" in new Test {
+            stubFailure("/register")
+            AuditStub.audit()
 
-          AuditStub.audit()
-
-          val response: HttpPostResponse = {
             appConfig.features.useDesStub(true)
-            await(connector.sendRegisterRequest(maxRegisterNinoRequestModel))
-          }
+            appConfig.features.logDesJson(true)
 
-          response shouldBe Left(ServiceUnavailableError)
+            val response: HttpPostResponse = await(connector.sendRegisterRequest(maxRegisterNinoRequestModel))
+
+            response shouldBe Left(ServiceUnavailableError)
+          }
         }
       }
-    }
 
-    "the feature switch is off" should {
+      "the feature switch is off" should {
+        "return a DesResponse model" when {
+          "the request is successful" in new Test {
+            stubSuccess("/individuals/create")
+            AuditStub.audit()
 
-      "return a DesResponse model" when {
-
-        "the request is successful" in new Test {
-          stubSuccess("/individuals/create")
-
-          AuditStub.audit()
-
-
-          val response: HttpPostResponse = {
             appConfig.features.useDesStub(false)
-            await(connector.sendRegisterRequest(maxRegisterNinoRequestModel))
-          }
+            appConfig.features.logDesJson(false)
 
-          response shouldBe Right(())
+            val response: HttpPostResponse = await(connector.sendRegisterRequest(maxRegisterNinoRequestModel))
+
+            response shouldBe Right(())
+          }
         }
-      }
-      "return an Error model" when {
 
-        "the request is unsuccessful" in new Test {
-          stubFailure("/individuals/create")
+        "return an Error model" when {
+          "the request is unsuccessful" in new Test {
+            stubFailure("/individuals/create")
+            AuditStub.audit()
 
-          AuditStub.audit()
-
-
-          val response: HttpPostResponse = {
             appConfig.features.useDesStub(false)
-            await(connector.sendRegisterRequest(maxRegisterNinoRequestModel))
-          }
+            appConfig.features.logDesJson(false)
 
-          response shouldBe Left(ServiceUnavailableError)
+            val response: HttpPostResponse = await(connector.sendRegisterRequest(maxRegisterNinoRequestModel))
+
+            response shouldBe Left(ServiceUnavailableError)
+          }
         }
       }
     }
   }
-
 }

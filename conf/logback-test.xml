@@ -51,6 +51,10 @@
 
     <logger name="application" level="WARN"/>
 
+    <logger name="v1.controllers" level="DEBUG"/>
+
+    <logger name="v1.models.request" level="DEBUG"/>
+
     <logger name="connector" level="ERROR">
         <appender-ref ref="STDOUT"/>
     </logger>

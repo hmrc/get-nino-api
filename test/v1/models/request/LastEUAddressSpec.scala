@@ -16,67 +16,56 @@
 
 package v1.models.request
 
-import org.scalatest.matchers.should.Matchers
-import org.scalatest.wordspec.AnyWordSpec
 import play.api.libs.json.{JsObject, Json}
+import support.UnitSpec
 
-class LastEUAddressSpec extends AnyWordSpec with Matchers {
+class LastEUAddressSpec extends UnitSpec {
 
-  "LastEUAddress.formats" when {
+  private val (lineNo1, lineNo2, lineNo3, lineNo4, lineNo5): (Int, Int, Int, Int, Int) = (1, 2, 3, 4, 5)
 
-    val maximumLastEUAddressModel = LastEUAddress(
-      Some(AddressLine("1 line address")),
-      Some(AddressLine("2 line address")),
-      Some(AddressLine("3 line address")),
-      Some(AddressLine("4 line address")),
-      Some(AddressLine("5 line address"))
+  private val maximumLastEUAddressModel: LastEUAddress = LastEUAddress(
+    Some(AddressLine("1 line address")),
+    Some(AddressLine("2 line address")),
+    Some(AddressLine("3 line address")),
+    Some(AddressLine("4 line address")),
+    Some(AddressLine("5 line address"))
+  )
+
+  private val minimumLastEUAddressModel: LastEUAddress = LastEUAddress()
+
+  private val maximumLastEUAddressJson: Boolean => JsObject = implicit isWrite => {
+    val addressLinePrefix = (lineNo: Int) => if (isWrite) s"addressLine$lineNo" else s"line$lineNo"
+    Json.obj(
+      addressLinePrefix(lineNo1) -> "1 line address",
+      addressLinePrefix(lineNo2) -> "2 line address",
+      addressLinePrefix(lineNo3) -> "3 line address",
+      addressLinePrefix(lineNo4) -> "4 line address",
+      addressLinePrefix(lineNo5) -> "5 line address"
     )
+  }
 
-    val maximumLastEUAddressJson: Boolean => JsObject = implicit isWrite => {
-      val addressLinePrefix = (lineNo: Int) => if (isWrite) s"addressLine$lineNo" else s"line$lineNo"
-      Json.obj(
-        addressLinePrefix(1) -> "1 line address",
-        addressLinePrefix(2) -> "2 line address",
-        addressLinePrefix(3) -> "3 line address",
-        addressLinePrefix(4) -> "4 line address",
-        addressLinePrefix(5) -> "5 line address"
-      )
-    }
+  private val minimumLastEUAddressJson: JsObject = JsObject.empty
 
-    val minimumLastEUAddressJson = Json.obj()
-
-    "reading JSON" when {
-      "provided with the maximum number of data items" should {
-
-        "return a LastEUAddress model" in {
-
+  "LastEUAddress" when {
+    ".reads" should {
+      "return a LastEUAddress model" when {
+        "provided with the maximum number of data items" in {
           maximumLastEUAddressJson(false).as[LastEUAddress] shouldBe maximumLastEUAddressModel
         }
-      }
 
-      "provided with the minimum number of data items" should {
-
-        "return a LastEUAddress model" in {
-
-          minimumLastEUAddressJson.as[LastEUAddress] shouldBe LastEUAddress()
+        "provided with the minimum number of data items" in {
+          minimumLastEUAddressJson.as[LastEUAddress] shouldBe minimumLastEUAddressModel
         }
       }
     }
 
-    "writing to JSON" when {
-      "provided with the maximum number of data items" should {
-
-        "parse to json correctly" in {
-
+    ".writes" should {
+      "parse to json correctly" when {
+        "provided with the maximum number of data items" in {
           Json.toJson(maximumLastEUAddressModel) shouldBe maximumLastEUAddressJson(true)
-
         }
-      }
 
-      "provided with the minimum number of data items" should {
-
-        "parse to json correctly" in {
-
+        "provided with the minimum number of data items" in {
           Json.toJson(LastEUAddress()) shouldBe minimumLastEUAddressJson
         }
       }
