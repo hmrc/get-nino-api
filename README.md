@@ -3,7 +3,7 @@
 
 This is the code repository for the Get NINO API. This repository contains:
 
-* code used to serves requests issued by approved other government departments via the HMRC API Platform.
+* code used to serve requests issued by approved other government departments via the HMRC API Platform.
 * content used to serve the documentation related to the endpoints exposed via the [HMRC Developer Hub](https://developer.service.hmrc.gov.uk/api-documentation/docs/api).
 
 ## Viewing Documentation
