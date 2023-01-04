@@ -24,87 +24,72 @@ class ApiDefinitionConfigSpec extends UnitSpec {
   private trait Test {
     lazy val mockConfig: Configuration = mock[Configuration]
 
-    lazy val target: ApiDefinitionConfigImpl = {
-      new ApiDefinitionConfigImpl(mockConfig)
-    }
+    lazy val target: ApiDefinitionConfigImpl = new ApiDefinitionConfigImpl(mockConfig)
   }
 
-  "calling status" when {
+  "ApiDefinitionConfigImpl" when {
+    ".status" should {
+      "retrieve the status specified" when {
+        "a value is added to the configuration" in new Test {
+          (mockConfig
+            .get[String](_: String)(_: ConfigLoader[String]))
+            .expects("api.status", *)
+            .returns("BETA")
 
-    "a value is added to the configuration" should {
-      "retrieve the status specified" in new Test {
-
-        val expected = "BETA"
-
-        (mockConfig
-          .get[String](_: String)(_: ConfigLoader[String]))
-          .expects("api.status", *)
-          .returns(expected)
-
-        target.status shouldBe expected
+          target.status shouldBe "BETA"
+        }
       }
-    }
 
-    "no value is added to the configuration" should {
-      "return a runtime exception" in new Test {
-        intercept[RuntimeException] {
-          target.status
+      "return a runtime exception" when {
+        "no value is added to the configuration" in new Test {
+          intercept[RuntimeException] {
+            target.status
+          }
         }
       }
     }
-  }
 
-  "calling accessType" when {
+    ".accessType" should {
+      "retrieve the API access setting specified" when {
+        "a value is added to the configuration" in new Test {
+          (mockConfig
+            .getOptional[String](_: String)(_: ConfigLoader[String]))
+            .expects("api.access.type", *)
+            .returns(Some("PUBLIC"))
 
-    "a value is added to the configuration" should {
-      "retrieve the API access setting specified" in new Test {
+          target.accessType shouldBe "PUBLIC"
+        }
+      }
 
-        val expected = "PUBLIC"
+      "retrieve the default API access setting (PRIVATE)" when {
+        "no value is added to the configuration" in new Test {
+          (mockConfig
+            .getOptional[String](_: String)(_: ConfigLoader[String]))
+            .expects("api.access.type", *)
+            .returns(None)
 
-        (mockConfig
-          .getOptional[String](_: String)(_: ConfigLoader[String]))
-          .expects("api.access.type", *)
-          .returns(Some(expected))
-
-        target.accessType shouldBe expected
+          target.accessType shouldBe "PRIVATE"
+        }
       }
     }
 
-    "no value is added to the configuration" should {
-      "retrieve the default API access setting (PRIVATE)" in new Test {
+    ".whiteListedApplicationIds" should {
+      "retrieve the whitelisted application IDs specified" when {
+        "values are added to the configuration" in new Test {
+          (mockConfig
+            .get[Seq[String]](_: String)(_: ConfigLoader[Seq[String]]))
+            .expects("api.access.whitelistedApplicationIds", *)
+            .returns(Seq("a", "b"))
 
-        val expected = "PRIVATE"
-
-        (mockConfig
-          .getOptional[String](_: String)(_: ConfigLoader[String]))
-          .expects("api.access.type", *)
-          .returns(None)
-
-        target.accessType shouldBe expected
+          target.whiteListedApplicationIds shouldBe Seq("a", "b")
+        }
       }
-    }
-  }
 
-  "calling whitelistedApplicationIds" when {
-
-    "values are added to the configuration" should {
-      "retrieve the whitelisted application IDs specified" in new Test {
-
-        private val expected = Seq("a", "b")
-
-        (mockConfig
-          .get[Seq[String]](_: String)(_: ConfigLoader[Seq[String]]))
-          .expects("api.access.whitelistedApplicationIds", *)
-          .returns(expected)
-
-        target.whiteListedApplicationIds shouldBe expected
-      }
-    }
-
-    "no value is added to the configuration" should {
-      "return a runtime exception" in new Test {
-        intercept[RuntimeException] {
-          target.whiteListedApplicationIds
+      "return a runtime exception" when {
+        "no value is added to the configuration" in new Test {
+          intercept[RuntimeException] {
+            target.whiteListedApplicationIds
+          }
         }
       }
     }

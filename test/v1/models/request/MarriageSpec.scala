@@ -16,11 +16,13 @@
 
 package v1.models.request
 
-import org.scalatest.matchers.should.Matchers
-import org.scalatest.wordspec.AnyWordSpec
-import play.api.libs.json.{JsObject, Json}
+import java.time.format.DateTimeFormatter
+import java.time.{LocalDate, ZoneId}
 
-class MarriageSpec extends AnyWordSpec with Matchers {
+import play.api.libs.json.{JsObject, Json}
+import support.UnitSpec
+
+class MarriageSpec extends UnitSpec {
 
   private lazy val maxMarriageJson: Boolean => JsObject = isReads =>
     if (isReads) {
@@ -45,7 +47,7 @@ class MarriageSpec extends AnyWordSpec with Matchers {
       )
     }
 
-  private lazy val minMarriageJson: JsObject = Json.obj()
+  private lazy val minMarriageJson: JsObject = JsObject.empty
 
   private lazy val maxMarriageModel: Marriage = Marriage(
     maritalStatus = Some(DIVORCED),
@@ -59,97 +61,112 @@ class MarriageSpec extends AnyWordSpec with Matchers {
 
   private lazy val minMarriageModel: Marriage = Marriage()
 
-  "Marriage .reads" when {
+  "Marriage" when {
+    ".reads" should {
+      "return a Marriage model" when {
+        "provided with all optional values" in {
+          maxMarriageJson(true).as[Marriage] shouldBe maxMarriageModel
+        }
 
-    "provided with all optional values" should {
+        "provided with no optional values" in {
+          minMarriageJson.as[Marriage] shouldBe minMarriageModel
+        }
+      }
 
-      "return a fully populated Marriage model" in {
+      "throw a JsResultException" when {
+        "provided with invalid json" in {
+          val json: JsObject = Json.obj("partnerNino" -> 3)
 
-        maxMarriageJson(true).as[Marriage] shouldBe maxMarriageModel
+          json.validate[Marriage].isError shouldBe true
+        }
       }
     }
 
-    "provided with no optional values" should {
+    ".writes" should {
+      "correctly parse to JSON" when {
+        "provided with all optional values" in {
+          Json.toJson(maxMarriageModel) shouldBe maxMarriageJson(false)
+        }
 
-      "return a Marriage model with only mandatory items" in {
-
-        minMarriageJson.as[Marriage] shouldBe minMarriageModel
+        "provided with no optional values" in {
+          Json.toJson(minMarriageModel) shouldBe minMarriageJson
+        }
       }
     }
 
-    "provided with invalid json" should {
+    ".stringValidation" should {
+      "return true" when {
+        "provided with a valid string" in {
+          val result: Boolean = Marriage.stringValidation(item = Some("Name"), itemName = "example")
 
-      "throw a JsResultException" in {
+          result shouldBe true
+        }
 
-        val json = Json.obj("partnerNino" -> 3)
+        "not provided with the optional item value" in {
+          val result: Boolean = Marriage.stringValidation(item = None, itemName = "failed example")
 
-        json.validate[Marriage].isError shouldBe true
+          result shouldBe true
+        }
       }
-    }
-  }
 
-  "Marriage .writes" when {
+      "return false" when {
+        "provided with a string" which {
+          "is too long" in {
+            val result: Boolean = Marriage.stringValidation(
+              item = Some("thisnameisunfortunatelytoolongfortheregexthatitwillbematchingagainst"),
+              itemName = "example"
+            )
 
-    "provided with all optional values" should {
+            result shouldBe false
+          }
 
-      "correctly parse to JSON" in {
+          "has an invalid character" in {
+            val result: Boolean = Marriage.stringValidation(item = Some("!incorrectName!"), itemName = "example")
 
-        Json.toJson(maxMarriageModel) shouldBe maxMarriageJson(false)
-      }
-    }
-
-    "provided with no optional values" should {
-
-      "correctly parse to JSON" in {
-
-        Json.toJson(minMarriageModel) shouldBe minMarriageJson
-      }
-    }
-  }
-
-  "Marriage. .stringValidation" when {
-
-    "provided with a valid string" should {
-
-      "return true" in {
-
-        val result = Marriage.stringValidation(item = Some("Name"), itemName = "example")
-
-        result shouldBe true
+            result shouldBe false
+          }
+        }
       }
     }
 
-    "provided with a string which does not match the regex" should {
+    ".validateDateAsPriorDate" should {
+      val currentDate: DateModel =
+        DateModel(LocalDate.now(ZoneId.of("UTC")).format(DateTimeFormatter.ofPattern("dd-MM-yyyy")))
 
-      "return false" in {
+      "return true" when {
+        "only one or neither date is provided" in {
+          Marriage.validateDateAsPriorDate(Some(currentDate), None) shouldBe true
+          Marriage.validateDateAsPriorDate(None, Some(currentDate)) shouldBe true
+          Marriage.validateDateAsPriorDate(None, None)              shouldBe true
+        }
 
-        val result = Marriage.stringValidation(item = Some("!incorrectName!"), itemName = "example")
+        "the first date provided is before the second" in {
+          val validDate: DateModel = DateModel("01-01-2000")
 
-        result shouldBe false
+          Marriage.validateDateAsPriorDate(Some(validDate), Some(currentDate)) shouldBe true
+        }
+
+        "the provided dates are equal and canBeEqual is true" in {
+          Marriage.validateDateAsPriorDate(Some(currentDate), Some(currentDate)) shouldBe true
+        }
       }
-    }
 
-    "provided with a string with a length which is too long for the regex" should {
+      "return false" when {
+        "the first date provided is after the second" in {
+          val invalidDate: DateModel = DateModel(
+            LocalDate.now(ZoneId.of("UTC")).plusDays(1).format(DateTimeFormatter.ofPattern("dd-MM-yyyy"))
+          )
 
-      "return false" in {
+          Marriage.validateDateAsPriorDate(Some(invalidDate), Some(currentDate)) shouldBe false
+        }
 
-        val result = Marriage.stringValidation(
-          item = Some("thisnameisunfortunatelytoolongfortheregexthatitwillbematchingagainst"),
-          itemName = "example"
-        )
-
-        result shouldBe false
-
-      }
-    }
-
-    "not provided with the optional item value" should {
-
-      "return true" in {
-
-        val result = Marriage.stringValidation(item = None, itemName = "failed example")
-
-        result shouldBe true
+        "the provided dates are equal and canBeEqual is false" in {
+          Marriage.validateDateAsPriorDate(
+            Some(currentDate),
+            Some(currentDate),
+            canBeEqual = false
+          ) shouldBe false
+        }
       }
     }
   }

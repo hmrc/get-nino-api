@@ -8,23 +8,20 @@ lazy val microservice = Project(appName, file("."))
   .disablePlugins(JUnitXmlReportPlugin)
   .settings(
     majorVersion := 0,
-    libraryDependencies ++= AppDependencies()
+    libraryDependencies ++= AppDependencies(),
+    // To resolve a bug with version 2.x.x of the scoverage plugin - https://github.com/sbt/sbt/issues/6997
+    libraryDependencySchemes += "org.scala-lang.modules" %% "scala-xml" % VersionScheme.Always
   )
   .settings(PlayKeys.playDefaultPort := 9750)
   .settings(publishingSettings: _*)
   .configs(IntegrationTest)
   .settings(integrationTestSettings(): _*)
-  .settings(resolvers += Resolver.jcenterRepo)
   .settings(CodeCoverageSettings.settings: _*)
-  .settings(scalaVersion := "2.12.16")
+  .settings(scalaVersion := "2.12.17")
   .settings(IntegrationTest / resourceDirectory := (baseDirectory apply { baseDir: File =>
     baseDir / "it/resources"
   }).value)
+  .settings(scalacOptions += "-Wconf:src=routes/.*:s")
 
-scalacOptions ++= Seq(
-  "-P:silencer:globalFilters=Unused import",
-  "-feature"
-)
-
-addCommandAlias("scalafmtAll", "all scalafmtSbt scalafmt test:scalafmt")
-addCommandAlias("scalastyleAll", "all scalastyle test:scalastyle")
+addCommandAlias("scalafmtAll", "all scalafmtSbt scalafmt Test/scalafmt")
+addCommandAlias("scalastyleAll", "all scalastyle Test/scalastyle")

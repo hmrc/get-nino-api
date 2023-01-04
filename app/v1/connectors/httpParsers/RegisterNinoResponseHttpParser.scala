@@ -31,7 +31,7 @@ object RegisterNinoResponseHttpParser {
     override def read(method: String, url: String, response: HttpResponse): HttpPostResponse =
       (response.status, Try(response.json.validate[DesError])) match {
         case (Status.ACCEPTED, _)                             =>
-          logger.debug("[RegisterNinoResponseHttpParser][read] Status Accepted")
+          logger.info("[RegisterNinoResponseHttpParser][read] Status Accepted")
           Right(())
         case (Status.FORBIDDEN, Success(JsSuccess(error, _))) =>
           logger.warn(

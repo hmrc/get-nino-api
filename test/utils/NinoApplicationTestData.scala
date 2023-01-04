@@ -36,6 +36,8 @@ object NinoApplicationTestData {
   private def laterDateForAddresses(implicit isWrite: Boolean): String =
     if (isWrite) "2000-10-10" else "10-10-2000"
 
+  private val (lineNo1, lineNo2, lineNo3, lineNo4, lineNo5): (Int, Int, Int, Int, Int) = (1, 2, 3, 4, 5)
+
   val minRegisterNinoRequestJson: Boolean => JsObject = implicit isWrite => {
     val nameJsObject: (String, JsValueWrapper) = if (isWrite) {
       "applicantNames" -> Json.arr(
@@ -218,28 +220,28 @@ object NinoApplicationTestData {
     val historicAddressJsObject: (String, JsValueWrapper) = if (isWrite) {
       "applicantHistoricAddresses" -> Json.arr(
         Json.obj(
-          "addressType"        -> "RESIDENTIAL",
-          addressLinePrefix(1) -> "1 AStreetName",
-          addressLinePrefix(2) -> "Some",
-          addressLinePrefix(3) -> "Old",
-          addressLinePrefix(4) -> "Place",
-          addressLinePrefix(5) -> "ItsTheFinalLine",
-          "postCode"           -> "AA1 1AA",
-          "countryCode"        -> "GBR",
-          "startDate"          -> earlierDateForAddresses,
-          "endDate"            -> laterDateForAddresses
+          "addressType"              -> "RESIDENTIAL",
+          addressLinePrefix(lineNo1) -> "1 AStreetName",
+          addressLinePrefix(lineNo2) -> "Some",
+          addressLinePrefix(lineNo3) -> "Old",
+          addressLinePrefix(lineNo4) -> "Place",
+          addressLinePrefix(lineNo5) -> "ItsTheFinalLine",
+          "postCode"                 -> "AA1 1AA",
+          "countryCode"              -> "GBR",
+          "startDate"                -> earlierDateForAddresses,
+          "endDate"                  -> laterDateForAddresses
         ),
         Json.obj(
-          "addressType"        -> "RESIDENTIAL",
-          "addressLine1"       -> "4 AStreetName",
-          "addressLine2"       -> "Some",
-          "addressLine3"       -> "Old",
-          "addressLine4"       -> "Place",
-          "addressLine5"       -> "ItsTheFinalLine",
-          "postCode"           -> "AA1 1AA",
-          "countryCode"        -> "GBR",
-          "startDate"          -> earlierDateForAddresses,
-          "endDate"            -> laterDateForAddresses
+          "addressType"              -> "RESIDENTIAL",
+          "addressLine1"             -> "4 AStreetName",
+          "addressLine2"             -> "Some",
+          "addressLine3"             -> "Old",
+          "addressLine4"             -> "Place",
+          "addressLine5"             -> "ItsTheFinalLine",
+          "postCode"                 -> "AA1 1AA",
+          "countryCode"              -> "GBR",
+          "startDate"                -> earlierDateForAddresses,
+          "endDate"                  -> laterDateForAddresses
         )
       )
     } else {
@@ -358,11 +360,11 @@ object NinoApplicationTestData {
         "paternalSurname"       -> "ASurname",
         "foreignSocialSecurity" -> "SomeSocialSecurityNumber",
         "lastEUAddress"         -> Json.obj(
-          addressLinePrefix(1) -> "4 AStreetName",
-          addressLinePrefix(2) -> "Some",
-          addressLinePrefix(3) -> "Old",
-          addressLinePrefix(4) -> "Place",
-          addressLinePrefix(5) -> "ItsTheFinalLine"
+          addressLinePrefix(lineNo1) -> "4 AStreetName",
+          addressLinePrefix(lineNo2) -> "Some",
+          addressLinePrefix(lineNo3) -> "Old",
+          addressLinePrefix(lineNo4) -> "Place",
+          addressLinePrefix(lineNo5) -> "ItsTheFinalLine"
         )
       ),
       priorResidencyPath      -> Json.arr(

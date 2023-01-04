@@ -19,13 +19,14 @@ package v1.models.request
 import java.time.{LocalDate, ZoneId}
 import java.time.format.DateTimeFormatter
 
-import org.scalatest.matchers.should.Matchers
-import org.scalatest.wordspec.AnyWordSpec
 import play.api.libs.json.{JsValue, Json}
+import support.UnitSpec
 
-class AddressModelSpec extends AnyWordSpec with Matchers {
+class AddressModelSpec extends UnitSpec {
 
-  val minimumAddressJson: Boolean => JsValue = isReads => {
+  private val (lineNo1, lineNo2, lineNo3, lineNo4, lineNo5): (Int, Int, Int, Int, Int) = (1, 2, 3, 4, 5)
+
+  private val minimumAddressJson: Boolean => JsValue = isReads => {
 
     val line1Path = if (isReads) "line1" else "addressLine1"
 
@@ -35,18 +36,18 @@ class AddressModelSpec extends AnyWordSpec with Matchers {
     )
   }
 
-  def maximumAddressJson: Boolean => JsValue = isReads => {
+  private def maximumAddressJson: Boolean => JsValue = isReads => {
     val addressLinePrefix = (lineNo: Int) => if (isReads) s"line$lineNo" else s"addressLine$lineNo"
     val postCode          = if (isReads) s"postcode" else s"postCode"
     Json.obj(
-      "addressType"        -> "RESIDENTIAL",
-      addressLinePrefix(1) -> "1234 Test Avenue",
-      addressLinePrefix(2) -> "Test Line 2",
-      addressLinePrefix(3) -> "Test Line 3",
-      addressLinePrefix(4) -> "Test Line 4",
-      addressLinePrefix(5) -> "Test Line 5",
-      postCode             -> "TE5 5LN",
-      "countryCode"        -> "GBR"
+      "addressType"              -> "RESIDENTIAL",
+      addressLinePrefix(lineNo1) -> "1234 Test Avenue",
+      addressLinePrefix(lineNo2) -> "Test Line 2",
+      addressLinePrefix(lineNo3) -> "Test Line 3",
+      addressLinePrefix(lineNo4) -> "Test Line 4",
+      addressLinePrefix(lineNo5) -> "Test Line 5",
+      postCode                   -> "TE5 5LN",
+      "countryCode"              -> "GBR"
     ) ++ (if (isReads) {
             Json.obj(
               "startDate" -> "01-01-2019",
@@ -60,7 +61,7 @@ class AddressModelSpec extends AnyWordSpec with Matchers {
           })
   }
 
-  val minimumAddressModel: AddressModel =
+  private val minimumAddressModel: AddressModel =
     AddressModel(
       addressType = None,
       addressLine1 = AddressLine("1234 Test Avenue"),
@@ -74,7 +75,7 @@ class AddressModelSpec extends AnyWordSpec with Matchers {
       endDate = None
     )
 
-  val maximumAddressModel: AddressModel =
+  private val maximumAddressModel: AddressModel =
     AddressModel(
       addressType = Some(Residential),
       addressLine1 = AddressLine("1234 Test Avenue"),
@@ -88,198 +89,118 @@ class AddressModelSpec extends AnyWordSpec with Matchers {
       endDate = Some(DateModel("31-12-2019"))
     )
 
-  "Reading an AddressModel" when {
-
-    "only mandatory items are present" should {
-
-      "return a minimum AddressModel" in {
-
-        minimumAddressJson(true).as[AddressModel] shouldBe minimumAddressModel
-      }
-    }
-
-    "all optional fields are populated" should {
-
-      "return a full AddressModel" in {
-
-        maximumAddressJson(true).as[AddressModel] shouldBe maximumAddressModel
-      }
-    }
-
-    "missing a postcode field" should {
-
-      "return an error" in {
-
-        val missingPostcodeAddressJson: JsValue = Json.obj(
-          "addressType" -> "RESIDENTIAL",
-          "line1"       -> "1234 Test Avenue",
-          "line2"       -> "Test Line 2",
-          "line3"       -> "Test Line 3",
-          "line4"       -> "Test Line 4",
-          "line5"       -> "Test Line 5",
-          "countryCode" -> "GBR",
-          "startDate"   -> "01-01-2019",
-          "endDate"     -> "31-12-2019"
-        )
-
-        missingPostcodeAddressJson.validate[AddressModel].isError shouldBe true
-      }
-    }
-  }
-
-  "Writing an AddressModel" when {
-
-    "only mandatory items are present" should {
-
-      "correctly parse to json" in {
-
-        Json.toJson(minimumAddressModel) shouldBe minimumAddressJson(false)
-      }
-    }
-
-    "all optional fields are populated" should {
-
-      "correctly parse to json" in {
-
-        Json.toJson(maximumAddressModel) shouldBe maximumAddressJson(false)
-      }
-    }
-  }
-
-  "AddressModel.checkPostcodeMandated" when {
-
-    "a country code is supplied" when {
-
-      "the country code is GBR" when {
-
-        "a postcode is supplied" should {
-
-          "return a postcode object" in {
-
-            val result = AddressModel.checkPostcodeMandated(Some(Postcode("TF3 4NT")), "GBR")
-
-            result shouldBe true
-          }
+  "AddressModel" when {
+    ".reads" should {
+      "return an AddressModel" when {
+        "only mandatory items are present" in {
+          minimumAddressJson(true).as[AddressModel] shouldBe minimumAddressModel
         }
 
-        "a postcode is not supplied" should {
-
-          "throw an exception" in {
-
-            val result = AddressModel.checkPostcodeMandated(None, "GBR")
-
-            result shouldBe false
-          }
+        "all optional fields are populated" in {
+          maximumAddressJson(true).as[AddressModel] shouldBe maximumAddressModel
         }
       }
 
-      "the country code is gbr" when {
+      "return an error" when {
+        "missing a postcode field" in {
+          val missingPostcodeAddressJson: JsValue = Json.obj(
+            "addressType" -> "RESIDENTIAL",
+            "line1"       -> "1234 Test Avenue",
+            "line2"       -> "Test Line 2",
+            "line3"       -> "Test Line 3",
+            "line4"       -> "Test Line 4",
+            "line5"       -> "Test Line 5",
+            "countryCode" -> "GBR",
+            "startDate"   -> "01-01-2019",
+            "endDate"     -> "31-12-2019"
+          )
 
-        "a postcode is supplied" should {
-
-          "return true" in {
-
-            val result = AddressModel.checkPostcodeMandated(Some(Postcode("TF3 4NT")), "gbr")
-
-            result shouldBe true
-          }
-        }
-      }
-
-      "the country code is ggy" when {
-
-        "a postcode is supplied" should {
-
-          "return true" in {
-
-            val result = AddressModel.checkPostcodeMandated(Some(Postcode("TF3 4NT")), "ggy")
-
-            result shouldBe true
-          }
-        }
-      }
-
-      "the country code is imn" when {
-
-        "a postcode is supplied" should {
-
-          "return true" in {
-
-            val result = AddressModel.checkPostcodeMandated(Some(Postcode("TF3 4NT")), "imn")
-
-            result shouldBe true
-          }
-        }
-      }
-
-      "the country code is not GBR" when {
-
-        "a postcode is supplied" should {
-
-          "return a true" in {
-
-            val result = AddressModel.checkPostcodeMandated(Some(Postcode("TF3 4NT")), "USA")
-
-            result shouldBe true
-          }
-        }
-
-        "a postcode is not supplied" should {
-
-          "return a true" in {
-
-            val result = AddressModel.checkPostcodeMandated(None, "USA")
-
-            result shouldBe true
-          }
+          missingPostcodeAddressJson.validate[AddressModel].isError shouldBe true
         }
       }
     }
-  }
 
-  ".validateDateAsPriorDate" should {
+    ".writes" should {
+      "correctly parse to json" when {
+        "only mandatory items are present" in {
+          Json.toJson(minimumAddressModel) shouldBe minimumAddressJson(false)
+        }
 
-    val currentDate = DateModel(LocalDate.now(ZoneId.of("UTC")).format(DateTimeFormatter.ofPattern("dd-MM-yyyy")))
-
-    "return true" when {
-
-      "only one or neither date is provided" in {
-        AddressModel.validateDateAsPriorDate(Some(currentDate), None) shouldBe true
-        AddressModel.validateDateAsPriorDate(None, Some(currentDate)) shouldBe true
-        AddressModel.validateDateAsPriorDate(None, None)              shouldBe true
-      }
-
-      "the first date provided is before the second" in {
-        val validDate = DateModel("01-01-2000")
-
-        AddressModel.validateDateAsPriorDate(Some(validDate), Some(currentDate)) shouldBe true
-      }
-
-      "the provided dates are equal and canBeEqual is true" in {
-        val validDate = DateModel(
-          LocalDate.now(ZoneId.of("UTC")).format(DateTimeFormatter.ofPattern("dd-MM-yyyy"))
-        )
-
-        AddressModel.validateDateAsPriorDate(Some(validDate), Some(validDate)) shouldBe true
+        "all optional fields are populated" in {
+          Json.toJson(maximumAddressModel) shouldBe maximumAddressJson(false)
+        }
       }
     }
 
-    "return false" when {
+    ".checkPostcodeMandated" should {
+      "return true" when {
+        "a postcode is supplied" which {
+          def test(countryCode: String): Unit =
+            s"the country code supplied is $countryCode" in {
+              val result: Boolean = AddressModel.checkPostcodeMandated(Some(Postcode("TF3 4NT")), countryCode)
 
-      "the first date provided is after the second" in {
-        val invalidDate = DateModel(
-          LocalDate.now(ZoneId.of("UTC")).plusDays(1).format(DateTimeFormatter.ofPattern("dd-MM-yyyy"))
-        )
+              result shouldBe true
+            }
 
-        AddressModel.validateDateAsPriorDate(Some(invalidDate), Some(currentDate)) shouldBe false
+          val inputArgs = Seq("GBR", "gbr", "ggy", "imn", "USA")
+
+          inputArgs.foreach(test)
+        }
+
+        "the country code supplied is USA and a postcode is not supplied" in {
+          val result: Boolean = AddressModel.checkPostcodeMandated(None, "USA")
+
+          result shouldBe true
+        }
       }
 
-      "the provided dates are equal and canBeEqual is false" in {
-        val validDate = DateModel(
-          LocalDate.now(ZoneId.of("UTC")).format(DateTimeFormatter.ofPattern("dd-MM-yyyy"))
-        )
+      "return false" when {
+        "the country code supplied is GBR and a postcode is not supplied" in {
+          val result: Boolean = AddressModel.checkPostcodeMandated(None, "GBR")
 
-        AddressModel.validateDateAsPriorDate(Some(validDate), Some(validDate), canBeEqual = false) shouldBe false
+          result shouldBe false
+        }
+      }
+    }
+
+    ".validateDateAsPriorDate" should {
+      val currentDate: DateModel =
+        DateModel(LocalDate.now(ZoneId.of("UTC")).format(DateTimeFormatter.ofPattern("dd-MM-yyyy")))
+
+      "return true" when {
+        "only one or neither date is provided" in {
+          AddressModel.validateDateAsPriorDate(Some(currentDate), None) shouldBe true
+          AddressModel.validateDateAsPriorDate(None, Some(currentDate)) shouldBe true
+          AddressModel.validateDateAsPriorDate(None, None)              shouldBe true
+        }
+
+        "the first date provided is before the second" in {
+          val validDate: DateModel = DateModel("01-01-2000")
+
+          AddressModel.validateDateAsPriorDate(Some(validDate), Some(currentDate)) shouldBe true
+        }
+
+        "the provided dates are equal and canBeEqual is true" in {
+          AddressModel.validateDateAsPriorDate(Some(currentDate), Some(currentDate)) shouldBe true
+        }
+      }
+
+      "return false" when {
+        "the first date provided is after the second" in {
+          val invalidDate: DateModel = DateModel(
+            LocalDate.now(ZoneId.of("UTC")).plusDays(1).format(DateTimeFormatter.ofPattern("dd-MM-yyyy"))
+          )
+
+          AddressModel.validateDateAsPriorDate(Some(invalidDate), Some(currentDate)) shouldBe false
+        }
+
+        "the provided dates are equal and canBeEqual is false" in {
+          AddressModel.validateDateAsPriorDate(
+            Some(currentDate),
+            Some(currentDate),
+            canBeEqual = false
+          ) shouldBe false
+        }
       }
     }
   }
