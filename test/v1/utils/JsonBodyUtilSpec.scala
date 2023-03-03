@@ -58,8 +58,8 @@ class JsonBodyUtilSpec extends UnitSpec {
         val invalidParsedJson: Either[ErrorResponse, NinoApplication] = testUtil.parsedJsonBody[NinoApplication]
         invalidParsedJson.isLeft shouldBe true
 
-        invalidParsedJson.left.get.code    shouldBe "JSON_VALIDATION_ERROR"
-        invalidParsedJson.left.get.message shouldBe "The provided JSON was unable to be validated as the selected model."
+        invalidParsedJson.swap.toOption.get.code    shouldBe "JSON_VALIDATION_ERROR"
+        invalidParsedJson.swap.toOption.get.message shouldBe "The provided JSON was unable to be validated as the selected model."
       }
     }
   }

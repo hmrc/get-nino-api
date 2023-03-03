@@ -62,7 +62,7 @@ class DesConnector @Inject() (
     }
 
     def desHeaders(implicit hc: HeaderCarrier): Seq[(String, String)] = Seq(
-      "Environment"   -> appConfig.desEnvironment,
+      "Environment"   -> appConfig.desEnvironment(),
       "Authorization" -> s"Bearer ${appConfig.desToken()}",
       "CorrelationId" -> correlationId(hc)
     )

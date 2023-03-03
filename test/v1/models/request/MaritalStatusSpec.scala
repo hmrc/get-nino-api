@@ -38,8 +38,8 @@ class MaritalStatusSpec extends UnitSpec {
       "an incorrect JsString is parsed" in {
         val result = JsString(invalidMaritalStatusString).validate[MaritalStatus].asEither
 
-        result.isLeft                shouldBe true
-        result.left.get.head._2.head shouldBe MaritalStatus.maritalStatusError
+        result.isLeft                         shouldBe true
+        result.swap.toOption.get.head._2.head shouldBe MaritalStatus.maritalStatusError
       }
     }
   }
