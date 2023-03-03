@@ -71,7 +71,7 @@ class VersionRoutingRequestHandlerSpec extends UnitSpec with Matchers with MockF
 
     private val errorHandler = new ErrorHandler(configuration, auditConnector, httpAuditEvent)
     private val filters      = mock[HttpFilters]
-    (filters.filters _).stubs().returns(Seq.empty)
+    (() => filters.filters).stubs().returns(Seq.empty)
 
     private val actionBuilder: DefaultActionBuilder = DefaultActionBuilder(new play.api.mvc.BodyParsers.Default())
 
@@ -101,8 +101,7 @@ class VersionRoutingRequestHandlerSpec extends UnitSpec with Matchers with MockF
         override def lift: RequestHeader => Option[Handler] = requestHeader =>
           if (requestHeader.path == path) handler else None
       }
-
-      (router.routes _)
+      (() => router.routes)
         .expects()
         .returns(routes)
 
