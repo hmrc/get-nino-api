@@ -48,7 +48,9 @@ object PriorResidencyModel extends Logging {
     "The date provided is after today. The date must be today or before."
   )
 
-  private def startDateAfterEndDateError = JsonValidationError("The given start date is after the given end date.")
+  private def startDateAfterEndDateError = JsonValidationError(
+    "The given end date should be after the given start date."
+  )
 
   private def currentDate: Option[DateModel] = Some(
     DateModel(LocalDate.now(ZoneId.of("UTC")).format(DateTimeFormatter.ofPattern("dd-MM-yyyy")))

@@ -122,7 +122,7 @@ class NameModelSpec extends UnitSpec {
           }
 
           result.getMessage should include("endDate")
-          result.getMessage should include("The given start date is after the given end date.")
+          result.getMessage should include("The given end date should be after the given start date.")
         }
       }
     }
