@@ -38,7 +38,7 @@ object BirthDateVerification extends Logging {
   implicit val reads: Reads[BirthDateVerification] = for {
     birthDateValue <-
       __.read[String].filter(JsonValidationError("Invalid Birth Date verification"))(birthDateValidation)
-  } yield birthDateValue match {
+  } yield (birthDateValue: @unchecked) match {
     case Unverified.value           => Unverified
     case Verified.value             => Verified
     case VerificationNotKnown.value => VerificationNotKnown

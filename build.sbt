@@ -1,5 +1,4 @@
-import uk.gov.hmrc.DefaultBuildSettings.integrationTestSettings
-import uk.gov.hmrc.sbtdistributables.SbtDistributablesPlugin.publishingSettings
+import uk.gov.hmrc.DefaultBuildSettings._
 
 val appName = "get-nino-api"
 
@@ -13,7 +12,6 @@ lazy val microservice = Project(appName, file("."))
     libraryDependencySchemes += "org.scala-lang.modules" %% "scala-xml" % VersionScheme.Always
   )
   .settings(PlayKeys.playDefaultPort := 9750)
-  .settings(publishingSettings: _*)
   .configs(IntegrationTest)
   .settings(integrationTestSettings(): _*)
   .settings(CodeCoverageSettings.settings: _*)

@@ -26,7 +26,7 @@ object AddressType {
 
   implicit val reads: Reads[AddressType] = for {
     addressValue <- __.read[String].filter(JsonValidationError("Unable to parse Address Type"))(validAddressTypeCheck)
-  } yield addressValue match {
+  } yield (addressValue: @unchecked) match {
     case Residential.value    => Residential
     case Correspondence.value => Correspondence
   }
