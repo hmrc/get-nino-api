@@ -19,6 +19,7 @@ lazy val microservice = Project(appName, file("."))
   .settings(IntegrationTest / resourceDirectory := (baseDirectory apply { baseDir: File =>
     baseDir / "it/resources"
   }).value)
+  .settings(IntegrationTest / javaOptions += "-Dlogger.resource=logback-test.xml")
   .settings(scalacOptions += "-Wconf:src=routes/.*:s")
 
 addCommandAlias("scalafmtAll", "all scalafmtSbt scalafmt Test/scalafmt")
