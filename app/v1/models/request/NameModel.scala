@@ -61,7 +61,7 @@ object NameModel extends Logging {
   )
 
   private def startDateAfterEndDateError: JsonValidationError = JsonValidationError(
-    "The given start date is after the given end date."
+    "The given end date should be after the given start date."
   )
 
   private val validTitles = Seq(

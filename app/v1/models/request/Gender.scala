@@ -36,7 +36,7 @@ object Gender extends Logging {
 
   implicit val reads: Reads[Gender] = for {
     genderValue <- __.read[String].filter(JsonValidationError("Error parsing gender"))(validGenderCheck)
-  } yield genderValue match {
+  } yield (genderValue: @unchecked) match {
     case Male.value           => Male
     case Female.value         => Female
     case GenderNotKnown.value => GenderNotKnown

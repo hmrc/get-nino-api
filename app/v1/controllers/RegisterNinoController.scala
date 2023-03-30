@@ -46,14 +46,11 @@ class RegisterNinoController @Inject() (
   def register(): Action[AnyContent] =
     (privilegedApplicationPredicate andThen originatorIdPredicate andThen correlationIdPredicate).async {
       implicit request =>
-        val optionalOriginatorId  = request.headers.get("OriginatorId")
-        val optionalCorrelationId = request.headers.get("CorrelationId")
+        val originatorId  = request.headers.get("OriginatorId").get
+        val correlationId = request.headers.get("CorrelationId").get
 
-        val hcWithOriginatorIdAndCorrelationId = (optionalOriginatorId, optionalCorrelationId) match {
-          case (Some(originatorId), Some(correlationId)) =>
-            hc.withExtraHeaders("OriginatorId" -> originatorId, "CorrelationId" -> correlationId)
-          case _                                         => hc
-        }
+        val hcWithOriginatorIdAndCorrelationId =
+          hc.withExtraHeaders("OriginatorId" -> originatorId, "CorrelationId" -> correlationId)
 
         if (appConfig.features.logDwpJson()) request.body match {
           case jsonContent: AnyContentAsJson =>
