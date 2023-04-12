@@ -46,8 +46,8 @@ class RegisterNinoController @Inject() (
   def register(): Action[AnyContent] =
     (privilegedApplicationPredicate andThen originatorIdPredicate andThen correlationIdPredicate).async {
       implicit request =>
-        val originatorId  = request.headers.get("OriginatorId").get
-        val correlationId = request.headers.get("CorrelationId").get
+        val originatorId  = request.headers.get("OriginatorId").get // it will always be there as we have a predicate
+        val correlationId = request.headers.get("CorrelationId").get // it will always be there as we have a predicate
 
         val hcWithOriginatorIdAndCorrelationId =
           hc.withExtraHeaders("OriginatorId" -> originatorId, "CorrelationId" -> correlationId)

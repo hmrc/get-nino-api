@@ -18,7 +18,7 @@ package config
 
 import controllers.Assets
 import play.api.http.HttpErrorHandler
-import play.api.libs.json.Json
+import play.api.libs.json.{JsObject, Json}
 import play.api.mvc.{Action, AnyContent, ControllerComponents}
 import uk.gov.hmrc.api.controllers.DocumentationController
 
@@ -34,6 +34,11 @@ class ApiDocumentationController @Inject() (
 ) extends DocumentationController(cc, assets, errorHandler) {
 
   override def definition(): Action[AnyContent] = Action.async {
+    lazy val apiAccess: JsObject = Json.obj(
+      "type"                      -> apiConfig.accessType(),
+      "allowlistedApplicationIds" -> apiConfig.allowlistedApplicationIds()
+    )
+
     val apiDefinition = Json.parse(
       s"""
          |{
@@ -54,9 +59,7 @@ class ApiDocumentationController @Inject() (
          |        "version": "1.0",
          |        "status": "${apiConfig.status()}",
          |        "endpointsEnabled": ${apiConfig.endpointsEnabled()},
-         |        "access" : {
-         |          "type" : "${apiConfig.accessType()}"
-         |        }
+         |        "access" : $apiAccess
          |      }
          |    ]
          |  }
