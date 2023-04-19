@@ -17,12 +17,12 @@
 package config
 
 import controllers.Assets
-import javax.inject.{Inject, Singleton}
 import play.api.http.HttpErrorHandler
 import play.api.libs.json.{JsObject, Json}
 import play.api.mvc.{Action, AnyContent, ControllerComponents}
 import uk.gov.hmrc.api.controllers.DocumentationController
 
+import javax.inject.{Inject, Singleton}
 import scala.concurrent.Future
 
 @Singleton()
@@ -36,7 +36,7 @@ class ApiDocumentationController @Inject() (
   override def definition(): Action[AnyContent] = Action.async {
     lazy val apiAccess: JsObject = Json.obj(
       "type"                      -> apiConfig.accessType(),
-      "whitelistedApplicationIds" -> apiConfig.whiteListedApplicationIds()
+      "allowlistedApplicationIds" -> apiConfig.allowlistedApplicationIds()
     )
 
     val apiDefinition = Json.parse(

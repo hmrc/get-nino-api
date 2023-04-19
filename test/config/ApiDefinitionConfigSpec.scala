@@ -73,25 +73,26 @@ class ApiDefinitionConfigSpec extends UnitSpec {
       }
     }
 
-    ".whiteListedApplicationIds" should {
+    ".allowlistedApplicationIds" should {
       "retrieve the whitelisted application IDs specified" when {
         "values are added to the configuration" in new Test {
           (mockConfig
-            .get[Seq[String]](_: String)(_: ConfigLoader[Seq[String]]))
-            .expects("api.access.whitelistedApplicationIds", *)
-            .returns(Seq("a", "b"))
+            .getOptional[Seq[String]](_: String)(_: ConfigLoader[Seq[String]]))
+            .expects("api.access.allowlistedApplicationIds", *)
+            .returns(Some(Seq("a", "b")))
 
-          target.whiteListedApplicationIds shouldBe Seq("a", "b")
+          target.allowlistedApplicationIds shouldBe Seq("a", "b")
         }
       }
 
       "return a runtime exception" when {
         "no value is added to the configuration" in new Test {
           intercept[RuntimeException] {
-            target.whiteListedApplicationIds
+            target.allowlistedApplicationIds
           }
         }
       }
     }
+
   }
 }

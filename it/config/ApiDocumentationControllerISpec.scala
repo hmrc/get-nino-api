@@ -82,7 +82,7 @@ class ApiDocumentationControllerISpec extends IntegrationBaseSpec {
            |        "endpointsEnabled": true,
            |        "access" : {
            |          "type": "PRIVATE",
-           |          "whitelistedApplicationIds": []
+           |          "allowlistedApplicationIds": []
            |        }
            |      }
            |    ]
