@@ -15,7 +15,7 @@ lazy val microservice = Project(appName, file("."))
   .configs(IntegrationTest)
   .settings(integrationTestSettings(): _*)
   .settings(CodeCoverageSettings.settings: _*)
-  .settings(scalaVersion := "2.13.10")
+  .settings(scalaVersion := "2.13.11")
   .settings(IntegrationTest / resourceDirectory := (baseDirectory apply { baseDir: File =>
     baseDir / "it/resources"
   }).value)
