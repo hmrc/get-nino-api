@@ -11,7 +11,97 @@ paths:
   /misc/register-nino/process-nino:
     post:
       summary: Register NINO API
-      description: Sends data down to NPS to register a NINO
+      description: |
+        Sends data down to NPS to register a NINO
+        
+        ### Test data
+        
+        Scenario simulations for testing in Sandbox environment.
+
+        <table style="font-family:Roboto, sans-serif; font-size:14px;">
+        <col width="25%">
+        <col width="35%">
+        <col width="40%">
+        <thead>
+          <tr>
+          <th>Scenario</th>
+          <th>Request Payload</th>
+          <th>Response</th>
+          </tr>
+        </thead>
+        <tbody>
+        <tr>
+        <td>
+        <p>Request with a valid payload for NINO Registration</p>
+        </td>
+        <td>
+        <pre class="code--block">
+        {
+          "nino": "GW629902A",
+          "gender": "MALE",
+          "entryDate": "08-06-2020",
+          "birthDate": "02-10-1967",
+          "officeNumber": "123456",
+          "names": [
+            {
+              "nameType": "REGISTERED",
+              "surname": "ASurname"
+            }
+          ],
+          "addresses": [
+            {
+              "addressType": "RESIDENTIAL",
+              "line1": "4 AStreetName",
+              "countryCode": "NGA"
+            }
+          ]
+        }
+        </pre>
+        </td>
+        <td>
+        <p>HTTP status: <code class="code--slim">202 (Created)</code></p>
+        </td>
+        </tr>
+        <tr>
+        <td>
+          <p>Request with an account that already exists</p>
+        </td>
+        <td>
+        <pre class="code--block">
+        {
+          "nino": "AA111114A",
+          "gender": "MALE",
+          "entryDate": "08-06-2020",
+          "birthDate": "02-10-1967",
+          "officeNumber": "123456",
+          "names": [
+            {
+              "nameType": "REGISTERED",
+              "surname": "ASurname"
+            }
+          ],
+          "addresses": [
+            {
+              "addressType": "RESIDENTIAL",
+              "line1": "4 AStreetName",
+              "countryCode": "NGA"
+            }
+          ]
+        }
+        </pre>
+        </td>
+        <td>
+        <p>HTTP status: <code class="code--slim">400 (Bad Request)</code></p>
+        <pre class="code--block">
+          {
+            "code": "ACCOUNT_ALREADY_EXISTS",
+            "message": "The remote endpoint has indicated that the account already exists."
+          }
+        </pre>
+        </td>
+        </tr>
+        </tbody>
+        </table>
       operationId: registerNinoApi
       parameters:
         - $ref: '#/components/parameters/acceptHeader'
@@ -146,6 +236,28 @@ paths:
       responses:
         '202':
           description: Accepted
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/errorResponse"
+              examples:
+                accountAlreadyExists:
+                  description: Account already exists
+                  value:
+                    code: ACCOUNT_ALREADY_EXISTS
+                    message: The remote endpoint has indicated that the account already exists.
+                jsonValidationError:
+                  description: The mandatory field gender is not supplied
+                  value:
+                    code: JSON_VALIDATION_ERROR
+                    message: The provided JSON was unable to be validated as the selected model.
+                    errors:
+                      - code: BAD_REQUEST
+                        message: error.path.missing
+                        path: gender
       deprecated: false
       security:
         - user-restricted:
@@ -213,6 +325,39 @@ components:
           scopes:
             read:register-nino: Register NINO
   schemas:
+    errorResponse:
+      title: errorResponse
+      required:
+        - code
+        - message
+      type: object
+      properties:
+        code:
+          type: string
+          description: The error code.
+        message:
+          type: string
+          description: The error message.
+        errors:
+          uniqueItems: true
+          type: array
+          items:
+            required:
+              - code
+              - message
+              - path
+            type: object
+            properties:
+              code:
+                type: string
+                description: The error code.
+              message:
+                type: string
+                description: The error message.
+              path:
+                type: string
+                description: The path to the specific node where the error occurs.
+          description: A list of errors.
     name:
       title: name
       required:
