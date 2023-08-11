@@ -3,7 +3,7 @@ import sbt._
 
 object AppDependencies {
 
-  private lazy val bootstrapPlayVersion = "7.19.0"
+  private lazy val bootstrapPlayVersion = "7.21.0"
 
   private lazy val compile: Seq[ModuleID] = Seq(
     "uk.gov.hmrc"                  %% "bootstrap-backend-play-28" % bootstrapPlayVersion,
@@ -17,7 +17,7 @@ object AppDependencies {
     "org.scalatest"         %% "scalatest"              % "3.2.16",
     "org.scalamock"         %% "scalamock"              % "5.2.0",
     "com.github.tomakehurst" % "wiremock-jre8"          % "2.35.0",
-    "com.vladsch.flexmark"   % "flexmark-all"           % "0.64.0"
+    "com.vladsch.flexmark"   % "flexmark-all"           % "0.64.8"
   ).map(_ % "test, it")
 
   def apply(): Seq[ModuleID]           = compile ++ test
