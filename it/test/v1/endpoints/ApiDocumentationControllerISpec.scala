@@ -14,85 +14,74 @@
  * limitations under the License.
  */
 
-package config
+package v1.endpoints
 
 import com.github.tomakehurst.wiremock.stubbing.StubMapping
-import play.api.http.Status
-import play.api.libs.json.Json
+import play.api.http.Status.OK
+import play.api.libs.json._
 import play.api.libs.ws.WSResponse
 import support.IntegrationBaseSpec
 import v1.stubs.AuditStub
 
 class ApiDocumentationControllerISpec extends IntegrationBaseSpec {
 
-
   private trait Test {
-
     def setupStubs(): StubMapping
 
     def response(): WSResponse = {
       setupStubs()
-      await(buildRequest(s"/api/definition").get())
+      await(buildRequest("/api/definition").get())
     }
   }
 
   "Calling the /api/definition endpoint" should {
-
     "return a 200 status code" in new Test {
-
       override def setupStubs(): StubMapping = {
         AuditStub.audit()
         AuditStub.audit()
       }
 
-      response().status shouldBe Status.OK
+      response().status shouldBe OK
     }
 
     "return a JSON response" in new Test {
-
-      override def setupStubs(): StubMapping = {
-        AuditStub.audit()
-      }
+      override def setupStubs(): StubMapping = AuditStub.audit()
 
       response().contentType shouldBe "application/json"
     }
 
     "return a JSON document that describes the API access" in new Test {
-
-      private val expectedJson = Json.parse(
-
-        s"""
-           |{
-           |  "scopes": [
-           |    {
-           |      "key": "read:register-nino",
-           |      "name": "Register NINO",
-           |      "description": "Register NINO"
-           |    }
-           |  ],
-           |  "api": {
-           |    "name": "Register NINO",
-           |    "description": "Register NINO information for downstream service",
-           |    "context": "misc/register-nino",
-           |    "categories": ["PRIVATE_GOVERNMENT"],
-           |    "versions": [
-           |      {
-           |        "version": "1.0",
-           |        "status": "BETA",
-           |        "endpointsEnabled": true,
-           |        "access" : {
-           |          "type": "PRIVATE"
-           |        }
-           |      }
-           |    ]
-           |  }
-           |}
-      """.stripMargin
+      private val expectedJson: JsValue = Json.parse(
+        """
+          |{
+          |  "scopes": [
+          |    {
+          |      "key": "read:register-nino",
+          |      "name": "Register NINO",
+          |      "description": "Register NINO"
+          |    }
+          |  ],
+          |  "api": {
+          |    "name": "Register NINO",
+          |    "description": "Register NINO information for downstream service",
+          |    "context": "misc/register-nino",
+          |    "categories": ["PRIVATE_GOVERNMENT"],
+          |    "versions": [
+          |      {
+          |        "version": "1.0",
+          |        "status": "BETA",
+          |        "endpointsEnabled": true,
+          |        "access" : {
+          |          "type": "PRIVATE"
+          |        }
+          |      }
+          |    ]
+          |  }
+          |}
+        """.stripMargin
       )
 
-      override def setupStubs(): StubMapping = {
-        AuditStub.audit()
-      }
+      override def setupStubs(): StubMapping = AuditStub.audit()
 
       response().json shouldBe expectedJson
     }

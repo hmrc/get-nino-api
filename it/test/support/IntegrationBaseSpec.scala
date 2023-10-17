@@ -21,34 +21,30 @@ import org.scalatest._
 import org.scalatest.matchers.should.Matchers
 import org.scalatestplus.play.guice.GuiceOneServerPerSuite
 import play.api.inject.guice.GuiceApplicationBuilder
-import play.api.libs.json.{JsValue, Json}
-import play.api.libs.ws.{WSClient, WSRequest, WSResponse}
-import play.api.test.{DefaultAwaitTimeout, FutureAwaits}
-import play.api.{Application, Environment, Mode}
+import play.api.libs.ws._
+import play.api.test._
+import play.api._
 
-trait IntegrationBaseSpec extends AnyWordSpecLike
-  with EitherValues
-  with Matchers
-  with FutureAwaits
-  with DefaultAwaitTimeout
-  with WireMockHelper
-  with GuiceOneServerPerSuite
-  with BeforeAndAfterEach
-  with BeforeAndAfterAll {
+trait IntegrationBaseSpec
+    extends AnyWordSpecLike
+    with Matchers
+    with FutureAwaits
+    with DefaultAwaitTimeout
+    with WireMockHelper
+    with GuiceOneServerPerSuite
+    with BeforeAndAfterEach
+    with BeforeAndAfterAll {
 
-  val mockHost: String = WireMockHelper.host
-  val mockPort: String = WireMockHelper.wireMockPort.toString
+  private val mockHost: String = WireMockHelper.host
+  private val mockPort: String = WireMockHelper.wireMockPort.toString
 
-  lazy val client: WSClient = app.injector.instanceOf[WSClient]
+  private lazy val client: WSClient = app.injector.instanceOf[WSClient]
 
-  def servicesConfig: Map[String, String] = Map(
-    "microservice.services.des.host" -> mockHost,
-    "microservice.services.des.port" -> mockPort,
-    "microservice.services.desStub.port" -> mockPort,
+  private def servicesConfig: Map[String, String] = Map(
+    "microservice.services.des.host"  -> mockHost,
+    "microservice.services.des.port"  -> mockPort,
     "microservice.services.auth.host" -> mockHost,
-    "microservice.services.auth.port" -> mockPort,
-    "auditing.consumer.baseUri.port" -> mockPort
-
+    "microservice.services.auth.port" -> mockPort
   )
 
   override implicit lazy val app: Application = new GuiceApplicationBuilder()
@@ -72,6 +68,4 @@ trait IntegrationBaseSpec extends AnyWordSpecLike
   }
 
   def buildRequest(path: String): WSRequest = client.url(s"http://localhost:$port$path").withFollowRedirects(false)
-
-  def document(response: WSResponse): JsValue = Json.parse(response.body)
 }

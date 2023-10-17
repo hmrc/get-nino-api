@@ -18,16 +18,16 @@ package v1.connectors
 
 import config.AppConfig
 
-import javax.inject.{Inject, Singleton}
+import javax.inject._
 import play.api.Logging
 import play.api.libs.json.Json
-import uk.gov.hmrc.http.{HeaderCarrier, HttpClient}
+import uk.gov.hmrc.http._
 import v1.connectors.httpParsers.HttpResponseTypes.HttpPostResponse
 import v1.connectors.httpParsers.RegisterNinoResponseHttpParser.RegisterNinoResponseReads
 import v1.models.request.NinoApplication
 
 import java.util.UUID.randomUUID
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent._
 import scala.util.matching.Regex
 
 @Singleton
@@ -45,8 +45,8 @@ class DesConnector @Inject() (
       case Some(requestId) =>
         requestId.value match {
           case CorrelationIdPattern(prefix) =>
-            val uuuidLength = 24
-            prefix + "-" + generateNewUUID.substring(uuuidLength)
+            val uuidLength = 24
+            prefix + "-" + generateNewUUID.substring(uuidLength)
           case _                            => generateNewUUID
         }
       case _               => generateNewUUID
@@ -55,11 +55,7 @@ class DesConnector @Inject() (
   def sendRegisterRequest(
     request: NinoApplication
   )(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[HttpPostResponse] = {
-    val url = if (appConfig.features.useDesStub()) {
-      s"${appConfig.desStubUrl}/${appConfig.desStubContext}"
-    } else {
-      s"${appConfig.desBaseUrl()}${appConfig.desContext()}"
-    }
+    val url = s"${appConfig.desBaseUrl()}${appConfig.desEndpoint()}"
 
     def desHeaders(implicit hc: HeaderCarrier): Seq[(String, String)] = Seq(
       "Environment"   -> appConfig.desEnvironment(),
@@ -68,7 +64,7 @@ class DesConnector @Inject() (
     )
     val requestBody                                                   = Json.toJson(request)
 
-    if (appConfig.features.logDesJson()) logger.info(s"Logging JSON body of outgoing DES request: $requestBody")
+    if (appConfig.logDesJson()) logger.info(s"Logging JSON body of outgoing DES request: $requestBody")
 
     http.POST(url, requestBody, headers = desHeaders(hc))
   }

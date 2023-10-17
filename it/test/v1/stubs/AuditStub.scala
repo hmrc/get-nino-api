@@ -14,15 +14,15 @@
  * limitations under the License.
  */
 
-package config
+package v1.stubs
 
-object ConfigKeys {
-  val featureSwitchKey = "feature-switch"
-  val servicesKey      = "microservice.services"
+import com.github.tomakehurst.wiremock.stubbing.StubMapping
+import play.api.http.Status._
+import support.WireMockMethods
 
-  val useDesStubKey     = s"$featureSwitchKey.useDesStub"
-  val desStubContextKey = s"$servicesKey.desStub.context"
+object AuditStub extends WireMockMethods {
 
-  val logDesJsonKey = s"$featureSwitchKey.logDesJson"
-  val logDwpJsonKey = s"$featureSwitchKey.logDwpJson"
+  private val auditUri: String = s"/write/audit.*"
+
+  def audit(): StubMapping = when(uri = auditUri).thenReturn(status = NO_CONTENT)
 }

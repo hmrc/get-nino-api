@@ -17,40 +17,42 @@
 package v1.connectors.httpParsers
 
 import play.api.http.Status._
-import play.api.libs.json.Json
+import play.api.libs.json._
 import support.UnitSpec
 import uk.gov.hmrc.http.HttpResponse
 import v1.connectors.httpParsers.RegisterNinoResponseHttpParser._
-import v1.models.errors.{DownstreamValidationError, ServiceUnavailableError}
+import v1.models.errors._
 
 class RegisterNinoResponseHttpParserSpec extends UnitSpec {
 
   private val successfulResponse: HttpResponse = HttpResponse(ACCEPTED, "")
 
-  private def unsuccessfulResponse(status: Int = FORBIDDEN, code: String, reason: String): HttpResponse = HttpResponse(
+  private def unsuccessfulResponse(status: Int = FORBIDDEN, jsonBody: JsObject): HttpResponse = HttpResponse(
     status,
-    json = Json.obj(
-      "code"   -> code,
-      "reason" -> reason
-    ),
-    Map.empty
+    json = jsonBody,
+    headers = Map.empty
   )
 
-  "The RegisterNinoResponseHttpParser" should {
-    "return successful response model" when {
+  "RegisterNinoResponseHttpParser" should {
+    "return successful response" when {
       "DES returns 202 ACCEPTED" in {
         RegisterNinoResponseReads.read("", "", successfulResponse) shouldBe Right(())
       }
     }
 
-    "return DownstreamValidationError model" when {
+    "return DownstreamValidationError response" when {
       def test(desCode: String, desReason: String, expectedReason: String): Unit =
         s"DES returns 403 FORBIDDEN with code $desCode" in {
+          val desJsonBody: JsObject = Json.obj(
+            "code"   -> desCode,
+            "reason" -> desReason
+          )
+
           RegisterNinoResponseReads
             .read(
               method = "",
               url = "",
-              response = unsuccessfulResponse(code = desCode, reason = desReason)
+              response = unsuccessfulResponse(jsonBody = desJsonBody)
             ) shouldBe Left(DownstreamValidationError(desCode, expectedReason))
         }
 
@@ -70,16 +72,46 @@ class RegisterNinoResponseHttpParserSpec extends UnitSpec {
       inputArgs.foreach(args => (test _).tupled(args))
     }
 
-    "return ServiceUnavailableError model" when {
+    "return ServiceUnavailableError response" when {
+      "DES returns 400 BAD_REQUEST with a body" that {
+        "cannot be parsed" in {
+          RegisterNinoResponseReads
+            .read(
+              method = "",
+              url = "",
+              response = unsuccessfulResponse(
+                status = BAD_REQUEST,
+                jsonBody = JsObject.empty
+              )
+            ) shouldBe Left(ServiceUnavailableError)
+        }
+
+        "results in an exception when read" in {
+          RegisterNinoResponseReads
+            .read(
+              method = "",
+              url = "",
+              response = unsuccessfulResponse(
+                status = BAD_REQUEST,
+                jsonBody = None.orNull
+              )
+            ) shouldBe Left(ServiceUnavailableError)
+        }
+      }
+
       "DES returns 503 SERVICE_UNAVAILABLE with code SERVICE_UNAVAILABLE" in {
+        val desJsonBody: JsObject = Json.obj(
+          "code"   -> "SERVICE_UNAVAILABLE",
+          "reason" -> "Dependent systems are currently not responding."
+        )
+
         RegisterNinoResponseReads
           .read(
             method = "",
             url = "",
             response = unsuccessfulResponse(
               status = SERVICE_UNAVAILABLE,
-              code = "SERVICE_UNAVAILABLE",
-              reason = "Dependent systems are currently not responding."
+              jsonBody = desJsonBody
             )
           ) shouldBe Left(ServiceUnavailableError)
       }

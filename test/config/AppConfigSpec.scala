@@ -16,7 +16,7 @@
 
 package config
 
-import play.api.Configuration
+import play.api._
 import support.UnitSpec
 import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 
@@ -31,18 +31,28 @@ class AppConfigSpec extends UnitSpec {
 
   "AppConfigImpl" when {
     ".desBaseUrl" should {
-      "retrieve the DES URL" in new Test {
-        (mockServiceConfig
-          .baseUrl(_: String))
-          .expects("des")
-          .returns("http://des-host")
+      "return the DES URL" when {
+        "a value is added to the configuration" in new Test {
+          (mockServiceConfig
+            .baseUrl(_: String))
+            .expects("des")
+            .returns("http://des-host")
 
-        target.desBaseUrl shouldBe "http://des-host"
+          target.desBaseUrl shouldBe "http://des-host"
+        }
+
+        "return a runtime exception" when {
+          "no value is added to the configuration" in new Test {
+            intercept[RuntimeException] {
+              target.desBaseUrl
+            }
+          }
+        }
       }
     }
 
     ".desEnvironment" should {
-      "return the des env" when {
+      "return the DES env" when {
         "a value is added to the configuration" in new Test {
           (mockServiceConfig
             .getString(_: String))
@@ -79,6 +89,75 @@ class AppConfigSpec extends UnitSpec {
           intercept[RuntimeException] {
             target.desToken
           }
+        }
+      }
+    }
+
+    ".desEndpoint" should {
+      "return the DES endpoint" when {
+        "a value is added to the configuration" in new Test {
+          (mockServiceConfig
+            .getString(_: String))
+            .stubs("microservice.services.des.endpoint")
+            .returns("/register")
+
+          target.desEndpoint shouldBe "/register"
+        }
+      }
+
+      "return a runtime exception" when {
+        "no value is added to the configuration" in new Test {
+          intercept[RuntimeException] {
+            target.desEndpoint
+          }
+        }
+      }
+    }
+
+    ".logDesJson" should {
+      "return true" when {
+        "the value true is added to the configuration" in new Test {
+          (mockConfig
+            .getOptional[Boolean](_: String)(_: ConfigLoader[Boolean]))
+            .expects("feature-switch.logDesJson", *)
+            .returns(Some(true))
+
+          target.logDesJson shouldBe true
+        }
+      }
+
+      "default to false" when {
+        "no value is added to the configuration" in new Test {
+          (mockConfig
+            .getOptional[Boolean](_: String)(_: ConfigLoader[Boolean]))
+            .expects("feature-switch.logDesJson", *)
+            .returns(None)
+
+          target.logDesJson shouldBe false
+        }
+      }
+    }
+
+    ".logDwpJson" should {
+      "return true" when {
+        "the value true is added to the configuration" in new Test {
+          (mockConfig
+            .getOptional[Boolean](_: String)(_: ConfigLoader[Boolean]))
+            .expects("feature-switch.logDwpJson", *)
+            .returns(Some(true))
+
+          target.logDwpJson shouldBe true
+        }
+      }
+
+      "default to false" when {
+        "no value is added to the configuration" in new Test {
+          (mockConfig
+            .getOptional[Boolean](_: String)(_: ConfigLoader[Boolean]))
+            .expects("feature-switch.logDwpJson", *)
+            .returns(None)
+
+          target.logDwpJson shouldBe false
         }
       }
     }
