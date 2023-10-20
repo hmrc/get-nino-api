@@ -16,177 +16,331 @@
 
 package v1.controllers
 
+import mocks.MockAppConfig
 import org.slf4j.MDC
-import play.api.http.Status
-import play.api.libs.json.{JsError, JsPath, Json, JsonValidationError => JavaJsonValidationError}
+import play.api.libs.json.{JsonValidationError => JavaJsonValidationError, _}
+import play.api.mvc._
+import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import support.ControllerBaseSpec
 import uk.gov.hmrc.auth.core.authorise.Predicate
 import uk.gov.hmrc.auth.core.retrieve.Retrieval
-import uk.gov.hmrc.auth.core.{AuthConnector, InvalidBearerToken}
-import uk.gov.hmrc.http.{HeaderCarrier, HeaderNames}
-import utils.NinoApplicationTestData.{maxRegisterNinoRequestJson, maxRegisterNinoRequestModel}
-import v1.controllers.predicates.{CorrelationIdPredicate, OriginatorIdPredicate, PrivilegedApplicationPredicate}
-import v1.models.errors.{InvalidBodyTypeError, ErrorResponse => NinoError, JsonValidationError => NinoJsonValidationError}
+import uk.gov.hmrc.auth.core._
+import uk.gov.hmrc.http._
+import utils.NinoApplicationTestData._
+import v1.controllers.predicates._
+import v1.models.errors.{JsonValidationError => NinoJsonValidationError, _}
 import v1.models.request.NinoApplication
 import v1.services.DesService
 
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent._
 
-class RegisterNinoControllerSpec extends ControllerBaseSpec {
+class RegisterNinoControllerSpec extends ControllerBaseSpec with MockAppConfig {
 
-  implicit val ec: ExecutionContext = stubControllerComponents().executionContext
+  private implicit val executionContext: ExecutionContext = stubControllerComponents().executionContext
 
-  val mockAuth: AuthConnector = mock[AuthConnector]
+  private val mockAuthConnector: AuthConnector = mock[AuthConnector]
 
-  val mockService: DesService = mock[DesService]
+  private val mockDesService: DesService = mock[DesService]
 
-  val mockPrivilegedPredicate: PrivilegedApplicationPredicate = new PrivilegedApplicationPredicate(
-    mockAuth,
-    stubControllerComponents(),
-    ec
+  private val privilegedApplicationPredicate: PrivilegedApplicationPredicate = new PrivilegedApplicationPredicate(
+    authConnector = mockAuthConnector,
+    controllerComponents = stubControllerComponents(),
+    executionContext = executionContext
   )
 
-  val mockOriginatorPredicate: OriginatorIdPredicate = new OriginatorIdPredicate(
-    ec,
-    stubControllerComponents()
+  private val originatorIdPredicate: OriginatorIdPredicate = new OriginatorIdPredicate(
+    ec = executionContext,
+    controllerComponents = stubControllerComponents()
   )
 
-  val mockCorrelationPredicate: CorrelationIdPredicate = new CorrelationIdPredicate(
-    ec,
-    stubControllerComponents()
+  private val correlationIdPredicate: CorrelationIdPredicate = new CorrelationIdPredicate(
+    ec = executionContext,
+    controllerComponents = stubControllerComponents()
   )
 
-  val controller: RegisterNinoController = new RegisterNinoController(
-    stubControllerComponents(),
-    mockService,
-    mockPrivilegedPredicate,
-    mockCorrelationPredicate,
-    mockOriginatorPredicate,
-    mockAppConfig
+  private val controller: RegisterNinoController = new RegisterNinoController(
+    cc = stubControllerComponents(),
+    desService = mockDesService,
+    privilegedApplicationPredicate = privilegedApplicationPredicate,
+    correlationIdPredicate = correlationIdPredicate,
+    originatorIdPredicate = originatorIdPredicate,
+    appConfig = mockAppConfig
   )
 
-  "Calling the register action" when {
+  private class Setup(logDwpJson: Boolean) {
+    MockedAppConfig.logDwpJson().returns(logDwpJson)
+  }
 
-    "the request is authorised" should {
+  "RegisterNinoController" when {
+    ".register" when {
+      "the request is authorised" when {
+        "the request is valid" when {
+          "the service call is successful" should {
+            "return 202 ACCEPTED" in new Setup(true) {
+              (mockAuthConnector
+                .authorise(_: Predicate, _: Retrieval[_])(_: HeaderCarrier, _: ExecutionContext))
+                .expects(*, *, *, *)
+                .returns(Future.successful((): Unit))
 
-      "the request is valid" should {
+              (mockDesService
+                .registerNino(_: NinoApplication)(_: HeaderCarrier, _: ExecutionContext))
+                .expects(maxRegisterNinoRequestModel, *, *)
+                .returns(Future.successful(Right(())))
 
-        "return 202" in {
+              val request: FakeRequest[AnyContent] = fakeRequest
+                .withHeaders(
+                  "Accept"               -> "application/vnd.hmrc.1.0+json",
+                  "OriginatorId"         -> "DA2_DWP_REG",
+                  "CorrelationId"        -> "DBABB1dB-7DED-b5Dd-19ce-5168C9E8fff9",
+                  HeaderNames.xRequestId -> "1234567890",
+                  HeaderNames.xSessionId -> "0987654321"
+                )
+                .withMethod("POST")
+                .withJsonBody(maxRegisterNinoRequestJson(false))
 
-          (mockAuth
-            .authorise(_: Predicate, _: Retrieval[_])(_: HeaderCarrier, _: ExecutionContext))
-            .expects(*, *, *, *)
-            .returns(Future.successful((): Unit))
+              val result: Future[Result] = controller.register()(request)
 
-          (mockService
-            .registerNino(_: NinoApplication)(_: HeaderCarrier, _: ExecutionContext))
-            .expects(maxRegisterNinoRequestModel, *, *)
-            .returns(Future.successful(Right(())))
+              status(result) shouldBe ACCEPTED
 
-          val request = fakeRequest
-            .withHeaders(
-              "Accept"               -> "application/vnd.hmrc.1.0+json",
-              "OriginatorId"         -> "DA2_DWP_REG",
-              "CorrelationId"        -> "DBABB1dB-7DED-b5Dd-19ce-5168C9E8fff9",
-              HeaderNames.xRequestId -> "1234567890",
-              HeaderNames.xSessionId -> "0987654321"
-            )
-            .withMethod("POST")
-            .withJsonBody(maxRegisterNinoRequestJson(false))
+              MDC.get(HeaderNames.xRequestId) shouldBe "1234567890"
+              MDC.get(HeaderNames.xSessionId) shouldBe "0987654321"
+            }
+          }
 
-          val result = controller.register()(request)
+          "the service call returns 503 SERVICE_UNAVAILABLE with ServiceUnavailableError response" should {
+            "return 503 SERVICE_UNAVAILABLE with ServiceUnavailableError response" in new Setup(false) {
+              (mockAuthConnector
+                .authorise(_: Predicate, _: Retrieval[_])(_: HeaderCarrier, _: ExecutionContext))
+                .expects(*, *, *, *)
+                .returns(Future.successful((): Unit))
 
-          status(result) shouldBe Status.ACCEPTED
+              (mockDesService
+                .registerNino(_: NinoApplication)(_: HeaderCarrier, _: ExecutionContext))
+                .expects(maxRegisterNinoRequestModel, *, *)
+                .returns(Future.successful(Left(ServiceUnavailableError)))
 
-          MDC.get(HeaderNames.xRequestId) shouldBe "1234567890"
-          MDC.get(HeaderNames.xSessionId) shouldBe "0987654321"
+              val request: FakeRequest[AnyContent] = fakeRequest
+                .withHeaders(
+                  "Accept"               -> "application/vnd.hmrc.1.0+json",
+                  "OriginatorId"         -> "DA2_DWP_REG",
+                  "CorrelationId"        -> "DBABB1dB-7DED-b5Dd-19ce-5168C9E8fff9",
+                  HeaderNames.xRequestId -> "1234567890",
+                  HeaderNames.xSessionId -> "0987654321"
+                )
+                .withMethod("POST")
+                .withJsonBody(maxRegisterNinoRequestJson(false))
+
+              val result: Future[Result] = controller.register()(request)
+
+              status(result)        shouldBe SERVICE_UNAVAILABLE
+              contentAsJson(result) shouldBe contentAsJson(Future.successful(ServiceUnavailableError.result))
+            }
+          }
         }
-      }
 
-      "when the request body is not json" should {
+        "the request" that {
+          "is supplied has originator ID absent" should {
+            "return 400 BAD_REQUEST with OriginatorIdMissingError response" in {
+              (mockAuthConnector
+                .authorise(_: Predicate, _: Retrieval[_])(_: HeaderCarrier, _: ExecutionContext))
+                .expects(*, *, *, *)
+                .returning(Future.successful((): Unit))
 
-        "return 415" in {
+              val request: FakeRequest[AnyContent] = fakeRequest
+                .withHeaders(
+                  "Accept"        -> "application/vnd.hmrc.1.0+json",
+                  "CorrelationId" -> "DBABB1dB-7DED-b5Dd-19ce-5168C9E8fff9"
+                )
+                .withMethod("POST")
+                .withJsonBody(maxRegisterNinoRequestJson(false))
 
-          (mockAuth
-            .authorise(_: Predicate, _: Retrieval[_])(_: HeaderCarrier, _: ExecutionContext))
-            .expects(*, *, *, *)
-            .returning(Future.successful((): Unit))
+              val result: Future[Result] = controller.register()(request)
 
-          val request = fakeRequest
-            .withHeaders(
-              "Accept"        -> "application/vnd.hmrc.1.0+json",
-              "CorrelationId" -> "DBABB1dB-7DED-b5Dd-19ce-5168C9E8fff9",
-              "OriginatorId"  -> "DA2_DWP_REG"
-            )
-            .withMethod("POST")
+              status(result)        shouldBe BAD_REQUEST
+              contentAsJson(result) shouldBe contentAsJson(Future.successful(OriginatorIdMissingError.result))
+            }
+          }
 
-          val result = controller.register()(request)
+          "is supplied has an incorrect originator ID" should {
+            "return 400 BAD_REQUEST with OriginatorIdIncorrectError response" in {
+              (mockAuthConnector
+                .authorise(_: Predicate, _: Retrieval[_])(_: HeaderCarrier, _: ExecutionContext))
+                .expects(*, *, *, *)
+                .returning(Future.successful((): Unit))
 
-          status(result)        shouldBe Status.UNSUPPORTED_MEDIA_TYPE
-          contentAsJson(result) shouldBe contentAsJson(Future.successful(InvalidBodyTypeError.result))
+              val request: FakeRequest[AnyContent] = fakeRequest
+                .withHeaders(
+                  "Accept"        -> "application/vnd.hmrc.1.0+json",
+                  "OriginatorId"  -> "id",
+                  "CorrelationId" -> "DBABB1dB-7DED-b5Dd-19ce-5168C9E8fff9"
+                )
+                .withMethod("POST")
+                .withJsonBody(maxRegisterNinoRequestJson(false))
+
+              val result: Future[Result] = controller.register()(request)
+
+              status(result)        shouldBe BAD_REQUEST
+              contentAsJson(result) shouldBe contentAsJson(Future.successful(OriginatorIdIncorrectError.result))
+            }
+          }
+
+          "is supplied has correlation ID absent" should {
+            "return 400 BAD_REQUEST with CorrelationIdMissingError response" in {
+              (mockAuthConnector
+                .authorise(_: Predicate, _: Retrieval[_])(_: HeaderCarrier, _: ExecutionContext))
+                .expects(*, *, *, *)
+                .returning(Future.successful((): Unit))
+
+              val request: FakeRequest[AnyContent] = fakeRequest
+                .withHeaders(
+                  "Accept"       -> "application/vnd.hmrc.1.0+json",
+                  "OriginatorId" -> "DA2_DWP_REG"
+                )
+                .withMethod("POST")
+                .withJsonBody(maxRegisterNinoRequestJson(false))
+
+              val result: Future[Result] = controller.register()(request)
+
+              status(result)        shouldBe BAD_REQUEST
+              contentAsJson(result) shouldBe contentAsJson(Future.successful(CorrelationIdMissingError.result))
+            }
+          }
+
+          "is supplied has an incorrect correlation ID" should {
+            "return 400 BAD_REQUEST with CorrelationIdIncorrectError response" in {
+              (mockAuthConnector
+                .authorise(_: Predicate, _: Retrieval[_])(_: HeaderCarrier, _: ExecutionContext))
+                .expects(*, *, *, *)
+                .returning(Future.successful((): Unit))
+
+              val request: FakeRequest[AnyContent] = fakeRequest
+                .withHeaders(
+                  "Accept"        -> "application/vnd.hmrc.1.0+json",
+                  "OriginatorId"  -> "DA2_DWP_REG",
+                  "CorrelationId" -> "id"
+                )
+                .withMethod("POST")
+                .withJsonBody(maxRegisterNinoRequestJson(false))
+
+              val result: Future[Result] = controller.register()(request)
+
+              status(result)        shouldBe BAD_REQUEST
+              contentAsJson(result) shouldBe contentAsJson(Future.successful(CorrelationIdIncorrectError.result))
+            }
+          }
         }
-      }
 
-      "when the request body is valid json, but cannot be validated as a NinoApplication" should {
-        "return a 400" in {
+        "the request body is not JSON" should {
+          "return 415 UNSUPPORTED_MEDIA_TYPE with InvalidBodyTypeError response" in new Setup(true) {
+            (mockAuthConnector
+              .authorise(_: Predicate, _: Retrieval[_])(_: HeaderCarrier, _: ExecutionContext))
+              .expects(*, *, *, *)
+              .returning(Future.successful((): Unit))
 
-          (mockAuth
-            .authorise(_: Predicate, _: Retrieval[_])(_: HeaderCarrier, _: ExecutionContext))
-            .expects(*, *, *, *)
-            .returning(Future.successful((): Unit))
-
-          val request = fakeRequest
-            .withHeaders(
-              "Accept"        -> "application/vnd.hmrc.1.0+json",
-              "CorrelationId" -> "DBABB1dB-7DED-b5Dd-19ce-5168C9E8fff9",
-              "OriginatorId"  -> "DA2_DWP_REG"
-            )
-            .withMethod("POST")
-            .withJsonBody(
-              Json.obj(
-                "aField" -> "aValue"
+            val request: FakeRequest[AnyContent] = fakeRequest
+              .withHeaders(
+                "Accept"        -> "application/vnd.hmrc.1.0+json",
+                "CorrelationId" -> "DBABB1dB-7DED-b5Dd-19ce-5168C9E8fff9",
+                "OriginatorId"  -> "DA2_DWP_REG"
               )
-            )
+              .withMethod("POST")
 
-          val result = controller.register()(request)
+            val result: Future[Result] = controller.register()(request)
 
-          status(result)        shouldBe Status.BAD_REQUEST
-          contentAsJson(result) shouldBe Json.toJson(
-            NinoJsonValidationError(
-              JsError(
-                Seq("names", "entryDate", "officeNumber", "birthDate", "addresses", "nino", "gender").map { field =>
-                  (JsPath \ field, Seq(JavaJsonValidationError("error.path.missing")))
-                }
+            status(result)        shouldBe UNSUPPORTED_MEDIA_TYPE
+            contentAsJson(result) shouldBe contentAsJson(Future.successful(InvalidBodyTypeError.result))
+          }
+        }
+
+        "the request body is a valid JSON, but cannot be validated as a NinoApplication" should {
+          "return a 400 BAD_REQUEST with JsonValidationError response" in new Setup(false) {
+            (mockAuthConnector
+              .authorise(_: Predicate, _: Retrieval[_])(_: HeaderCarrier, _: ExecutionContext))
+              .expects(*, *, *, *)
+              .returning(Future.successful((): Unit))
+
+            val request: FakeRequest[AnyContent] = fakeRequest
+              .withHeaders(
+                "Accept"        -> "application/vnd.hmrc.1.0+json",
+                "CorrelationId" -> "DBABB1dB-7DED-b5Dd-19ce-5168C9E8fff9",
+                "OriginatorId"  -> "DA2_DWP_REG"
               )
-            )
-          )(NinoError.validationWrites)
+              .withMethod("POST")
+              .withJsonBody(
+                Json.obj(
+                  "aField" -> "aValue"
+                )
+              )
+
+            val result: Future[Result] = controller.register()(request)
+
+            status(result)        shouldBe BAD_REQUEST
+            contentAsJson(result) shouldBe Json.toJson(
+              NinoJsonValidationError(
+                JsError(
+                  Seq("names", "entryDate", "officeNumber", "birthDate", "addresses", "nino", "gender").map { field =>
+                    (JsPath \ field, Seq(JavaJsonValidationError("error.path.missing")))
+                  }
+                )
+              )
+            )(ErrorResponse.validationWrites)
+          }
         }
       }
 
-    }
+      "the request is not authorised" when {
+        "authorisation failed with AuthorisationException" should {
+          "return 401 UNAUTHORIZED with UnauthorisedError response" in {
+            (mockAuthConnector
+              .authorise(_: Predicate, _: Retrieval[_])(_: HeaderCarrier, _: ExecutionContext))
+              .expects(*, *, *, *)
+              .returns(Future.failed(InvalidBearerToken()))
 
-    "the request is not authorised" should {
+            val request: FakeRequest[AnyContent] = fakeRequest
+              .withHeaders(
+                "Accept"               -> "application/vnd.hmrc.1.0+json",
+                "OriginatorId"         -> "DA2_DWP_REG",
+                "CorrelationId"        -> "DBABB1dB-7DED-b5Dd-19ce-5168C9E8fff9",
+                HeaderNames.xRequestId -> "1234567890",
+                HeaderNames.xSessionId -> "0987654321"
+              )
+              .withMethod("POST")
+              .withJsonBody(maxRegisterNinoRequestJson(false))
 
-      "return an unauthorised response" in {
+            val result: Future[Result] = controller.register()(request)
 
-        (mockAuth
-          .authorise(_: Predicate, _: Retrieval[_])(_: HeaderCarrier, _: ExecutionContext))
-          .expects(*, *, *, *)
-          .returns(Future.failed(InvalidBearerToken()))
+            status(result)        shouldBe UNAUTHORIZED
+            contentAsJson(result) shouldBe contentAsJson(
+              Future.successful(UnauthorisedError("Invalid bearer token").result)
+            )
+          }
+        }
 
-        val request = fakeRequest
-          .withHeaders(
-            "Accept"               -> "application/vnd.hmrc.1.0+json",
-            HeaderNames.xRequestId -> "1234567890",
-            HeaderNames.xSessionId -> "0987654321"
-          )
-          .withMethod("POST")
-          .withJsonBody(maxRegisterNinoRequestJson(false))
+        "authorisation failed with another exception" should {
+          "return 503 SERVICE_UNAVAILABLE with ServiceUnavailableError response" in {
+            (mockAuthConnector
+              .authorise(_: Predicate, _: Retrieval[_])(_: HeaderCarrier, _: ExecutionContext))
+              .expects(*, *, *, *)
+              .returns(Future.failed(new Exception("")))
 
-        val result = controller.register()(request)
+            val request: FakeRequest[AnyContent] = fakeRequest
+              .withHeaders(
+                "Accept"               -> "application/vnd.hmrc.1.0+json",
+                "OriginatorId"         -> "DA2_DWP_REG",
+                "CorrelationId"        -> "DBABB1dB-7DED-b5Dd-19ce-5168C9E8fff9",
+                HeaderNames.xRequestId -> "1234567890",
+                HeaderNames.xSessionId -> "0987654321"
+              )
+              .withMethod("POST")
+              .withJsonBody(maxRegisterNinoRequestJson(false))
 
-        status(result) shouldBe Status.UNAUTHORIZED
+            val result: Future[Result] = controller.register()(request)
+
+            status(result)        shouldBe SERVICE_UNAVAILABLE
+            contentAsJson(result) shouldBe contentAsJson(Future.successful(ServiceUnavailableError.result))
+          }
+        }
       }
     }
   }

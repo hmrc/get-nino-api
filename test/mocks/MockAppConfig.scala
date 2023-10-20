@@ -26,7 +26,6 @@ trait MockAppConfig extends MockFactory {
   val mockAppConfig: AppConfig = mock[AppConfig]
 
   object MockedAppConfig {
-
     def desBaseUrl(): CallHandler[String] =
       (() => mockAppConfig.desBaseUrl())
         .expects()
@@ -37,6 +36,18 @@ trait MockAppConfig extends MockFactory {
 
     def desToken(): CallHandler[String] =
       (() => mockAppConfig.desToken())
+        .expects()
+
+    def desEndpoint(): CallHandler[String] =
+      (() => mockAppConfig.desEndpoint())
+        .expects()
+
+    def logDesJson(): CallHandler[Boolean] =
+      (() => mockAppConfig.logDesJson())
+        .expects()
+
+    def logDwpJson(): CallHandler[Boolean] =
+      (() => mockAppConfig.logDwpJson())
         .expects()
 
     def featureSwitch: CallHandler[Option[Configuration]] =

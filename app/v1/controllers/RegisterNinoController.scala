@@ -17,18 +17,18 @@
 package v1.controllers
 
 import config.AppConfig
-import javax.inject.{Inject, Singleton}
+import javax.inject._
 import play.api.Logging
 import play.api.libs.json.Json
 import play.api.mvc._
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.bootstrap.backend.controller.BackendController
-import v1.controllers.predicates.{CorrelationIdPredicate, OriginatorIdPredicate, PrivilegedApplicationPredicate}
+import v1.controllers.predicates._
 import v1.models.request.NinoApplication
 import v1.services.DesService
 import v1.utils.JsonBodyUtil
 
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent._
 
 @Singleton
 class RegisterNinoController @Inject() (
@@ -52,7 +52,7 @@ class RegisterNinoController @Inject() (
         val hcWithOriginatorIdAndCorrelationId =
           hc.withExtraHeaders("OriginatorId" -> originatorId, "CorrelationId" -> correlationId)
 
-        if (appConfig.features.logDwpJson()) request.body match {
+        if (appConfig.logDwpJson()) request.body match {
           case jsonContent: AnyContentAsJson =>
             logger.info(
               s"[RegisterNinoController][register] Logging JSON body of incoming request: ${jsonContent.json}"

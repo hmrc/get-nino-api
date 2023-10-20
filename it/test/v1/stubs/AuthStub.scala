@@ -24,28 +24,12 @@ object AuthStub extends WireMockMethods {
 
   private val authoriseUri: String = "/auth/authorise"
 
-  def authorised(): StubMapping = {
-    when(method = POST, uri = authoriseUri)
-      .thenReturn(status = OK, body = "true")
-  }
+  def authorised(): StubMapping = when(uri = authoriseUri).thenReturn(status = OK, body = "true")
 
-  def notAuthorised(): StubMapping = {
-    when(method = POST, uri = authoriseUri)
-      .thenReturn(status = UNAUTHORIZED, Map("WWW-Authenticate" -> """MDTP detail="someReason""""))
-  }
+  def notAuthorised(): StubMapping = when(uri = authoriseUri)
+    .thenReturn(status = UNAUTHORIZED, Map("WWW-Authenticate" -> """MDTP detail="someReason""""))
 
-  def noActiveSession(): StubMapping = {
-    when(method = POST, uri = authoriseUri)
-      .thenReturn(status = UNAUTHORIZED, Map("WWW-Authenticate" -> """MDTP detail="MissingBearerToken""""))
-  }
+  def authDown(): StubMapping      = when(uri = authoriseUri).thenReturn(status = BAD_GATEWAY)
 
-  def authDown(): StubMapping = {
-    when(method = POST, uri = authoriseUri)
-      .thenReturn(status = BAD_GATEWAY)
-  }
-
-  def otherStatus(): StubMapping = {
-    when(method = POST, uri = authoriseUri)
-      .thenReturn(status = NOT_IMPLEMENTED)
-  }
+  def otherStatus(): StubMapping = when(uri = authoriseUri).thenReturn(status = NOT_IMPLEMENTED)
 }

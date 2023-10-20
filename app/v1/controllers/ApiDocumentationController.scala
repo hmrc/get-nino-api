@@ -14,18 +14,19 @@
  * limitations under the License.
  */
 
-package config
+package v1.controllers
 
+import config.ApiDefinitionConfig
 import controllers.Assets
+import javax.inject._
 import play.api.http.HttpErrorHandler
 import play.api.libs.json.Json
-import play.api.mvc.{Action, AnyContent, ControllerComponents}
+import play.api.mvc._
 import uk.gov.hmrc.api.controllers.DocumentationController
 
-import javax.inject.{Inject, Singleton}
 import scala.concurrent.Future
 
-@Singleton()
+@Singleton
 class ApiDocumentationController @Inject() (
   cc: ControllerComponents,
   assets: Assets,
@@ -66,5 +67,4 @@ class ApiDocumentationController @Inject() (
 
     Future.successful(Ok(apiDefinition))
   }
-
 }

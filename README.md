@@ -10,7 +10,7 @@ This is the code repository for the Get NINO API. This repository contains:
 ### Locally
 - Run Get NINO API and other required services with the script:
 
-    ```
+    ```bash
      ./run_local_preview_documentation.sh
     ```
 
@@ -20,7 +20,7 @@ This is the code repository for the Get NINO API. This repository contains:
     ```
      http://localhost:9750/api/conf/1.0/application.yaml
     ```
-- Ensure to uncomment the lines [here](https://github.com/hmrc/get-nino-api/blob/main/conf/application.conf#L42-L45) in case of CORS errors
+- Ensure to uncomment the lines [here](https://github.com/hmrc/get-nino-api/blob/main/conf/application.conf#L30-L33) in case of CORS errors
 
 ### On Developer Hub
 Full documentation can be found on the [Developer Hub](https://developer.service.hmrc.gov.uk/api-documentation/docs/api/service/get-nino-api).
