@@ -1,0 +1,128 @@
+{
+  "nino": "AA000000A",
+  "gender": "MALE",
+  "entryDate": "02-03-2020",
+  "birthDate": "15-11-1974",
+  "birthDateVerification": "VERIFIED",
+  "officeNumber": "123456",
+  "contactNumber": "1234567890",
+  "nationalityCode": "FRA",
+  "names": [
+    {
+      "nameType": "REGISTERED",
+      "title": "MR",
+      "forename": "AForename",
+      "secondForename": "AMiddle name",
+      "surname": "ASurname",
+      "startDate": "03-04-2020",
+      "endDate": "17-08-2020"
+    }
+  ],
+  "historicNames": [
+    {
+      "nameType": "REGISTERED",
+      "title": "MRS",
+      "forename": "AForename",
+      "secondForename": "AMiddle name",
+      "surname": "ASurname",
+      "startDate": "17-03-2019",
+      "endDate": "02-04-2020"
+    },
+    {
+      "nameType": "REGISTERED",
+      "title": "MISS",
+      "forename": "AForename",
+      "secondForename": "AMiddle name",
+      "surname": "ASurname",
+      "startDate": "09-07-2016",
+      "endDate": "16-03-2019"
+    }
+  ],
+  "addresses": [
+    {
+      "addressType": "RESIDENTIAL",
+      "line1": "4 AStreetName",
+      "line2": "Town",
+      "line3": "Place",
+      "line4": "Area",
+      "line5": "Province",
+      "postcode": "AA1 1AA",
+      "countryCode": "GBR",
+      "startDate": "25-04-2020",
+      "endDate": "27-07-2020"
+    }
+  ],
+  "historicAddresses": [
+    {
+      "addressType": "RESIDENTIAL",
+      "line1": "1 AStreetName",
+      "line2": "Town",
+      "line3": "Place",
+      "line4": "Area",
+      "line5": "Province",
+      "postcode": "AA1 1AA",
+      "countryCode": "GBR",
+      "startDate": "29-03-2003",
+      "endDate": "23-04-2020"
+    },
+    {
+      "addressType": "RESIDENTIAL",
+      "line1": "2 AStreetName",
+      "line2": "Town",
+      "line3": "Place",
+      "line4": "Area",
+      "line5": "Province",
+      "countryCode": "ZAF",
+      "startDate": "02-05-1998",
+      "endDate": "28-03-2003"
+    }
+  ],
+  "marriages": [
+    {
+      "maritalStatus": "MARRIAGE-TERMINATED",
+      "startDate": "04-02-2017",
+      "endDate": "05-08-2019",
+      "partnerNino": "AA000001D",
+      "birthDate": "11-10-1954",
+      "forename": "Partner forename",
+      "surname": "Partner surname"
+    },
+    {
+      "maritalStatus": "CIVIL-PARTNERSHIP-TERMINATED",
+      "startDate": "02-06-2006",
+      "endDate": "01-04-2007",
+      "partnerNino": "AA000002B",
+      "birthDate": "08-09-1970",
+      "forename": "Partner forename",
+      "surname": "Partner surname"
+    }
+  ],
+  "originData": {
+    "birthTown": "ATown",
+    "birthProvince": "SomeProvince",
+    "birthCountryCode": "CAN",
+    "birthSurname": "ASurname",
+    "maternalForename": "MotherForename",
+    "maternalSurname": "AnotherSurname",
+    "paternalForename": "AForename",
+    "paternalSurname": "ASurname",
+    "foreignSocialSecurity": "1234567890AB",
+    "lastEUAddress": {
+      "line1": "3 AStreetName",
+      "line2": "Town",
+      "line3": "Place",
+      "line4": "Area",
+      "line5": "Province"
+    }
+  },
+  "priorResidency": [
+    {
+      "priorStartDate": "08-02-2001",
+      "priorEndDate": "03-03-2001"
+    },
+    {
+      "priorStartDate": "14-11-2007",
+      "priorEndDate": "17-06-2008"
+    }
+  ]
+}
