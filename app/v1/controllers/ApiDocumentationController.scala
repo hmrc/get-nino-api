@@ -38,13 +38,6 @@ class ApiDocumentationController @Inject() (
     val apiDefinition = Json.parse(
       s"""
          |{
-         |  "scopes": [
-         |    {
-         |      "key": "read:register-nino",
-         |      "name": "Register NINO",
-         |      "description": "Register NINO"
-         |    }
-         |  ],
          |  "api": {
          |    "name": "Register NINO",
          |    "description": "Register NINO information for downstream service",

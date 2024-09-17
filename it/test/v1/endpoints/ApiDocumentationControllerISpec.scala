@@ -54,13 +54,6 @@ class ApiDocumentationControllerISpec extends IntegrationBaseSpec {
       private val expectedJson: JsValue = Json.parse(
         """
           |{
-          |  "scopes": [
-          |    {
-          |      "key": "read:register-nino",
-          |      "name": "Register NINO",
-          |      "description": "Register NINO"
-          |    }
-          |  ],
           |  "api": {
           |    "name": "Register NINO",
           |    "description": "Register NINO information for downstream service",
