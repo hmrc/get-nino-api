@@ -16,14 +16,14 @@
 
 package mocks
 
-import org.scalamock.scalatest.MockFactory
 import play.api.libs.json._
+import support.UnitSpec
 import uk.gov.hmrc.http._
 import v1.connectors.httpParsers.HttpResponseTypes.HttpPostResponse
 
 import scala.concurrent._
 
-trait MockHttpClient extends MockFactory {
+trait MockHttpClient extends UnitSpec {
 
   val mockHttpClient: HttpClient = mock[HttpClient]
 

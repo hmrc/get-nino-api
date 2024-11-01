@@ -23,9 +23,9 @@ import play.api.mvc._
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import support.ControllerBaseSpec
+import uk.gov.hmrc.auth.core._
 import uk.gov.hmrc.auth.core.authorise.Predicate
 import uk.gov.hmrc.auth.core.retrieve.Retrieval
-import uk.gov.hmrc.auth.core._
 import uk.gov.hmrc.http._
 import utils.NinoApplicationTestData._
 import v1.controllers.predicates._

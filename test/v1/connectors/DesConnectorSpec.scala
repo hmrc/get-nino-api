@@ -40,6 +40,13 @@ class DesConnectorSpec extends UnitSpec with MockAppConfig with MockHttpClient {
   }
 
   private class SendRegisterRequestSetup(logDesJson: Boolean) {
+//    when(mockAppConfig.logDesJson()).thenReturn(logDesJson)
+//    when(mockAppConfig.desToken()).thenReturn("des-token")
+//    when(mockAppConfig.desEnvironment()).thenReturn("des-environment")
+//    when(mockAppConfig.desBaseUrl()).thenReturn("http://des-base-url")
+//    when(mockAppConfig.desEndpoint()).thenReturn("/register")
+//    when(mockAppConfig.desToken()).thenReturn("des-token")
+
     MockedAppConfig.desToken().returns("des-token")
     MockedAppConfig.desEnvironment().returns("des-environment")
     MockedAppConfig.desBaseUrl().returns("http://des-base-url")
@@ -81,13 +88,11 @@ class DesConnectorSpec extends UnitSpec with MockAppConfig with MockHttpClient {
       "return a successful response" when {
         "the request is successful" in new SendRegisterRequestSetup(true) {
           val expectedResponse: HttpPostResponse = Right(())
-
           MockedHttpClient.post(
             url = "http://des-base-url/register",
             body = maxRegisterNinoRequestJson(true)
           )(response = expectedResponse)
-
-          val result: HttpPostResponse = await(desConnector.sendRegisterRequest(maxRegisterNinoRequestModel))
+          val result: HttpPostResponse           = await(desConnector.sendRegisterRequest(maxRegisterNinoRequestModel))
 
           result shouldBe expectedResponse
         }
