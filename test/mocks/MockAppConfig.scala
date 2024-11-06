@@ -18,10 +18,10 @@ package mocks
 
 import config.AppConfig
 import org.scalamock.handlers.CallHandler
-import org.scalamock.scalatest.MockFactory
 import play.api.Configuration
+import support.UnitSpec
 
-trait MockAppConfig extends MockFactory {
+trait MockAppConfig extends UnitSpec {
 
   val mockAppConfig: AppConfig = mock[AppConfig]
 
