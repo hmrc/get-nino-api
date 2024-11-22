@@ -16,16 +16,18 @@
 
 package mocks
 
+import org.mockito.ArgumentMatchers.any
 import play.api.libs.json._
 import support.UnitSpec
 import uk.gov.hmrc.http._
+import uk.gov.hmrc.http.client.HttpClientV2
 import v1.connectors.httpParsers.HttpResponseTypes.HttpPostResponse
 
 import scala.concurrent._
 
 trait MockHttpClient extends UnitSpec {
 
-  val mockHttpClient: HttpClient = mock[HttpClient]
+  val mockHttpClient: HttpClientV2 = mock[HttpClientV2]
 
   object MockedHttpClient {
     def post(url: String, body: JsValue)(response: HttpPostResponse): Unit =
@@ -38,5 +40,13 @@ trait MockHttpClient extends UnitSpec {
         ))
         .expects(url, body, *, *, *, *, *)
         .returns(Future.successful(response))
+  }
+
+  object MockedHttpClient {
+    def post(url: String, body: JsValue)(response: HttpPostResponse): Unit =
+      (mockHttpClient
+        .post(url"$url")(any[HeaderCarrier])
+        .withBody(Json.toJson(JsValue))
+        .execute[HttpResponse](any[HttpReads[HttpResponse]], any[ExecutionContext])
   }
 }

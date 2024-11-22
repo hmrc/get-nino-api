@@ -22,6 +22,7 @@ import config.AppConfig
 import play.api.http.Status._
 import support.IntegrationBaseSpec
 import uk.gov.hmrc.http._
+import uk.gov.hmrc.http.client.HttpClientV2
 import utils.ItNinoApplicationTestData._
 import v1.connectors.httpParsers.HttpResponseTypes.HttpPostResponse
 import v1.models.errors.ServiceUnavailableError
@@ -32,7 +33,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
 class DesConnectorISpec extends IntegrationBaseSpec {
 
   private lazy val appConfig: AppConfig       = app.injector.instanceOf[AppConfig]
-  private lazy val httpClient: HttpClient     = app.injector.instanceOf[HttpClient]
+  private lazy val httpClient: HttpClientV2     = app.injector.instanceOf[HttpClientV2]
   private implicit lazy val hc: HeaderCarrier = HeaderCarrier()
 
   private lazy val connector: DesConnector = new DesConnector(httpClient, appConfig)
