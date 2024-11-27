@@ -33,7 +33,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
 class DesConnectorISpec extends IntegrationBaseSpec {
 
   private lazy val appConfig: AppConfig       = app.injector.instanceOf[AppConfig]
-  private lazy val httpClient: HttpClientV2     = app.injector.instanceOf[HttpClientV2]
+  private lazy val httpClient: HttpClientV2   = app.injector.instanceOf[HttpClientV2]
   private implicit lazy val hc: HeaderCarrier = HeaderCarrier()
 
   private lazy val connector: DesConnector = new DesConnector(httpClient, appConfig)

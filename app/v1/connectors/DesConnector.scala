@@ -32,8 +32,8 @@ import scala.util.matching.Regex
 
 @Singleton
 class DesConnector @Inject() (
-                               http: HttpClientV2,
-                               appConfig: AppConfig
+  http: HttpClientV2,
+  appConfig: AppConfig
 ) extends Logging {
 
   val CorrelationIdPattern: Regex = """.*([A-Za-z0-9]{8}-[A-Za-z0-9]{4}-[A-Za-z0-9]{4}-[A-Za-z0-9]{4}).*""".r
@@ -66,11 +66,9 @@ class DesConnector @Inject() (
 
     if (appConfig.logDesJson()) logger.info(s"Logging JSON body of outgoing DES request: $requestBody")
 
-//    http.POST(url, requestBody, headers = desHeaders(hc))
-
     http
       .post(url"$url")
-      .withBody(Json.toJson(requestBody))
+      .withBody(requestBody)
       .setHeader(desHeaders: _*)
       .execute[HttpPostResponse]
   }
