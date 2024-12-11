@@ -36,7 +36,10 @@ trait MockHttpClient extends UnitSpec {
 
   object MockedHttpClient {
     def post(url: String, body: JsValue)(response: HttpPostResponse): Unit = {
-      (mockHttpClient.post(_: URL)(_: HeaderCarrier)).expects(*, *).returns(mockRequestBuilder)
+      (mockHttpClient
+        .post(_: URL)(_: HeaderCarrier))
+        .expects(*, *)
+        .returns(mockRequestBuilder)
       (mockRequestBuilder
         .setHeader(_: (String, String)))
         .expects(*)
