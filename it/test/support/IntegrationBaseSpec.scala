@@ -55,7 +55,7 @@ trait IntegrationBaseSpec
     .build()
 
   val httpClient = fakeApp.injector.instanceOf[HttpClientV2]
-  val appConfig = fakeApp.injector.instanceOf[AppConfig]
+  val appConfig  = fakeApp.injector.instanceOf[AppConfig]
 
   val des = new DesConnector(httpClient, appConfig) {
     override def generateNewUUID: String = "DBABB1dB-7DED-b5Dd-19ce-5168C9E8fff9"
