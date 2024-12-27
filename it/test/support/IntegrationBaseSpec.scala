@@ -16,6 +16,7 @@
 
 package support
 
+import config.AppConfig
 import org.scalatest.wordspec.AnyWordSpecLike
 import org.scalatest._
 import org.scalatest.matchers.should.Matchers
@@ -24,6 +25,8 @@ import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.libs.ws._
 import play.api.test._
 import play.api._
+import uk.gov.hmrc.http.client.HttpClientV2
+import v1.connectors.DesConnector
 
 trait IntegrationBaseSpec
     extends AnyWordSpecLike
@@ -47,8 +50,20 @@ trait IntegrationBaseSpec
     "microservice.services.auth.port" -> mockPort
   )
 
+  val fakeApp = new GuiceApplicationBuilder()
+    .configure(servicesConfig)
+    .build()
+
+  val httpClient = fakeApp.injector.instanceOf[HttpClientV2]
+  val appConfig = fakeApp.injector.instanceOf[AppConfig]
+
+  val des = new DesConnector(httpClient, appConfig) {
+    override def generateNewUUID: String = "DBABB1dB-7DED-b5Dd-19ce-5168C9E8fff9"
+  }
+
   override implicit lazy val app: Application = new GuiceApplicationBuilder()
     .in(Environment.simple(mode = Mode.Dev))
+    .overrides(inject.bind[DesConnector].toInstance(des))
     .configure(servicesConfig)
     .build()
 
