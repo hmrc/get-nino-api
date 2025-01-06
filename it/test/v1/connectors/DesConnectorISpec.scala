@@ -18,7 +18,6 @@ package v1.connectors
 
 import com.github.tomakehurst.wiremock.client.WireMock._
 import com.github.tomakehurst.wiremock.stubbing.StubMapping
-import config.AppConfig
 import play.api.http.Status._
 import support.IntegrationBaseSpec
 import uk.gov.hmrc.http._
@@ -31,11 +30,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
 
 class DesConnectorISpec extends IntegrationBaseSpec {
 
-  private lazy val appConfig: AppConfig       = app.injector.instanceOf[AppConfig]
-  private lazy val httpClient: HttpClient     = app.injector.instanceOf[HttpClient]
   private implicit lazy val hc: HeaderCarrier = HeaderCarrier()
-
-  private lazy val connector: DesConnector = new DesConnector(httpClient, appConfig)
 
   private trait Test {
     def stubSuccess(): StubMapping =
@@ -64,7 +59,7 @@ class DesConnectorISpec extends IntegrationBaseSpec {
         AuditStub.audit()
         stubSuccess()
 
-        await(connector.sendRegisterRequest(maxRegisterNinoRequestModel))
+        await(des.sendRegisterRequest(maxRegisterNinoRequestModel))
 
         verify(postRequestedFor(urlEqualTo("/register")).withHeader("Environment", equalTo("local")))
       }
@@ -74,7 +69,7 @@ class DesConnectorISpec extends IntegrationBaseSpec {
           stubSuccess()
           AuditStub.audit()
 
-          val response: HttpPostResponse = await(connector.sendRegisterRequest(maxRegisterNinoRequestModel))
+          val response: HttpPostResponse = await(des.sendRegisterRequest(maxRegisterNinoRequestModel))
 
           response shouldBe Right(())
         }
@@ -85,7 +80,7 @@ class DesConnectorISpec extends IntegrationBaseSpec {
           stubFailure()
           AuditStub.audit()
 
-          val response: HttpPostResponse = await(connector.sendRegisterRequest(maxRegisterNinoRequestModel))
+          val response: HttpPostResponse = await(des.sendRegisterRequest(maxRegisterNinoRequestModel))
 
           response shouldBe Left(ServiceUnavailableError)
         }

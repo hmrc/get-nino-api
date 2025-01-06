@@ -17,11 +17,11 @@
 package v1.connectors
 
 import config.AppConfig
-
 import javax.inject._
 import play.api.Logging
 import play.api.libs.json.Json
 import uk.gov.hmrc.http._
+import uk.gov.hmrc.http.client.HttpClientV2
 import v1.connectors.httpParsers.HttpResponseTypes.HttpPostResponse
 import v1.connectors.httpParsers.RegisterNinoResponseHttpParser.RegisterNinoResponseReads
 import v1.models.request.NinoApplication
@@ -32,7 +32,7 @@ import scala.util.matching.Regex
 
 @Singleton
 class DesConnector @Inject() (
-  http: HttpClient,
+  http: HttpClientV2,
   appConfig: AppConfig
 ) extends Logging {
 
@@ -66,7 +66,11 @@ class DesConnector @Inject() (
 
     if (appConfig.logDesJson()) logger.info(s"Logging JSON body of outgoing DES request: $requestBody")
 
-    http.POST(url, requestBody, headers = desHeaders(hc))
+    http
+      .post(url"$url")
+      .withBody(requestBody)
+      .setHeader(desHeaders: _*)
+      .execute[HttpPostResponse]
   }
 
 }

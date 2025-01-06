@@ -32,7 +32,7 @@ class DesConnectorSpec extends UnitSpec with MockAppConfig with MockHttpClient {
   private val uuid: String = "123f4567-g89c-42c3-b456-557742330000"
 
   private class CorrelationIdSetup(requestId: Option[RequestId]) {
-    val desConnector: DesConnector = new DesConnector(mockHttpClient, mockAppConfig) {
+    private val desConnector: DesConnector = new DesConnector(mockHttpClient, mockAppConfig) {
       override def generateNewUUID: String = uuid
     }
 
