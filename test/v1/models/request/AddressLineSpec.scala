@@ -25,6 +25,10 @@ class AddressLineSpec extends AnyWordSpec with Matchers {
   val addressLineJson: JsString                  = JsString("1234 Test Avenue")
   val addressLineStartingWithNumber: AddressLine = AddressLine("1234 Test Avenue")
   val invalidJson: JsString                      = JsString("~~~~~ Error invalid json ~~~~~~")
+  val validAddressWithSpecialChars: AddressLine  = AddressLine("Apt. 4-B, 22nd St.")
+  val validAddressWithBackslash: AddressLine     = AddressLine("123\\Main St.")
+  val addressWithInvalidCharacters: AddressLine  = AddressLine("Invalid@Address!")
+
 
   "AddressLine.read" when {
 
@@ -101,12 +105,30 @@ class AddressLineSpec extends AnyWordSpec with Matchers {
         }
       }
 
+      "contains special characters in allowed positions" should {
+        "return true" in {
+          AddressLine.addressLineValidation(validAddressWithSpecialChars.addressLine) shouldBe true
+        }
+      }
+
+      "contains a backslash" should {
+        "return true" in {
+          AddressLine.addressLineValidation(validAddressWithBackslash.addressLine) shouldBe true
+        }
+      }
+
       "is too long" should {
         "return false" in {
 
           val tooLongAddressLine = "This address is unfortunately over 35 characters"
 
           AddressLine.addressLineValidation(tooLongAddressLine) shouldBe false
+        }
+      }
+
+      "contains invalid characters" should {
+        "return false" in {
+          AddressLine.addressLineValidation(addressWithInvalidCharacters.addressLine) shouldBe false
         }
       }
 
