@@ -6,7 +6,7 @@ object AppDependencies {
 
   private lazy val compile: Seq[ModuleID] = Seq(
     "uk.gov.hmrc"                  %% "bootstrap-backend-play-30" % bootstrapPlayVersion,
-    "uk.gov.hmrc"                  %% "play-hmrc-api-play-30"     % "8.2.0",
+    "uk.gov.hmrc"                  %% "play-hmrc-api-play-30"     % "8.0.0",
     "com.fasterxml.jackson.module" %% "jackson-module-scala"      % "2.18.2"
   )
 
