@@ -29,20 +29,20 @@ import javax.inject.{Inject, Singleton}
 
 @Singleton
 class VersionRoutingRequestHandler @Inject() (
-  versionRoutingMap: VersionRoutingMap,
-  errorHandler: ErrorHandler,
-  httpConfiguration: HttpConfiguration,
-  config: AppConfig,
-  filters: HttpFilters,
-  action: DefaultActionBuilder
-) extends DefaultHttpRequestHandler(
-      webCommands = new DefaultWebCommands,
-      optDevContext = None,
-      router = versionRoutingMap.defaultRouter,
-      errorHandler = errorHandler,
-      configuration = httpConfiguration,
-      filters = filters.filters
-    ) {
+                                               versionRoutingMap: VersionRoutingMap,
+                                               errorHandler: ErrorHandler,
+                                               httpConfiguration: HttpConfiguration,
+                                               config: AppConfig,
+                                               filters: HttpFilters,
+                                               action: DefaultActionBuilder
+                                             ) extends DefaultHttpRequestHandler(
+  webCommands = new DefaultWebCommands,
+  optDevContext = None,
+  router = versionRoutingMap.defaultRouter,
+  errorHandler = errorHandler,
+  configuration = httpConfiguration,
+  filters = filters.filters
+) {
 
   private val featureSwitch = FeatureSwitch(config.featureSwitch)
 

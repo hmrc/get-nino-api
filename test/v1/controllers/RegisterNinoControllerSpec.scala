@@ -17,6 +17,10 @@
 package v1.controllers
 
 import mocks.MockAppConfig
+import org.mockito.ArgumentMatchers
+import org.mockito.ArgumentMatchers.any
+import org.mockito.Mockito.when
+import org.scalatestplus.mockito.MockitoSugar.mock
 import org.slf4j.MDC
 import play.api.libs.json.{JsonValidationError => JavaJsonValidationError, _}
 import play.api.mvc._
@@ -69,7 +73,7 @@ class RegisterNinoControllerSpec extends ControllerBaseSpec with MockAppConfig {
   )
 
   private class Setup(logDwpJson: Boolean) {
-    MockedAppConfig.logDwpJson().returns(logDwpJson)
+    MockedAppConfig.logDwpJson().thenReturn(logDwpJson)
   }
 
   "RegisterNinoController" when {
@@ -78,15 +82,13 @@ class RegisterNinoControllerSpec extends ControllerBaseSpec with MockAppConfig {
         "the request is valid" when {
           "the service call is successful" should {
             "return 202 ACCEPTED" in new Setup(true) {
-              (mockAuthConnector
-                .authorise(_: Predicate, _: Retrieval[_])(_: HeaderCarrier, _: ExecutionContext))
-                .expects(*, *, *, *)
-                .returns(Future.successful((): Unit))
+              when(mockAuthConnector
+                .authorise(any[Predicate](), any[Retrieval[Unit]]())(any[HeaderCarrier](), any[ExecutionContext]()))
+                .thenReturn(Future.successful((): Unit))
 
-              (mockDesService
-                .registerNino(_: NinoApplication)(_: HeaderCarrier, _: ExecutionContext))
-                .expects(maxRegisterNinoRequestModel, *, *)
-                .returns(Future.successful(Right(())))
+              when(mockDesService
+                .registerNino(ArgumentMatchers.eq(maxRegisterNinoRequestModel))(any[HeaderCarrier](), any[ExecutionContext]()))
+                .thenReturn(Future.successful(Right(())))
 
               val request: FakeRequest[AnyContent] = fakeRequest
                 .withHeaders(
@@ -110,15 +112,13 @@ class RegisterNinoControllerSpec extends ControllerBaseSpec with MockAppConfig {
 
           "the service call returns 503 SERVICE_UNAVAILABLE with ServiceUnavailableError response" should {
             "return 503 SERVICE_UNAVAILABLE with ServiceUnavailableError response" in new Setup(false) {
-              (mockAuthConnector
-                .authorise(_: Predicate, _: Retrieval[_])(_: HeaderCarrier, _: ExecutionContext))
-                .expects(*, *, *, *)
-                .returns(Future.successful((): Unit))
+              when(mockAuthConnector
+                .authorise(any[Predicate](), any[Retrieval[Unit]]())(any[HeaderCarrier](), any[ExecutionContext]()))
+                .thenReturn(Future.successful((): Unit))
 
-              (mockDesService
-                .registerNino(_: NinoApplication)(_: HeaderCarrier, _: ExecutionContext))
-                .expects(maxRegisterNinoRequestModel, *, *)
-                .returns(Future.successful(Left(ServiceUnavailableError)))
+              when(mockDesService
+                .registerNino(ArgumentMatchers.eq(maxRegisterNinoRequestModel))(any[HeaderCarrier](), any[ExecutionContext]()))
+                .thenReturn(Future.successful(Left(ServiceUnavailableError)))
 
               val request: FakeRequest[AnyContent] = fakeRequest
                 .withHeaders(
@@ -142,10 +142,9 @@ class RegisterNinoControllerSpec extends ControllerBaseSpec with MockAppConfig {
         "the request" that {
           "is supplied has originator ID absent" should {
             "return 400 BAD_REQUEST with OriginatorIdMissingError response" in {
-              (mockAuthConnector
-                .authorise(_: Predicate, _: Retrieval[_])(_: HeaderCarrier, _: ExecutionContext))
-                .expects(*, *, *, *)
-                .returning(Future.successful((): Unit))
+              when(mockAuthConnector
+                .authorise(any[Predicate](), any[Retrieval[Unit]]())(any[HeaderCarrier](), any[ExecutionContext]()))
+                .thenReturn(Future.successful((): Unit))
 
               val request: FakeRequest[AnyContent] = fakeRequest
                 .withHeaders(
@@ -164,10 +163,9 @@ class RegisterNinoControllerSpec extends ControllerBaseSpec with MockAppConfig {
 
           "is supplied has an incorrect originator ID" should {
             "return 400 BAD_REQUEST with OriginatorIdIncorrectError response" in {
-              (mockAuthConnector
-                .authorise(_: Predicate, _: Retrieval[_])(_: HeaderCarrier, _: ExecutionContext))
-                .expects(*, *, *, *)
-                .returning(Future.successful((): Unit))
+              when(mockAuthConnector
+                .authorise(any[Predicate](), any[Retrieval[Unit]]())(any[HeaderCarrier](), any[ExecutionContext]()))
+                .thenReturn(Future.successful((): Unit))
 
               val request: FakeRequest[AnyContent] = fakeRequest
                 .withHeaders(
@@ -187,10 +185,9 @@ class RegisterNinoControllerSpec extends ControllerBaseSpec with MockAppConfig {
 
           "is supplied has correlation ID absent" should {
             "return 400 BAD_REQUEST with CorrelationIdMissingError response" in {
-              (mockAuthConnector
-                .authorise(_: Predicate, _: Retrieval[_])(_: HeaderCarrier, _: ExecutionContext))
-                .expects(*, *, *, *)
-                .returning(Future.successful((): Unit))
+              when(mockAuthConnector
+                .authorise(any[Predicate](), any[Retrieval[Unit]]())(any[HeaderCarrier](), any[ExecutionContext]()))
+                .thenReturn(Future.successful((): Unit))
 
               val request: FakeRequest[AnyContent] = fakeRequest
                 .withHeaders(
@@ -209,10 +206,9 @@ class RegisterNinoControllerSpec extends ControllerBaseSpec with MockAppConfig {
 
           "is supplied has an incorrect correlation ID" should {
             "return 400 BAD_REQUEST with CorrelationIdIncorrectError response" in {
-              (mockAuthConnector
-                .authorise(_: Predicate, _: Retrieval[_])(_: HeaderCarrier, _: ExecutionContext))
-                .expects(*, *, *, *)
-                .returning(Future.successful((): Unit))
+              when(mockAuthConnector
+                .authorise(any[Predicate](), any[Retrieval[Unit]]())(any[HeaderCarrier](), any[ExecutionContext]()))
+                .thenReturn(Future.successful((): Unit))
 
               val request: FakeRequest[AnyContent] = fakeRequest
                 .withHeaders(
@@ -233,10 +229,9 @@ class RegisterNinoControllerSpec extends ControllerBaseSpec with MockAppConfig {
 
         "the request body is not JSON" should {
           "return 415 UNSUPPORTED_MEDIA_TYPE with InvalidBodyTypeError response" in new Setup(true) {
-            (mockAuthConnector
-              .authorise(_: Predicate, _: Retrieval[_])(_: HeaderCarrier, _: ExecutionContext))
-              .expects(*, *, *, *)
-              .returning(Future.successful((): Unit))
+            when(mockAuthConnector
+              .authorise(any[Predicate](), any[Retrieval[Unit]]())(any[HeaderCarrier](), any[ExecutionContext]()))
+              .thenReturn(Future.successful((): Unit))
 
             val request: FakeRequest[AnyContent] = fakeRequest
               .withHeaders(
@@ -255,10 +250,9 @@ class RegisterNinoControllerSpec extends ControllerBaseSpec with MockAppConfig {
 
         "the request body is a valid JSON, but cannot be validated as a NinoApplication" should {
           "return a 400 BAD_REQUEST with JsonValidationError response" in new Setup(false) {
-            (mockAuthConnector
-              .authorise(_: Predicate, _: Retrieval[_])(_: HeaderCarrier, _: ExecutionContext))
-              .expects(*, *, *, *)
-              .returning(Future.successful((): Unit))
+            when(mockAuthConnector
+              .authorise(any[Predicate](), any[Retrieval[Unit]]())(any[HeaderCarrier](), any[ExecutionContext]()))
+              .thenReturn(Future.successful((): Unit))
 
             val request: FakeRequest[AnyContent] = fakeRequest
               .withHeaders(
@@ -292,10 +286,9 @@ class RegisterNinoControllerSpec extends ControllerBaseSpec with MockAppConfig {
       "the request is not authorised" when {
         "authorisation failed with AuthorisationException" should {
           "return 401 UNAUTHORIZED with UnauthorisedError response" in {
-            (mockAuthConnector
-              .authorise(_: Predicate, _: Retrieval[_])(_: HeaderCarrier, _: ExecutionContext))
-              .expects(*, *, *, *)
-              .returns(Future.failed(InvalidBearerToken()))
+            when(mockAuthConnector
+              .authorise(any[Predicate](), any[Retrieval[Unit]]())(any[HeaderCarrier](), any[ExecutionContext]()))
+              .thenReturn(Future.failed(InvalidBearerToken()))
 
             val request: FakeRequest[AnyContent] = fakeRequest
               .withHeaders(
@@ -319,10 +312,9 @@ class RegisterNinoControllerSpec extends ControllerBaseSpec with MockAppConfig {
 
         "authorisation failed with another exception" should {
           "return 503 SERVICE_UNAVAILABLE with ServiceUnavailableError response" in {
-            (mockAuthConnector
-              .authorise(_: Predicate, _: Retrieval[_])(_: HeaderCarrier, _: ExecutionContext))
-              .expects(*, *, *, *)
-              .returns(Future.failed(new Exception("")))
+            when(mockAuthConnector
+              .authorise(any[Predicate](), any[Retrieval[Unit]]())(any[HeaderCarrier](), any[ExecutionContext]()))
+              .thenReturn(Future.failed(new Exception("")))
 
             val request: FakeRequest[AnyContent] = fakeRequest
               .withHeaders(

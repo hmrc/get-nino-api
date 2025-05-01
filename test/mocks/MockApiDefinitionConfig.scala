@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2025 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,7 +17,9 @@
 package mocks
 
 import config.ApiDefinitionConfig
-import org.scalamock.handlers.CallHandler
+import org.mockito.Mockito.when
+import org.mockito.stubbing.OngoingStubbing
+import org.scalatestplus.mockito.MockitoSugar.mock
 import support.UnitSpec
 
 trait MockApiDefinitionConfig extends UnitSpec {
@@ -25,16 +27,13 @@ trait MockApiDefinitionConfig extends UnitSpec {
   val mockApiDefinitionConfig: ApiDefinitionConfig = mock[ApiDefinitionConfig]
 
   object MockedApiDefinitionConfig {
-    def status(): CallHandler[String] =
-      (() => mockApiDefinitionConfig.status())
-        .expects()
+    def status(): OngoingStubbing[String] =
+      when(mockApiDefinitionConfig.status())
 
-    def accessType(): CallHandler[String] =
-      (() => mockApiDefinitionConfig.accessType())
-        .expects()
+    def accessType(): OngoingStubbing[String] =
+      when(mockApiDefinitionConfig.accessType())
 
-    def endpointsEnabled(): CallHandler[Boolean] =
-      (() => mockApiDefinitionConfig.endpointsEnabled())
-        .expects()
+    def endpointsEnabled(): OngoingStubbing[Boolean] =
+      when(mockApiDefinitionConfig.endpointsEnabled())
   }
 }

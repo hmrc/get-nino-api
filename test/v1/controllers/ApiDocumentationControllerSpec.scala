@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2025 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,6 +18,7 @@ package v1.controllers
 
 import controllers._
 import mocks.MockApiDefinitionConfig
+import org.scalatestplus.mockito.MockitoSugar.mock
 import play.api.http._
 import play.api.libs.json._
 import play.api.mvc.Result
@@ -64,9 +65,9 @@ class ApiDocumentationControllerSpec extends ControllerBaseSpec with MockApiDefi
   )
 
   private trait Setup {
-    MockedApiDefinitionConfig.status().returns("BETA")
-    MockedApiDefinitionConfig.accessType().returns("PRIVATE")
-    MockedApiDefinitionConfig.endpointsEnabled().returns(true)
+    MockedApiDefinitionConfig.status().thenReturn("BETA")
+    MockedApiDefinitionConfig.accessType().thenReturn("PRIVATE")
+    MockedApiDefinitionConfig.endpointsEnabled().thenReturn(true)
 
     val apiDocumentationController: ApiDocumentationController = new ApiDocumentationController(
       cc = stubControllerComponents(),

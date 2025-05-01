@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2025 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,8 +16,13 @@
 
 package config
 
+import org.mockito.ArgumentMatchers
+import org.mockito.ArgumentMatchers.any
+import org.mockito.Mockito.when
+import org.scalatestplus.mockito.MockitoSugar.mock
 import play.api.{ConfigLoader, Configuration}
 import support.UnitSpec
+
 
 class ApiDefinitionConfigSpec extends UnitSpec {
 
@@ -31,10 +36,8 @@ class ApiDefinitionConfigSpec extends UnitSpec {
     ".status" should {
       "retrieve the status specified" when {
         "a value is added to the configuration" in new Test {
-          (mockConfig
-            .get[String](_: String)(_: ConfigLoader[String]))
-            .expects("api.status", *)
-            .returns("BETA")
+          when(mockConfig.get[String](ArgumentMatchers.eq("api.status"))(any[ConfigLoader[String]]))
+            .thenReturn("BETA")
 
           target.status shouldBe "BETA"
         }
@@ -42,6 +45,9 @@ class ApiDefinitionConfigSpec extends UnitSpec {
 
       "return a runtime exception" when {
         "no value is added to the configuration" in new Test {
+          when(mockConfig.get[String](ArgumentMatchers.eq("api.status"))(any[ConfigLoader[String]]))
+            .thenThrow(new RuntimeException("error"))
+
           intercept[RuntimeException] {
             target.status
           }
@@ -52,10 +58,9 @@ class ApiDefinitionConfigSpec extends UnitSpec {
     ".accessType" should {
       "retrieve the API access setting specified" when {
         "a value is added to the configuration" in new Test {
-          (mockConfig
-            .getOptional[String](_: String)(_: ConfigLoader[String]))
-            .expects("api.access.type", *)
-            .returns(Some("PUBLIC"))
+          when(mockConfig
+            .getOptional[String](ArgumentMatchers.eq("api.access.type"))(any[ConfigLoader[String]]()))
+            .thenReturn(Some("PUBLIC"))
 
           target.accessType shouldBe "PUBLIC"
         }
@@ -63,10 +68,9 @@ class ApiDefinitionConfigSpec extends UnitSpec {
 
       "retrieve the default API access setting (PRIVATE)" when {
         "no value is added to the configuration" in new Test {
-          (mockConfig
-            .getOptional[String](_: String)(_: ConfigLoader[String]))
-            .expects("api.access.type", *)
-            .returns(None)
+          when(mockConfig
+            .getOptional[String](ArgumentMatchers.eq("api.access.type"))(any[ConfigLoader[String]]()))
+            .thenReturn(None)
 
           target.accessType shouldBe "PRIVATE"
         }

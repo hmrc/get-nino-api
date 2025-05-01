@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2025 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,10 @@
 
 package config
 
+import org.mockito.ArgumentMatchers
+import org.mockito.ArgumentMatchers.any
+import org.mockito.Mockito.when
+import org.scalatestplus.mockito.MockitoSugar.mock
 import play.api._
 import support.UnitSpec
 import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
@@ -33,16 +37,16 @@ class AppConfigSpec extends UnitSpec {
     ".desBaseUrl" should {
       "return the DES URL" when {
         "a value is added to the configuration" in new Test {
-          (mockServiceConfig
-            .baseUrl(_: String))
-            .expects("des")
-            .returns("http://des-host")
+          when(mockServiceConfig
+            .baseUrl("des"))
+            .thenReturn("http://des-host")
 
           target.desBaseUrl shouldBe "http://des-host"
         }
 
         "return a runtime exception" when {
           "no value is added to the configuration" in new Test {
+            when(mockServiceConfig.baseUrl("des")).thenThrow(new RuntimeException("crunch"))
             intercept[RuntimeException] {
               target.desBaseUrl
             }
@@ -54,10 +58,8 @@ class AppConfigSpec extends UnitSpec {
     ".desEnvironment" should {
       "return the DES env" when {
         "a value is added to the configuration" in new Test {
-          (mockServiceConfig
-            .getString(_: String))
-            .stubs("microservice.services.des.env")
-            .returns("TEST_ENV")
+          when(mockServiceConfig.getString("microservice.services.des.env"))
+            .thenReturn("TEST_ENV")
 
           target.desEnvironment shouldBe "TEST_ENV"
         }
@@ -65,6 +67,9 @@ class AppConfigSpec extends UnitSpec {
 
       "return a runtime exception" when {
         "no value is added to the configuration" in new Test {
+          when(mockServiceConfig.getString("microservice.services.des.env"))
+            .thenThrow(new RuntimeException("rustled"))
+
           intercept[RuntimeException] {
             target.desEnvironment
           }
@@ -75,10 +80,9 @@ class AppConfigSpec extends UnitSpec {
     ".desToken" should {
       "return the DES token" when {
         "token is added to the configuration" in new Test {
-          (mockServiceConfig
-            .getString(_: String))
-            .stubs("microservice.services.des.token")
-            .returns("some-token")
+          when(mockServiceConfig
+            .getString("microservice.services.des.token"))
+            .thenReturn("some-token")
 
           target.desToken shouldBe "some-token"
         }
@@ -86,6 +90,10 @@ class AppConfigSpec extends UnitSpec {
 
       "return a runtime exception" when {
         "no value is added to the configuration" in new Test {
+          when(mockServiceConfig
+            .getString("microservice.services.des.token"))
+            .thenThrow(new RuntimeException("bam"))
+
           intercept[RuntimeException] {
             target.desToken
           }
@@ -96,10 +104,9 @@ class AppConfigSpec extends UnitSpec {
     ".desEndpoint" should {
       "return the DES endpoint" when {
         "a value is added to the configuration" in new Test {
-          (mockServiceConfig
-            .getString(_: String))
-            .stubs("microservice.services.des.endpoint")
-            .returns("/register")
+          when(mockServiceConfig
+            .getString("microservice.services.des.endpoint"))
+            .thenReturn("/register")
 
           target.desEndpoint shouldBe "/register"
         }
@@ -107,6 +114,10 @@ class AppConfigSpec extends UnitSpec {
 
       "return a runtime exception" when {
         "no value is added to the configuration" in new Test {
+          when(mockServiceConfig
+            .getString("microservice.services.des.endpoint"))
+            .thenThrow(new RuntimeException("blat"))
+
           intercept[RuntimeException] {
             target.desEndpoint
           }
@@ -117,10 +128,9 @@ class AppConfigSpec extends UnitSpec {
     ".logDesJson" should {
       "return true" when {
         "the value true is added to the configuration" in new Test {
-          (mockConfig
-            .getOptional[Boolean](_: String)(_: ConfigLoader[Boolean]))
-            .expects("feature-switch.logDesJson", *)
-            .returns(Some(true))
+          when(mockConfig
+            .getOptional[Boolean](ArgumentMatchers.eq("feature-switch.logDesJson"))(any[ConfigLoader[Boolean]]()))
+            .thenReturn(Some(true))
 
           target.logDesJson shouldBe true
         }
@@ -128,10 +138,9 @@ class AppConfigSpec extends UnitSpec {
 
       "default to false" when {
         "no value is added to the configuration" in new Test {
-          (mockConfig
-            .getOptional[Boolean](_: String)(_: ConfigLoader[Boolean]))
-            .expects("feature-switch.logDesJson", *)
-            .returns(None)
+          when(mockConfig
+            .getOptional[Boolean](ArgumentMatchers.eq("feature-switch.logDesJson"))(any[ConfigLoader[Boolean]]()))
+            .thenReturn(None)
 
           target.logDesJson shouldBe false
         }
@@ -141,10 +150,10 @@ class AppConfigSpec extends UnitSpec {
     ".logDwpJson" should {
       "return true" when {
         "the value true is added to the configuration" in new Test {
-          (mockConfig
-            .getOptional[Boolean](_: String)(_: ConfigLoader[Boolean]))
-            .expects("feature-switch.logDwpJson", *)
-            .returns(Some(true))
+
+          when(mockConfig
+            .getOptional[Boolean](ArgumentMatchers.eq("feature-switch.logDwpJson"))(any[ConfigLoader[Boolean]]()))
+            .thenReturn(Some(true))
 
           target.logDwpJson shouldBe true
         }
@@ -152,10 +161,9 @@ class AppConfigSpec extends UnitSpec {
 
       "default to false" when {
         "no value is added to the configuration" in new Test {
-          (mockConfig
-            .getOptional[Boolean](_: String)(_: ConfigLoader[Boolean]))
-            .expects("feature-switch.logDwpJson", *)
-            .returns(None)
+          when(mockConfig
+            .getOptional[Boolean](ArgumentMatchers.eq("feature-switch.logDwpJson"))( any[ConfigLoader[Boolean]]()))
+            .thenReturn(None)
 
           target.logDwpJson shouldBe false
         }

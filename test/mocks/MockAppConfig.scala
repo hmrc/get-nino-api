@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2025 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,7 +17,9 @@
 package mocks
 
 import config.AppConfig
-import org.scalamock.handlers.CallHandler
+import org.mockito.Mockito.when
+import org.mockito.stubbing.OngoingStubbing
+import org.scalatestplus.mockito.MockitoSugar.mock
 import play.api.Configuration
 import support.UnitSpec
 
@@ -26,32 +28,25 @@ trait MockAppConfig extends UnitSpec {
   val mockAppConfig: AppConfig = mock[AppConfig]
 
   object MockedAppConfig {
-    def desBaseUrl(): CallHandler[String] =
-      (() => mockAppConfig.desBaseUrl())
-        .expects()
+    def desBaseUrl(): OngoingStubbing[String] =
+      when(mockAppConfig.desBaseUrl())
 
-    def desEnvironment(): CallHandler[String] =
-      (() => mockAppConfig.desEnvironment())
-        .expects()
+    def desEnvironment(): OngoingStubbing[String] =
+      when(mockAppConfig.desEnvironment())
 
-    def desToken(): CallHandler[String] =
-      (() => mockAppConfig.desToken())
-        .expects()
+    def desToken(): OngoingStubbing[String] =
+      when(mockAppConfig.desToken())
 
-    def desEndpoint(): CallHandler[String] =
-      (() => mockAppConfig.desEndpoint())
-        .expects()
+    def desEndpoint(): OngoingStubbing[String] =
+      when(mockAppConfig.desEndpoint())
 
-    def logDesJson(): CallHandler[Boolean] =
-      (() => mockAppConfig.logDesJson())
-        .expects()
+    def logDesJson(): OngoingStubbing[Boolean] =
+      when(mockAppConfig.logDesJson())
 
-    def logDwpJson(): CallHandler[Boolean] =
-      (() => mockAppConfig.logDwpJson())
-        .expects()
+    def logDwpJson(): OngoingStubbing[Boolean] =
+      when(mockAppConfig.logDwpJson())
 
-    def featureSwitch: CallHandler[Option[Configuration]] =
-      (() => mockAppConfig.featureSwitch)
-        .expects()
+    def featureSwitch: OngoingStubbing[Option[Configuration]] =
+      when(mockAppConfig.featureSwitch)
   }
 }

@@ -16,6 +16,7 @@
 
 package utils
 
+import org.scalatestplus.mockito.MockitoSugar.mock
 import org.scalatestplus.play.guice.GuiceOneAppPerSuite
 import play.api.Configuration
 import play.api.mvc.{AnyContentAsEmpty, Result}

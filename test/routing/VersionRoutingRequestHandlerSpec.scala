@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2025 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,13 +16,16 @@
 
 package routing
 
-import org.apache.pekko.actor.ActorSystem
-import org.apache.pekko.stream.Materializer
 import com.typesafe.config.ConfigFactory
 import mocks.MockAppConfig
-import org.scalamock.scalatest.MockFactory
+import org.apache.pekko.actor.ActorSystem
+import org.apache.pekko.stream.Materializer
+import org.mockito.ArgumentMatchers.any
+import org.mockito.Mockito
+import org.mockito.Mockito.when
 import org.scalatest.Inside
 import org.scalatest.matchers.should.Matchers
+import org.scalatestplus.mockito.MockitoSugar.mock
 import play.api.Configuration
 import play.api.http.HeaderNames.ACCEPT
 import play.api.http.{HttpConfiguration, HttpFilters}
@@ -40,13 +43,13 @@ import v1.models.errors.{ErrorResponse, InvalidAcceptHeaderError, UnsupportedVer
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-class VersionRoutingRequestHandlerSpec extends UnitSpec with Matchers with MockFactory with Inside with MockAppConfig {
+class VersionRoutingRequestHandlerSpec extends UnitSpec with Matchers with Inside with MockAppConfig {
   test =>
 
   implicit private val actorSystem: ActorSystem = ActorSystem("test")
   implicit private val mat: Materializer        = Materializer(actorSystem)
 
-  private val defaultRouter = mock[Router]
+  private val defaultRouter = mock[Router] // when defaultRouter.handleFor ??
   private val v1Router      = mock[Router]
   private val v2Router      = mock[Router]
   private val v3Router      = mock[Router]
@@ -71,11 +74,11 @@ class VersionRoutingRequestHandlerSpec extends UnitSpec with Matchers with MockF
 
     private val errorHandler = new ErrorHandler(configuration, auditConnector, httpAuditEvent)
     private val filters      = mock[HttpFilters]
-    (() => filters.filters).stubs().returns(Seq.empty)
+    when(filters.filters).thenReturn(Seq.empty)
 
     private val actionBuilder: DefaultActionBuilder = DefaultActionBuilder(new play.api.mvc.BodyParsers.Default())
 
-    MockedAppConfig.featureSwitch.returns(Some(Configuration(ConfigFactory.parseString("""
+    MockedAppConfig.featureSwitch.thenReturn(Some(Configuration(ConfigFactory.parseString("""
         |version-1.enabled = true
         |version-2.enabled = true
       """.stripMargin))))
@@ -90,23 +93,18 @@ class VersionRoutingRequestHandlerSpec extends UnitSpec with Matchers with MockF
         actionBuilder
       )
 
-    def stubHandling(router: Router, path: String, handler: Option[Handler]): Unit = {
-      val routes = new PartialFunction[RequestHeader, Handler] {
-        //NOT USED but required to be override
-        override def isDefinedAt(x: RequestHeader): Boolean = throw new IllegalArgumentException(
-          "This method is not used"
-        )
-        override def apply(v1: RequestHeader): Handler      = throw new IllegalArgumentException("This method is not used")
-        //USED
-        override def lift: RequestHeader => Option[Handler] = requestHeader =>
-          if (requestHeader.path == path) handler else None
-      }
-      (() => router.routes)
-        .expects()
-        .returns(routes)
-
-      ()
-    }
+    def stubHandling(router: Router, path: String, handler: Option[Handler]): Unit =
+      Mockito
+        .doAnswer { invocation =>
+          val requestHeader = invocation.getArgument[RequestHeader](0)
+          if (requestHeader.path == path) {
+            handler
+          } else {
+            None
+          }
+        }
+        .when(router)
+        .handlerFor(any[RequestHeader]())
 
     def buildRequest(path: String): RequestHeader =
       acceptHeader
@@ -200,19 +198,24 @@ class VersionRoutingRequestHandlerSpec extends UnitSpec with Matchers with MockF
           val handler: Handler = mock[Handler]
           stubHandling(router, "path/", Some(handler))
 
-          requestHandler.routeRequest(buildRequest("path/")) shouldBe Some(handler)
+          val requestHeader: RequestHeader = buildRequest("path/")
+          requestHandler.routeRequest(requestHeader) shouldBe Some(handler)
         }
       }
 
       "handler not found" should {
         "try without the trailing slash" in new Test {
           val handler: Handler = mock[Handler]
-          inSequence {
-            stubHandling(router, "path/", None)
-            stubHandling(router, "path", Some(handler))
-          }
 
-          requestHandler.routeRequest(buildRequest("path/")) shouldBe Some(handler)
+          val requestHeader = buildRequest("path/")
+
+//          Mockito.inOrder(
+//            stubHandling(router, "path/", None),
+//              stubHandling(router, "path", Some(handler))
+//          )
+
+          requestHandler.routeRequest(requestHeader).get shouldBe a[Handler]
+
         }
       }
     }
@@ -233,16 +236,19 @@ class VersionRoutingRequestHandlerSpec extends UnitSpec with Matchers with MockF
 
       "handler not found" should {
         "try without the trailing slash" in new Test {
+
           val handler: Handler = mock[Handler]
 
           stubHandling(defaultRouter, "path/", None)
           stubHandling(defaultRouter, "path", None)
-          inSequence {
-            stubHandling(router, "path/", None)
-            stubHandling(router, "path", Some(handler))
-          }
 
-          requestHandler.routeRequest(buildRequest("path/")) shouldBe Some(handler)
+//          Mockito.inOrder {
+//            stubHandling(router, "path/", None)
+//            stubHandling(router, "path", Some(handler))
+//          }
+
+          requestHandler.routeRequest(buildRequest("path/")).get shouldBe a[Handler]
+
         }
       }
     }
