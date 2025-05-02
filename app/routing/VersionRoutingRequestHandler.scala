@@ -26,6 +26,7 @@ import utils.ErrorHandler
 import v1.models.errors.{InvalidAcceptHeaderError, UnsupportedVersionError}
 
 import javax.inject.{Inject, Singleton}
+import scala.util.Try
 
 @Singleton
 class VersionRoutingRequestHandler @Inject() (
@@ -64,13 +65,11 @@ class VersionRoutingRequestHandler @Inject() (
   }
 
   private def routeWith(router: Router)(request: RequestHeader): Option[Handler] = {
-    val x = router
-      .handlerFor(request)
-   println(1)
-      val y = x
-      .orElse {
-        println(2)
 
+    router.handlerFor(request) match {
+      case Some(handler) =>
+        Some(handler)
+      case None =>
         if (request.path.endsWith("/")) {
           val pathWithoutSlash        = request.path.dropRight(1)
           val requestWithModifiedPath = request.withTarget(request.target.withPath(pathWithoutSlash))
@@ -78,10 +77,23 @@ class VersionRoutingRequestHandler @Inject() (
         } else {
           None
         }
-      }
-    println(5)
+    }
 
-    y
+//    router
+//      .handlerFor(request)
+//      .orElse {
+//
+//        if (request.path.endsWith("/")) {
+//          val pathWithoutSlash        = request.path.dropRight(1)
+//          val requestWithModifiedPath = request.withTarget(request.target.withPath(pathWithoutSlash))
+//          router.handlerFor(requestWithModifiedPath)
+//        } else {
+//          None
+//        }
+//      }
+//    println(5)
+//
+//    y
   }
 
 }
