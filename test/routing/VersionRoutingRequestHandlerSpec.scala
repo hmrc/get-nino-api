@@ -93,7 +93,7 @@ class VersionRoutingRequestHandlerSpec extends UnitSpec with Matchers with Insid
         actionBuilder
       )
 
-    def stubHandling(router: Router, path: String, handler: Option[Handler]): Unit = {
+    def stubHandling(router: Router, path: String, handler: Option[Handler], rh: RequestHeader): Unit = {
 //      Mockito
 //        .doAnswer { invocation =>
 //          val requestHeader = invocation.getArgument[RequestHeader](0)
@@ -106,28 +106,18 @@ class VersionRoutingRequestHandlerSpec extends UnitSpec with Matchers with Insid
 //        .when(router)
 //        .handlerFor(any[RequestHeader]())
 
-        val routes = new PartialFunction[RequestHeader, Handler] {
-          //NOT USED but required to be override
-          override def isDefinedAt(x: RequestHeader): Boolean = throw new IllegalArgumentException(
-            "This method is not used"
-          )
-          override def apply(v1: RequestHeader): Handler      = throw new IllegalArgumentException("This method is not used")
-          //USED
-          override def lift: RequestHeader => Option[Handler] = requestHeader =>
-            if (requestHeader.path == path) handler else None
-        }
+      val routes = new PartialFunction[RequestHeader, Handler] {
+        //NOT USED but required to be override
+        override def isDefinedAt(x: RequestHeader): Boolean = throw new IllegalArgumentException(
+          "This method is not used"
+        )
+        override def apply(v1: RequestHeader): Handler      = throw new IllegalArgumentException("This method is not used")
+        //USED
+        override def lift: RequestHeader => Option[Handler] = requestHeader =>
+          if (requestHeader.path == path) handler else None
+      }
 
-      val requestHeader = buildRequest(path)
-
-      when(router.handlerFor(ArgumentMatchers.eq(requestHeader))).thenReturn(routes.lift(requestHeader))
-
-      when(router.routes.lift).thenReturn(routes.lift)
-
-      when(router.routes).thenReturn(routes)
-
-
-
-
+      when(router.handlerFor(rh)).thenReturn(routes.lift(rh))
 
     }
 
@@ -221,9 +211,11 @@ class VersionRoutingRequestHandlerSpec extends UnitSpec with Matchers with Insid
       "handler found" should {
         "use it" in new Test {
           val handler: Handler = mock[Handler]
-          stubHandling(router, "path/", Some(handler))
 
           val requestHeader: RequestHeader = buildRequest("path/")
+
+          stubHandling(router, "path/", Some(handler), requestHeader)
+
           requestHandler.routeRequest(requestHeader) shouldBe Some(handler)
         }
       }
