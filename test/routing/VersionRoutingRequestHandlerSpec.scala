@@ -220,21 +220,27 @@ class VersionRoutingRequestHandlerSpec extends UnitSpec with Matchers with Insid
         }
       }
 
-//      "handler not found" should {
-//        "try without the trailing slash" in new Test {
-//          val handler: Handler = mock[Handler]
-//
-//          val requestHeader = buildRequest("path/")
-//
-////          Mockito.inOrder(
-////            stubHandling(router, "path/", None),
-////              stubHandling(router, "path", Some(handler))
-////          )
-//
+      "handler not found" should {
+        "try without the trailing slash" in new Test {
+          val handler: Handler = mock[Handler]
+
+          val requestHeader = buildRequest("path")
+          val requestHeader2 = buildRequest("path/")
+
+          stubHandling(router, "path/", None, requestHeader2)
+          stubHandling(router, "path", Some(handler), requestHeader)
+
+//          Mockito.inOrder(
+//            stubHandling(router, "path/", None),
+//              stubHandling(router, "path", Some(handler))
+//          )
+
+          requestHandler.routeRequest(requestHeader) shouldBe Some(handler)
+
 //          requestHandler.routeRequest(requestHeader).get shouldBe a[Handler]
-//
-//        }
-//      }
+
+        }
+      }
     }
 
 //  private def handleWithVersionRoutes(router: Router)(implicit acceptHeader: Option[String]): Unit =
