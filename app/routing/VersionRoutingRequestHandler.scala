@@ -63,10 +63,14 @@ class VersionRoutingRequestHandler @Inject() (
     documentHandler orElse apiHandler
   }
 
-  private def routeWith(router: Router)(request: RequestHeader): Option[Handler] =
-    router
+  private def routeWith(router: Router)(request: RequestHeader): Option[Handler] = {
+    val x = router
       .handlerFor(request)
+   println(1)
+      val y = x
       .orElse {
+        println(2)
+
         if (request.path.endsWith("/")) {
           val pathWithoutSlash        = request.path.dropRight(1)
           val requestWithModifiedPath = request.withTarget(request.target.withPath(pathWithoutSlash))
@@ -75,5 +79,9 @@ class VersionRoutingRequestHandler @Inject() (
           None
         }
       }
+    println(5)
+
+    y
+  }
 
 }
