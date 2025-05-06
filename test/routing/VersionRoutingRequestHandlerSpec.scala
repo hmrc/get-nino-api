@@ -208,7 +208,7 @@ class VersionRoutingRequestHandlerSpec extends UnitSpec with Matchers with Insid
 
       "handler not found" should {
         "try without the trailing slash" in new Test {
-          requestHandler.routeRequest(buildRequest("/")) shouldBe Some(DefaultHandler)
+          requestHandler.routeRequest(buildRequest("")) shouldBe Some(DefaultHandler)
         }
       }
     }
@@ -223,7 +223,7 @@ class VersionRoutingRequestHandlerSpec extends UnitSpec with Matchers with Insid
 
       "handler not found" should {
         "try without the trailing slash" in new Test {
-          requestHandler.routeRequest(buildRequest(s"$path/")) shouldBe Some(handler)
+          requestHandler.routeRequest(buildRequest(s"$path")) shouldBe Some(handler)
         }
       }
     }
