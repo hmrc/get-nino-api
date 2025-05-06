@@ -39,7 +39,7 @@ class VersionRoutingRequestHandler @Inject() (
                                              ) extends DefaultHttpRequestHandler(
   webCommands = new DefaultWebCommands,
   optDevContext = None,
-  router = versionRoutingMap.defaultRouter,
+  router = () => versionRoutingMap.defaultRouter,
   errorHandler = errorHandler,
   configuration = httpConfiguration,
   filters = filters.filters
@@ -78,22 +78,6 @@ class VersionRoutingRequestHandler @Inject() (
           None
         }
     }
-
-//    router
-//      .handlerFor(request)
-//      .orElse {
-//
-//        if (request.path.endsWith("/")) {
-//          val pathWithoutSlash        = request.path.dropRight(1)
-//          val requestWithModifiedPath = request.withTarget(request.target.withPath(pathWithoutSlash))
-//          router.handlerFor(requestWithModifiedPath)
-//        } else {
-//          None
-//        }
-//      }
-//    println(5)
-//
-//    y
   }
 
 }
