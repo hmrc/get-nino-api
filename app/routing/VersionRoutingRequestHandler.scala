@@ -26,7 +26,6 @@ import utils.ErrorHandler
 import v1.models.errors.{InvalidAcceptHeaderError, UnsupportedVersionError}
 
 import javax.inject.{Inject, Singleton}
-import scala.util.Try
 
 @Singleton
 class VersionRoutingRequestHandler @Inject() (

@@ -27,14 +27,13 @@ import play.api.mvc._
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import support.ControllerBaseSpec
+import uk.gov.hmrc.auth.core._
 import uk.gov.hmrc.auth.core.authorise.Predicate
 import uk.gov.hmrc.auth.core.retrieve.Retrieval
-import uk.gov.hmrc.auth.core._
 import uk.gov.hmrc.http._
 import utils.NinoApplicationTestData._
 import v1.controllers.predicates._
 import v1.models.errors.{JsonValidationError => NinoJsonValidationError, _}
-import v1.models.request.NinoApplication
 import v1.services.DesService
 
 import scala.concurrent._
@@ -81,7 +80,7 @@ class RegisterNinoControllerSpec extends ControllerBaseSpec with MockAppConfig {
       "the request is authorised" when {
         "the request is valid" when {
           "the service call is successful" should {
-            "return 202 ACCEPTED" in new Setup(true) {
+            "return 202 ACCEPTED" in new Setup(logDwpJson = true) {
               when(mockAuthConnector
                 .authorise(any[Predicate](), any[Retrieval[Unit]]())(any[HeaderCarrier](), any[ExecutionContext]()))
                 .thenReturn(Future.successful((): Unit))
@@ -111,7 +110,7 @@ class RegisterNinoControllerSpec extends ControllerBaseSpec with MockAppConfig {
           }
 
           "the service call returns 503 SERVICE_UNAVAILABLE with ServiceUnavailableError response" should {
-            "return 503 SERVICE_UNAVAILABLE with ServiceUnavailableError response" in new Setup(false) {
+            "return 503 SERVICE_UNAVAILABLE with ServiceUnavailableError response" in new Setup(logDwpJson = false) {
               when(mockAuthConnector
                 .authorise(any[Predicate](), any[Retrieval[Unit]]())(any[HeaderCarrier](), any[ExecutionContext]()))
                 .thenReturn(Future.successful((): Unit))
@@ -228,7 +227,7 @@ class RegisterNinoControllerSpec extends ControllerBaseSpec with MockAppConfig {
         }
 
         "the request body is not JSON" should {
-          "return 415 UNSUPPORTED_MEDIA_TYPE with InvalidBodyTypeError response" in new Setup(true) {
+          "return 415 UNSUPPORTED_MEDIA_TYPE with InvalidBodyTypeError response" in new Setup(logDwpJson = true) {
             when(mockAuthConnector
               .authorise(any[Predicate](), any[Retrieval[Unit]]())(any[HeaderCarrier](), any[ExecutionContext]()))
               .thenReturn(Future.successful((): Unit))
@@ -249,7 +248,7 @@ class RegisterNinoControllerSpec extends ControllerBaseSpec with MockAppConfig {
         }
 
         "the request body is a valid JSON, but cannot be validated as a NinoApplication" should {
-          "return a 400 BAD_REQUEST with JsonValidationError response" in new Setup(false) {
+          "return a 400 BAD_REQUEST with JsonValidationError response" in new Setup(logDwpJson = false) {
             when(mockAuthConnector
               .authorise(any[Predicate](), any[Retrieval[Unit]]())(any[HeaderCarrier](), any[ExecutionContext]()))
               .thenReturn(Future.successful((): Unit))

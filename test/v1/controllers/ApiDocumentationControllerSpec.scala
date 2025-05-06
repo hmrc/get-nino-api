@@ -19,6 +19,7 @@ package v1.controllers
 import controllers._
 import mocks.MockApiDefinitionConfig
 import org.scalatestplus.mockito.MockitoSugar.mock
+import play.api.Environment
 import play.api.http._
 import play.api.libs.json._
 import play.api.mvc.Result
@@ -38,7 +39,8 @@ class ApiDocumentationControllerSpec extends ControllerBaseSpec with MockApiDefi
 
   private val assets: Assets = new Assets(
     errorHandler = mockHttpErrorHandler,
-    meta = assetsMetadata
+    meta = assetsMetadata,
+    Environment.simple()
   )
 
   private val expectedJson: JsValue = Json.parse(
