@@ -188,7 +188,7 @@ class VersionRoutingRequestHandlerSpec extends UnitSpec with Matchers with Insid
 
         private val request = buildRequest("path")
         inside(requestHandler.routeRequest(request)) { case Some(action: EssentialAction) =>
-          val result = action.apply(request)
+          val result = action.apply(request).run()
 
           status(result)        shouldBe NOT_FOUND
           contentAsJson(result) shouldBe errorToJson(UnsupportedVersionError)
