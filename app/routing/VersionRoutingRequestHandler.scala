@@ -29,20 +29,20 @@ import javax.inject.{Inject, Singleton}
 
 @Singleton
 class VersionRoutingRequestHandler @Inject() (
-                                               versionRoutingMap: VersionRoutingMap,
-                                               errorHandler: ErrorHandler,
-                                               httpConfiguration: HttpConfiguration,
-                                               config: AppConfig,
-                                               filters: HttpFilters,
-                                               action: DefaultActionBuilder
-                                             ) extends DefaultHttpRequestHandler(
-  webCommands = new DefaultWebCommands,
-  optDevContext = None,
-  router = () => versionRoutingMap.defaultRouter,
-  errorHandler = errorHandler,
-  configuration = httpConfiguration,
-  filters = filters.filters
-) {
+  versionRoutingMap: VersionRoutingMap,
+  errorHandler: ErrorHandler,
+  httpConfiguration: HttpConfiguration,
+  config: AppConfig,
+  filters: HttpFilters,
+  action: DefaultActionBuilder
+) extends DefaultHttpRequestHandler(
+      webCommands = new DefaultWebCommands,
+      optDevContext = None,
+      router = () => versionRoutingMap.defaultRouter,
+      errorHandler = errorHandler,
+      configuration = httpConfiguration,
+      filters = filters.filters
+    ) {
 
   private val featureSwitch = FeatureSwitch(config.featureSwitch)
 
@@ -63,12 +63,10 @@ class VersionRoutingRequestHandler @Inject() (
     documentHandler orElse apiHandler
   }
 
-  private def routeWith(router: Router)(request: RequestHeader): Option[Handler] = {
-
-    router.handlerFor(request) match {
-      case Some(handler) =>
-        Some(handler)
-      case None =>
+  private def routeWith(router: Router)(request: RequestHeader): Option[Handler] =
+    router
+      .handlerFor(request)
+      .orElse {
         if (request.path.endsWith("/")) {
           val pathWithoutSlash        = request.path.dropRight(1)
           val requestWithModifiedPath = request.withTarget(request.target.withPath(pathWithoutSlash))
@@ -76,7 +74,6 @@ class VersionRoutingRequestHandler @Inject() (
         } else {
           None
         }
-    }
-  }
+      }
 
 }
