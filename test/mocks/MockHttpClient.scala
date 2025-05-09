@@ -40,10 +40,8 @@ trait MockHttpClient extends UnitSpec {
 
       when(mockHttpClient.post(any[URL]())(any[HeaderCarrier]())).thenReturn(mockRequestBuilder)
       when(mockRequestBuilder.setHeader(any[(String, String)]())).thenReturn(mockRequestBuilder)
-      when(
-        mockRequestBuilder
-          .withBody(any[JsValue]())(any[BodyWritable[JsValue]](), any[Tag[JsValue]](), any[ExecutionContext]())
-      )
+
+      when(mockRequestBuilder.withBody(any[JsValue]())(any[BodyWritable[JsValue]](), any[Tag[JsValue]](), any[ExecutionContext]()))
         .thenReturn(mockRequestBuilder)
 
       when(mockRequestBuilder.execute(any[HttpReads[HttpPostResponse]](), any[ExecutionContext]()))
