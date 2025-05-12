@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2025 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -40,11 +40,11 @@ class DesConnectorSpec extends UnitSpec with MockAppConfig with MockHttpClient {
   }
 
   private class SendRegisterRequestSetup(logDesJson: Boolean) {
-    MockedAppConfig.desToken().returns("des-token")
-    MockedAppConfig.desEnvironment().returns("des-environment")
-    MockedAppConfig.desBaseUrl().returns("http://des-base-url")
-    MockedAppConfig.desEndpoint().returns("/register")
-    MockedAppConfig.logDesJson().returns(logDesJson)
+    MockedAppConfig.desToken().thenReturn("des-token")
+    MockedAppConfig.desEnvironment().thenReturn("des-environment")
+    MockedAppConfig.desBaseUrl().thenReturn("http://des-base-url")
+    MockedAppConfig.desEndpoint().thenReturn("/register")
+    MockedAppConfig.logDesJson().thenReturn(logDesJson)
 
     val desConnector: DesConnector = new DesConnector(mockHttpClient, mockAppConfig)
   }
@@ -79,13 +79,10 @@ class DesConnectorSpec extends UnitSpec with MockAppConfig with MockHttpClient {
 
     ".sendRegisterRequest" should {
       "return a successful response" when {
-        "the request is successful" in new SendRegisterRequestSetup(true) {
+        "the request is successful" in new SendRegisterRequestSetup(logDesJson = true) {
           val expectedResponse: HttpPostResponse = Right(())
 
-          MockedHttpClient.post(
-            url = "http://des-base-url/register",
-            body = maxRegisterNinoRequestJson(true)
-          )(response = expectedResponse)
+          MockedHttpClient.post(expectedResponse)
 
           val result: HttpPostResponse = await(desConnector.sendRegisterRequest(maxRegisterNinoRequestModel))
 
@@ -94,7 +91,7 @@ class DesConnectorSpec extends UnitSpec with MockAppConfig with MockHttpClient {
       }
 
       "return an error response" when {
-        "the request is unsuccessful" in new SendRegisterRequestSetup(false) {
+        "the request is unsuccessful" in new SendRegisterRequestSetup(logDesJson =  false) {
           val expectedResponse: HttpPostResponse = Left(
             DownstreamValidationError(
               code = "ACCOUNT_ALREADY_EXISTS",
@@ -102,10 +99,7 @@ class DesConnectorSpec extends UnitSpec with MockAppConfig with MockHttpClient {
             )
           )
 
-          MockedHttpClient.post(
-            url = "http://des-base-url/register",
-            body = maxRegisterNinoRequestJson(true)
-          )(response = expectedResponse)
+          MockedHttpClient.post(expectedResponse)
 
           val result: HttpPostResponse = await(desConnector.sendRegisterRequest(maxRegisterNinoRequestModel))
 

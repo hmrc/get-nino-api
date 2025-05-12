@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2025 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,14 +16,15 @@
 
 package mocks
 
+import izumi.reflect.Tag
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
-import izumi.reflect.Tag
+import org.scalatestplus.mockito.MockitoSugar.mock
 import play.api.libs.json._
 import play.api.libs.ws.BodyWritable
 import support.UnitSpec
-import uk.gov.hmrc.http.{HeaderCarrier, HttpReads}
 import uk.gov.hmrc.http.client.{HttpClientV2, RequestBuilder}
+import uk.gov.hmrc.http.{HeaderCarrier, HttpReads}
 import v1.connectors.httpParsers.HttpResponseTypes.HttpPostResponse
 
 import java.net.URL
@@ -35,23 +36,16 @@ trait MockHttpClient extends UnitSpec {
   val mockRequestBuilder: RequestBuilder = mock[RequestBuilder]
 
   object MockedHttpClient {
-    def post(url: String, body: JsValue)(response: HttpPostResponse): Unit = {
-      (mockHttpClient
-        .post(_: URL)(_: HeaderCarrier))
-        .expects(*, *)
-        .returns(mockRequestBuilder)
-      (mockRequestBuilder
-        .setHeader(_: (String, String)))
-        .expects(*)
-        .returns(mockRequestBuilder)
-      (mockRequestBuilder
-        .withBody(_: JsValue)(_: BodyWritable[JsValue], _: Tag[JsValue], _: ExecutionContext))
-        .expects(*, *, *, *)
-        .returns(mockRequestBuilder)
-      (mockRequestBuilder
-        .execute(_: HttpReads[?], _: ExecutionContext))
-        .expects(*, *)
-        .returns(Future.successful(response))
+    def post(response: HttpPostResponse): Unit = {
+
+      when(mockHttpClient.post(any[URL]())(any[HeaderCarrier]())).thenReturn(mockRequestBuilder)
+      when(mockRequestBuilder.setHeader(any[(String, String)]())).thenReturn(mockRequestBuilder)
+
+      when(mockRequestBuilder.withBody(any[JsValue]())(any[BodyWritable[JsValue]](), any[Tag[JsValue]](), any[ExecutionContext]()))
+        .thenReturn(mockRequestBuilder)
+
+      when(mockRequestBuilder.execute(any[HttpReads[HttpPostResponse]](), any[ExecutionContext]()))
+        .thenReturn(Future.successful(response))
     }
   }
 }

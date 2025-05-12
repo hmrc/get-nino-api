@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2025 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,12 +16,15 @@
 
 package v1.services
 
+import org.mockito.ArgumentMatchers
+import org.mockito.ArgumentMatchers.any
+import org.mockito.Mockito.when
+import org.scalatestplus.mockito.MockitoSugar.mock
 import support.UnitSpec
 import uk.gov.hmrc.http.HeaderCarrier
 import utils.NinoApplicationTestData._
 import v1.connectors.DesConnector
 import v1.models.errors.ServiceUnavailableError
-import v1.models.request.NinoApplication
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.{ExecutionContext, Future}
@@ -36,10 +39,9 @@ class DesServiceSpec extends UnitSpec {
     "return a des response model" when {
       "a response is returned from the connector" in {
 
-        (mockConnector
-          .sendRegisterRequest(_: NinoApplication)(_: HeaderCarrier, _: ExecutionContext))
-          .expects(maxRegisterNinoRequestModel, *, *)
-          .returns(Future.successful(Right(())))
+        when(mockConnector
+          .sendRegisterRequest(ArgumentMatchers.eq(maxRegisterNinoRequestModel))(any[HeaderCarrier](), any[ExecutionContext]()))
+          .thenReturn(Future.successful(Right(())))
 
         val response = await(service.registerNino(maxRegisterNinoRequestModel))
 
@@ -50,10 +52,9 @@ class DesServiceSpec extends UnitSpec {
       "an error is returned from the connector" in {
         val returnedError = ServiceUnavailableError
 
-        (mockConnector
-          .sendRegisterRequest(_: NinoApplication)(_: HeaderCarrier, _: ExecutionContext))
-          .expects(maxRegisterNinoRequestModel, *, *)
-          .returns(Future.successful(Left(returnedError)))
+        when(mockConnector
+          .sendRegisterRequest(ArgumentMatchers.eq(maxRegisterNinoRequestModel))(any[HeaderCarrier](), any[ExecutionContext]()))
+          .thenReturn(Future.successful(Left(returnedError)))
 
         val response = await(service.registerNino(maxRegisterNinoRequestModel))
 
