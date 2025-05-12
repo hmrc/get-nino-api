@@ -16,39 +16,35 @@
 
 package config
 
-import org.mockito.ArgumentMatchers
-import org.mockito.ArgumentMatchers.any
-import org.mockito.Mockito.when
-import org.scalatestplus.mockito.MockitoSugar.mock
 import play.api._
 import support.UnitSpec
 import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 
 class AppConfigSpec extends UnitSpec {
 
-  private trait Test {
-    implicit lazy val mockServiceConfig: ServicesConfig = mock[ServicesConfig]
-    implicit lazy val mockConfig: Configuration         = mock[Configuration]
-
-    lazy val target: AppConfigImpl = new AppConfigImpl
+  def createAppConfig(config: (String, Any)*): AppConfigImpl = {
+    val configuration = Configuration(config: _*)
+    new AppConfigImpl()(new ServicesConfig(configuration), configuration)
   }
 
   "AppConfigImpl" when {
     ".desBaseUrl" should {
       "return the DES URL" when {
-        "a value is added to the configuration" in new Test {
-          when(mockServiceConfig
-            .baseUrl("des"))
-            .thenReturn("http://des-host")
+        "a value is added to the configuration" in {
+          val appConfig = createAppConfig(
+            "microservice.services.des.host" -> "des-host",
+            "microservice.services.des.port" -> "1234"
+          )
 
-          target.desBaseUrl shouldBe "http://des-host"
+          appConfig.desBaseUrl shouldBe "http://des-host:1234"
         }
 
         "return a runtime exception" when {
-          "no value is added to the configuration" in new Test {
-            when(mockServiceConfig.baseUrl("des")).thenThrow(new RuntimeException("crunch"))
+          "no value is added to the configuration" in {
+            val appConfig = createAppConfig()
+
             intercept[RuntimeException] {
-              target.desBaseUrl
+              appConfig.desBaseUrl
             }
           }
         }
@@ -57,21 +53,18 @@ class AppConfigSpec extends UnitSpec {
 
     ".desEnvironment" should {
       "return the DES env" when {
-        "a value is added to the configuration" in new Test {
-          when(mockServiceConfig.getString("microservice.services.des.env"))
-            .thenReturn("TEST_ENV")
-
-          target.desEnvironment shouldBe "TEST_ENV"
+        "a value is added to the configuration" in {
+          val appConfig = createAppConfig("microservice.services.des.env" -> "TEST_ENV")
+          appConfig.desEnvironment shouldBe "TEST_ENV"
         }
       }
 
       "return a runtime exception" when {
-        "no value is added to the configuration" in new Test {
-          when(mockServiceConfig.getString("microservice.services.des.env"))
-            .thenThrow(new RuntimeException("rustled"))
+        "no value is added to the configuration" in {
+          val appConfig = createAppConfig()
 
           intercept[RuntimeException] {
-            target.desEnvironment
+            appConfig.desEnvironment
           }
         }
       }
@@ -79,23 +72,18 @@ class AppConfigSpec extends UnitSpec {
 
     ".desToken" should {
       "return the DES token" when {
-        "token is added to the configuration" in new Test {
-          when(mockServiceConfig
-            .getString("microservice.services.des.token"))
-            .thenReturn("some-token")
-
-          target.desToken shouldBe "some-token"
+        "token is added to the configuration" in {
+          val appConfig = createAppConfig("microservice.services.des.token" -> "some-token")
+          appConfig.desToken shouldBe "some-token"
         }
       }
 
       "return a runtime exception" when {
-        "no value is added to the configuration" in new Test {
-          when(mockServiceConfig
-            .getString("microservice.services.des.token"))
-            .thenThrow(new RuntimeException("bam"))
+        "no value is added to the configuration" in {
+          val appConfig = createAppConfig()
 
           intercept[RuntimeException] {
-            target.desToken
+            appConfig.desToken
           }
         }
       }
@@ -103,23 +91,18 @@ class AppConfigSpec extends UnitSpec {
 
     ".desEndpoint" should {
       "return the DES endpoint" when {
-        "a value is added to the configuration" in new Test {
-          when(mockServiceConfig
-            .getString("microservice.services.des.endpoint"))
-            .thenReturn("/register")
-
-          target.desEndpoint shouldBe "/register"
+        "a value is added to the configuration" in {
+          val appConfig = createAppConfig("microservice.services.des.endpoint" -> "/register")
+          appConfig.desEndpoint shouldBe "/register"
         }
       }
 
       "return a runtime exception" when {
-        "no value is added to the configuration" in new Test {
-          when(mockServiceConfig
-            .getString("microservice.services.des.endpoint"))
-            .thenThrow(new RuntimeException("blat"))
+        "no value is added to the configuration" in {
+          val appConfig = createAppConfig()
 
           intercept[RuntimeException] {
-            target.desEndpoint
+            appConfig.desEndpoint
           }
         }
       }
@@ -127,45 +110,32 @@ class AppConfigSpec extends UnitSpec {
 
     ".logDesJson" should {
       "return true" when {
-        "the value true is added to the configuration" in new Test {
-          when(mockConfig
-            .getOptional[Boolean](ArgumentMatchers.eq("feature-switch.logDesJson"))(any[ConfigLoader[Boolean]]()))
-            .thenReturn(Some(true))
-
-          target.logDesJson shouldBe true
+        "the value true is added to the configuration" in {
+          val appConfig = createAppConfig("feature-switch.logDesJson" -> true)
+          appConfig.logDesJson shouldBe true
         }
       }
 
       "default to false" when {
-        "no value is added to the configuration" in new Test {
-          when(mockConfig
-            .getOptional[Boolean](ArgumentMatchers.eq("feature-switch.logDesJson"))(any[ConfigLoader[Boolean]]()))
-            .thenReturn(None)
-
-          target.logDesJson shouldBe false
+        "no value is added to the configuration" in {
+          val appConfig = createAppConfig()
+          appConfig.logDesJson shouldBe false
         }
       }
     }
 
     ".logDwpJson" should {
       "return true" when {
-        "the value true is added to the configuration" in new Test {
-
-          when(mockConfig
-            .getOptional[Boolean](ArgumentMatchers.eq("feature-switch.logDwpJson"))(any[ConfigLoader[Boolean]]()))
-            .thenReturn(Some(true))
-
-          target.logDwpJson shouldBe true
+        "the value true is added to the configuration" in {
+          val appConfig = createAppConfig("feature-switch.logDwpJson" -> true)
+          appConfig.logDwpJson shouldBe true
         }
       }
 
       "default to false" when {
-        "no value is added to the configuration" in new Test {
-          when(mockConfig
-            .getOptional[Boolean](ArgumentMatchers.eq("feature-switch.logDwpJson"))( any[ConfigLoader[Boolean]]()))
-            .thenReturn(None)
-
-          target.logDwpJson shouldBe false
+        "no value is added to the configuration" in {
+          val appConfig = createAppConfig()
+          appConfig.logDwpJson shouldBe false
         }
       }
     }
