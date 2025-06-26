@@ -52,7 +52,7 @@ object RegisterNinoResponseHttpParser {
           )
           Left(ServiceUnavailableError)
         case (status, Failure(ex))                            =>
-          logger.warn(
+          logger.error(
             s"[RegisterNinoResponseHttpParser][read] Unexpected $status response returned." +
               s"Exception reading JSON body from DES response: $ex"
           )

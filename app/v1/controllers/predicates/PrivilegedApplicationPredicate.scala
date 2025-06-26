@@ -51,9 +51,10 @@ class PrivilegedApplicationPredicate @Inject() (
         logger.debug(
           s"[PrivilegedApplicationPredicate][invokeBlock] Authorization failed. Bearer token sent: ${hc.authorization}"
         )
+        logger.error(s"[PrivilegedApplicationPredicate][invokeBlock] Authorization failed with ${error.reason}")
         UnauthorisedError(error.reason).result
       case ex                            =>
-        logger.warn(s"[PrivilegedApplicationPredicate][invokeBlock] Auth request failed with unexpected exception: $ex")
+        logger.error(s"[PrivilegedApplicationPredicate][invokeBlock] Auth request failed with unexpected exception: $ex")
         ServiceUnavailableError.result
     }
   }
