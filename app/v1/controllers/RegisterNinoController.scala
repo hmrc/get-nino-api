@@ -17,6 +17,7 @@
 package v1.controllers
 
 import config.AppConfig
+
 import javax.inject._
 import play.api.Logging
 import play.api.libs.json.Json
@@ -27,6 +28,7 @@ import v1.controllers.predicates._
 import v1.models.request.NinoApplication
 import v1.services.DesService
 import v1.utils.JsonBodyUtil
+import views.html.defaultpages.error
 
 import scala.concurrent._
 
@@ -64,7 +66,9 @@ class RegisterNinoController @Inject() (
         Future(parsedJsonBody[NinoApplication]).flatMap {
           case Right(ninoModel) =>
             desService.registerNino(ninoModel)(hcWithOriginatorIdAndCorrelationId, ec).map {
-              case Right(_)    => Accepted
+              case Right(_)    =>
+                logger.info(s"[RegisterNinoController][register] Returned successful response")
+                Accepted
               case Left(error) => logErrorResult(error)
             }
           case Left(error)      => Future.successful(logErrorResult(error))

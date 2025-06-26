@@ -64,7 +64,8 @@ class DesConnector @Inject() (
     )
     val requestBody                                                   = Json.toJson(request)
 
-    if (appConfig.logDesJson()) logger.info(s"Logging JSON body of outgoing DES request: $requestBody")
+    if (appConfig.logDesJson())
+      logger.info(s"[DesConnector][sendRegisterRequest] Logging JSON body of outgoing DES request: $requestBody")
 
     http
       .post(url"$url")

@@ -34,6 +34,7 @@ class OriginatorIdPredicate @Inject() (
     request.headers.get("OriginatorId") match {
       case Some(originatorId) =>
         if (originatorId == "DA2_DWP_REG") {
+          logger.info("[OriginatorIdPredicate][Filter] - OriginatorId matches with the regex")
           Future.successful(None)
         } else {
           logger.warn("[OriginatorIdPredicate][Filter] - OriginatorId does not match regex")

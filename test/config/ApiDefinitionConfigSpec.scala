@@ -23,7 +23,6 @@ import org.scalatestplus.mockito.MockitoSugar.mock
 import play.api.{ConfigLoader, Configuration}
 import support.UnitSpec
 
-
 class ApiDefinitionConfigSpec extends UnitSpec {
 
   private trait Test {
@@ -58,8 +57,10 @@ class ApiDefinitionConfigSpec extends UnitSpec {
     ".accessType" should {
       "retrieve the API access setting specified" when {
         "a value is added to the configuration" in new Test {
-          when(mockConfig
-            .getOptional[String](ArgumentMatchers.eq("api.access.type"))(any[ConfigLoader[String]]()))
+          when(
+            mockConfig
+              .getOptional[String](ArgumentMatchers.eq("api.access.type"))(any[ConfigLoader[String]]())
+          )
             .thenReturn(Some("PUBLIC"))
 
           target.accessType shouldBe "PUBLIC"
@@ -68,8 +69,10 @@ class ApiDefinitionConfigSpec extends UnitSpec {
 
       "retrieve the default API access setting (PRIVATE)" when {
         "no value is added to the configuration" in new Test {
-          when(mockConfig
-            .getOptional[String](ArgumentMatchers.eq("api.access.type"))(any[ConfigLoader[String]]()))
+          when(
+            mockConfig
+              .getOptional[String](ArgumentMatchers.eq("api.access.type"))(any[ConfigLoader[String]]())
+          )
             .thenReturn(None)
 
           target.accessType shouldBe "PRIVATE"
