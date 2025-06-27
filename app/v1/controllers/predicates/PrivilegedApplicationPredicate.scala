@@ -54,7 +54,9 @@ class PrivilegedApplicationPredicate @Inject() (
         logger.error(s"[PrivilegedApplicationPredicate][invokeBlock] Authorization failed with ${error.reason}")
         UnauthorisedError(error.reason).result
       case ex                            =>
-        logger.error(s"[PrivilegedApplicationPredicate][invokeBlock] Auth request failed with unexpected exception: $ex")
+        logger.error(
+          s"[PrivilegedApplicationPredicate][invokeBlock] Auth request failed with unexpected exception: $ex"
+        )
         ServiceUnavailableError.result
     }
   }
