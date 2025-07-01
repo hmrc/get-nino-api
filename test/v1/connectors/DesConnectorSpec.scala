@@ -91,7 +91,7 @@ class DesConnectorSpec extends UnitSpec with MockAppConfig with MockHttpClient {
       }
 
       "return an error response" when {
-        "the request is unsuccessful" in new SendRegisterRequestSetup(logDesJson =  false) {
+        "the request is unsuccessful" in new SendRegisterRequestSetup(logDesJson = false) {
           val expectedResponse: HttpPostResponse = Left(
             DownstreamValidationError(
               code = "ACCOUNT_ALREADY_EXISTS",

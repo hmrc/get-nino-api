@@ -67,7 +67,7 @@ class ErrorHandler @Inject() (
       case ex: AuthorisationException => Future.successful(UnauthorisedError(ex.reason).result)
       case _: JsValidationException   => Future.successful(BadRequestError.result)
       case ex                         =>
-        logger.warn(s"[ErrorHandler][onServerError] Server error due to unexpected exception: $ex")
+        logger.error(s"[ErrorHandler][onServerError] Server error due to unexpected exception: $ex")
         Future.successful(ServiceUnavailableError.result)
     }
   }

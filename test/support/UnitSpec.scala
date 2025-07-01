@@ -22,13 +22,7 @@ import org.scalatest.wordspec.AnyWordSpecLike
 import play.api.libs.json.{JsObject, JsString}
 import play.api.test.{DefaultAwaitTimeout, FutureAwaits}
 
-
-trait UnitSpec
-    extends AnyWordSpecLike
-    with EitherValues
-    with Matchers
-    with FutureAwaits
-    with DefaultAwaitTimeout {
+trait UnitSpec extends AnyWordSpecLike with EitherValues with Matchers with FutureAwaits with DefaultAwaitTimeout {
 
   protected def flatJsObject(properties: (String, String)*): JsObject = JsObject(
     properties.map(prop => (prop._1, JsString(prop._2)))

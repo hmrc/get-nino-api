@@ -39,6 +39,7 @@ class CorrelationIdPredicate @Inject() (
     correlationId match {
       case Some(id) =>
         if (id.matches(correlationIdRegex)) {
+          logger.info("[CorrelationIdPredicate][Filter] - CorrelationId matches with the regex")
           Future.successful(None)
         } else {
           logger.warn("[CorrelationIdPredicate][Filter] - CorrelationId does not match regex")

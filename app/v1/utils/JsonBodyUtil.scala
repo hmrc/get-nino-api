@@ -28,14 +28,14 @@ trait JsonBodyUtil extends Logging {
       body.json.validate[T] match {
         case jsErrors: JsError            =>
           logger.debug(
-            s"[MicroserviceBaseController][parsedJsonBody] Json received, but could not validate. Errors: $jsErrors"
+            s"[RegisterNinoController][parsedJsonBody] Json received, but could not validate. Errors: $jsErrors"
           )
-          logger.warn("[MicroserviceBaseController][parsedJsonBody] Json received, but could not validate.")
+          logger.warn("[RegisterNinoController][parsedJsonBody] Json received, but could not validate.")
           Left(JsonValidationError(jsErrors))
         case validatedModel: JsSuccess[T] => Right(validatedModel.value)
       }
     case _                      =>
-      logger.warn("[MicroserviceBaseController][parsedJsonBody] Body of request was not JSON.")
+      logger.warn("[RegisterNinoController][parsedJsonBody] Body of request was not JSON.")
       Left(InvalidBodyTypeError)
   }
 

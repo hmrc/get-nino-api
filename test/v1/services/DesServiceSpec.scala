@@ -39,8 +39,13 @@ class DesServiceSpec extends UnitSpec {
     "return a des response model" when {
       "a response is returned from the connector" in {
 
-        when(mockConnector
-          .sendRegisterRequest(ArgumentMatchers.eq(maxRegisterNinoRequestModel))(any[HeaderCarrier](), any[ExecutionContext]()))
+        when(
+          mockConnector
+            .sendRegisterRequest(ArgumentMatchers.eq(maxRegisterNinoRequestModel))(
+              any[HeaderCarrier](),
+              any[ExecutionContext]()
+            )
+        )
           .thenReturn(Future.successful(Right(())))
 
         val response = await(service.registerNino(maxRegisterNinoRequestModel))
@@ -52,8 +57,13 @@ class DesServiceSpec extends UnitSpec {
       "an error is returned from the connector" in {
         val returnedError = ServiceUnavailableError
 
-        when(mockConnector
-          .sendRegisterRequest(ArgumentMatchers.eq(maxRegisterNinoRequestModel))(any[HeaderCarrier](), any[ExecutionContext]()))
+        when(
+          mockConnector
+            .sendRegisterRequest(ArgumentMatchers.eq(maxRegisterNinoRequestModel))(
+              any[HeaderCarrier](),
+              any[ExecutionContext]()
+            )
+        )
           .thenReturn(Future.successful(Left(returnedError)))
 
         val response = await(service.registerNino(maxRegisterNinoRequestModel))

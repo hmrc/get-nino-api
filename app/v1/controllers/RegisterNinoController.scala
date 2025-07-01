@@ -17,7 +17,6 @@
 package v1.controllers
 
 import config.AppConfig
-import javax.inject._
 import play.api.Logging
 import play.api.libs.json.Json
 import play.api.mvc._
@@ -28,6 +27,7 @@ import v1.models.request.NinoApplication
 import v1.services.DesService
 import v1.utils.JsonBodyUtil
 
+import javax.inject._
 import scala.concurrent._
 
 @Singleton

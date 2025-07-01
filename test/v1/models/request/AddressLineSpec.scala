@@ -29,7 +29,6 @@ class AddressLineSpec extends AnyWordSpec with Matchers {
   val validAddressWithBackslash: AddressLine     = AddressLine("123\\Main St.")
   val addressWithInvalidCharacters: AddressLine  = AddressLine("Invalid@Address!")
 
-
   "AddressLine.read" when {
 
     "provided with valid JSON" should {
