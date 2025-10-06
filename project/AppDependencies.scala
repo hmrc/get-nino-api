@@ -11,10 +11,7 @@ object AppDependencies {
   )
 
   private lazy val test: Seq[ModuleID] = Seq(
-    "uk.gov.hmrc"         %% "bootstrap-test-play-30" % bootstrapPlayVersion,
-    "org.scalatest"       %% "scalatest"              % "3.2.19",
-    "org.wiremock"         % "wiremock-standalone"    % "3.13.1",
-    "com.vladsch.flexmark" % "flexmark-all"           % "0.64.8"
+    "uk.gov.hmrc" %% "bootstrap-test-play-30" % bootstrapPlayVersion
   ).map(_ % Test)
 
   def apply(): Seq[ModuleID]           = compile ++ test
