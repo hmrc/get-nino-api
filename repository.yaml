@@ -1,4 +1,9 @@
+digital-service: NINO/National Insurance Number
+description: This is a NINO Automation API to create a National Insurance Number (NINO) account.
 repoVisibility: public_0C3F0CE3E6E6448FAD341E7BFA50FCD333E06A20CFF05FCACE61154DDBBADF71
+type: Service
+service-type: Backend
+tags: [ 'api' ]
 test-repositories:
   - get-nino-api-performance-tests
   - get-nino-api-acceptance-tests
