@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2026 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -50,14 +50,14 @@ trait IntegrationBaseSpec
     "microservice.services.auth.port" -> mockPort
   )
 
-  val fakeApp = new GuiceApplicationBuilder()
+  val fakeApp: Application = new GuiceApplicationBuilder()
     .configure(servicesConfig)
     .build()
 
-  val httpClient = fakeApp.injector.instanceOf[HttpClientV2]
-  val appConfig  = fakeApp.injector.instanceOf[AppConfig]
+  val httpClient: HttpClientV2 = fakeApp.injector.instanceOf[HttpClientV2]
+  val appConfig: AppConfig = fakeApp.injector.instanceOf[AppConfig]
 
-  val des = new DesConnector(httpClient, appConfig) {
+  val des: DesConnector = new DesConnector(httpClient, appConfig) {
     override def generateNewUUID: String = "DBABB1dB-7DED-b5Dd-19ce-5168C9E8fff9"
   }
 
