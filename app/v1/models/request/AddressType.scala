@@ -40,6 +40,7 @@ object AddressType {
     case Correspondence.value => true
     case _                    => false
   }
+
 }
 
 case object Residential extends AddressType {

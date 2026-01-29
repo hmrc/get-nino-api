@@ -35,8 +35,7 @@ class ErrorHandler @Inject() (
   auditConnector: AuditConnector,
   httpAuditEvent: HttpAuditEvent
 )(implicit ec: ExecutionContext)
-    extends JsonErrorHandler(auditConnector, httpAuditEvent, config)
-    with Logging {
+    extends JsonErrorHandler(auditConnector, httpAuditEvent, config) with Logging {
 
   override def onClientError(request: RequestHeader, statusCode: Int, message: String): Future[Result] = {
     logger.warn(
@@ -71,4 +70,5 @@ class ErrorHandler @Inject() (
         Future.successful(ServiceUnavailableError.result)
     }
   }
+
 }

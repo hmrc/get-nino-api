@@ -325,4 +325,5 @@ object ItNinoApplicationTestData {
     ),
     nationalityCode = Some("GBR")
   )
+
 }

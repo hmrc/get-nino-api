@@ -28,6 +28,7 @@ final case class LastEUAddress(
 )
 
 object LastEUAddress {
+
   implicit val reads: Reads[LastEUAddress] = (
     (__ \ "line1").readNullable[AddressLine] and
       (__ \ "line2").readNullable[AddressLine] and

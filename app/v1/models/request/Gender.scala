@@ -24,6 +24,7 @@ sealed trait Gender {
 }
 
 object Gender extends Logging {
+
   private[models] def validGenderCheck: String => Boolean = {
     case Male.value           => true
     case Female.value         => true

@@ -40,7 +40,7 @@ import scala.concurrent._
 
 class RegisterNinoControllerSpec extends ControllerBaseSpec with MockAppConfig {
 
-  private implicit val executionContext: ExecutionContext = stubControllerComponents().executionContext
+  implicit private val executionContext: ExecutionContext = stubControllerComponents().executionContext
 
   private val mockAuthConnector: AuthConnector = mock[AuthConnector]
 
@@ -365,4 +365,5 @@ class RegisterNinoControllerSpec extends ControllerBaseSpec with MockAppConfig {
       }
     }
   }
+
 }

@@ -43,4 +43,5 @@ object DesStub extends WireMockMethods {
           headers = Map("OriginatorId" -> "DA2_DWP_REG", "CorrelationId" -> "DBABB1dB-7DED-b5Dd-19ce-5168C9E8fff9")
         ).thenReturn(responseStatus)
     }
+
 }

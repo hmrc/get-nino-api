@@ -25,6 +25,7 @@ trait WireMockMethods {
   def when(uri: String, headers: Map[String, String] = Map.empty): Mapping = new Mapping(uri, headers, None)
 
   class Mapping(uri: String, headers: Map[String, String], body: Option[String]) {
+
     private val mapping = {
       val uriMapping = post(urlPathMatching(uri))
 
@@ -60,5 +61,7 @@ trait WireMockMethods {
 
       stubFor(mapping.willReturn(response))
     }
+
   }
+
 }

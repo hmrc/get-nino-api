@@ -63,4 +63,5 @@ class JsonBodyUtilSpec extends UnitSpec {
       }
     }
   }
+
 }

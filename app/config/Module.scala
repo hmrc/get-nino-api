@@ -27,4 +27,5 @@ class Module extends AbstractModule {
     bind(classOf[AppConfig]).to(classOf[AppConfigImpl]).asEagerSingleton()
     bind(classOf[ApiDefinitionConfig]).to(classOf[ApiDefinitionConfigImpl]).asEagerSingleton()
   }
+
 }

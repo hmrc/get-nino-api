@@ -47,8 +47,7 @@ class DateModelSpec extends UnitSpec {
         jsonForRead.as[DateModel] shouldBe validModel
       }
 
-      "regardless of the month" which {
-
+      "regardless of the month" which
         (1 to 12).map(number => s"20-${("0" + number.toString).takeRight(2)}-2000").foreach { stringDate =>
           s"for the following string: $stringDate" in {
             val expectedModel = DateModel(stringDate)
@@ -57,7 +56,6 @@ class DateModelSpec extends UnitSpec {
           }
         }
 
-      }
     }
 
     "correctly parse to Json" when {
@@ -87,4 +85,5 @@ class DateModelSpec extends UnitSpec {
 
     }
   }
+
 }

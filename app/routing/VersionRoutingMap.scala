@@ -40,4 +40,5 @@ final case class VersionRoutingMapImpl @Inject() (defaultRouter: Router, v1Route
   val map: Map[String, Router] = Map(
     VERSION_1 -> v1Router
   )
+
 }

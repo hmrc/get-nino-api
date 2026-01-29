@@ -71,4 +71,5 @@ class LastEUAddressSpec extends UnitSpec {
       }
     }
   }
+
 }

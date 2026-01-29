@@ -140,4 +140,5 @@ class AppConfigSpec extends UnitSpec {
       }
     }
   }
+
 }

@@ -26,9 +26,7 @@ import scala.concurrent.{ExecutionContext, Future}
 class OriginatorIdPredicate @Inject() (
   ec: ExecutionContext,
   val controllerComponents: ControllerComponents
-) extends ActionFilter[Request]
-    with BaseController
-    with Logging {
+) extends ActionFilter[Request] with BaseController with Logging {
 
   override protected def filter[A](request: Request[A]): Future[Option[Result]] =
     request.headers.get("OriginatorId") match {

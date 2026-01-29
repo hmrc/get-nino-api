@@ -204,4 +204,5 @@ class AddressModelSpec extends UnitSpec {
       }
     }
   }
+
 }

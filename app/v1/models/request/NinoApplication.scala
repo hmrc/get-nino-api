@@ -154,4 +154,5 @@ object NinoApplication {
           nationalityCode.fold(true)(validateAgainstRegex(_, nationalityCodeRegex))
         )
   )(NinoApplication.apply _)
+
 }

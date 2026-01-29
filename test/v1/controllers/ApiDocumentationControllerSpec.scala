@@ -31,6 +31,7 @@ import scala.concurrent.Future
 class ApiDocumentationControllerSpec extends ControllerBaseSpec with MockApiDefinitionConfig {
 
   private val mockHttpErrorHandler: HttpErrorHandler = mock[HttpErrorHandler]
+
   private val assetsMetadata: DefaultAssetsMetadata  = new DefaultAssetsMetadata(
     config = AssetsConfiguration(),
     resource = _ => None,
@@ -77,6 +78,7 @@ class ApiDocumentationControllerSpec extends ControllerBaseSpec with MockApiDefi
       errorHandler = mockHttpErrorHandler,
       apiConfig = mockApiDefinitionConfig
     )
+
   }
 
   "ApiDocumentationController" when {
@@ -89,4 +91,5 @@ class ApiDocumentationControllerSpec extends ControllerBaseSpec with MockApiDefi
       }
     }
   }
+
 }

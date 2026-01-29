@@ -47,6 +47,7 @@ object BirthDateVerification extends Logging {
 
   implicit val writes: Writes[BirthDateVerification] =
     Writes[BirthDateVerification](verificationValue => JsString(verificationValue.value))
+
 }
 
 case object Unverified extends BirthDateVerification {

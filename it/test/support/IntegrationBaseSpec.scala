@@ -55,13 +55,13 @@ trait IntegrationBaseSpec
     .build()
 
   val httpClient: HttpClientV2 = fakeApp.injector.instanceOf[HttpClientV2]
-  val appConfig: AppConfig = fakeApp.injector.instanceOf[AppConfig]
+  val appConfig: AppConfig     = fakeApp.injector.instanceOf[AppConfig]
 
   val des: DesConnector = new DesConnector(httpClient, appConfig) {
     override def generateNewUUID: String = "DBABB1dB-7DED-b5Dd-19ce-5168C9E8fff9"
   }
 
-  override implicit lazy val app: Application = new GuiceApplicationBuilder()
+  implicit override lazy val app: Application = new GuiceApplicationBuilder()
     .in(Environment.simple(mode = Mode.Dev))
     .overrides(inject.bind[DesConnector].toInstance(des))
     .configure(servicesConfig)

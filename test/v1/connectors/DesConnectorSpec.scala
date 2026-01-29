@@ -27,11 +27,12 @@ import scala.concurrent.ExecutionContext.Implicits.global
 
 class DesConnectorSpec extends UnitSpec with MockAppConfig with MockHttpClient {
 
-  private implicit val hc: HeaderCarrier = HeaderCarrier()
+  implicit private val hc: HeaderCarrier = HeaderCarrier()
 
   private val uuid: String = "123f4567-g89c-42c3-b456-557742330000"
 
   private class CorrelationIdSetup(requestId: Option[RequestId]) {
+
     private val desConnector: DesConnector = new DesConnector(mockHttpClient, mockAppConfig) {
       override def generateNewUUID: String = uuid
     }
@@ -108,4 +109,5 @@ class DesConnectorSpec extends UnitSpec with MockAppConfig with MockHttpClient {
       }
     }
   }
+
 }

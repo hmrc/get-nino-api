@@ -60,4 +60,5 @@ class ApiDocumentationController @Inject() (
 
     Future.successful(Ok(apiDefinition))
   }
+
 }

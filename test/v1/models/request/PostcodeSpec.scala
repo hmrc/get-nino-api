@@ -119,4 +119,5 @@ class PostcodeSpec extends AnyWordSpec with Matchers {
       }
     }
   }
+
 }

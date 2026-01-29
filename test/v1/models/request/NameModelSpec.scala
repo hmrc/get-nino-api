@@ -280,4 +280,5 @@ class NameModelSpec extends UnitSpec {
       }
     }
   }
+
 }

@@ -28,6 +28,7 @@ trait MockAppConfig extends UnitSpec {
   val mockAppConfig: AppConfig = mock[AppConfig]
 
   object MockedAppConfig {
+
     def desBaseUrl(): OngoingStubbing[String] =
       when(mockAppConfig.desBaseUrl())
 
@@ -48,5 +49,7 @@ trait MockAppConfig extends UnitSpec {
 
     def featureSwitch: OngoingStubbing[Option[Configuration]] =
       when(mockAppConfig.featureSwitch)
+
   }
+
 }

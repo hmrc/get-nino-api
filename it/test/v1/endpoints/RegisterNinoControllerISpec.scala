@@ -42,6 +42,7 @@ class RegisterNinoControllerISpec extends IntegrationBaseSpec {
           ("CorrelationId", "DBABB1dB-7DED-b5Dd-19ce-5168C9E8fff9")
         )
     }
+
   }
 
   "Calling the register nino endpoint" when {
@@ -246,4 +247,5 @@ class RegisterNinoControllerISpec extends IntegrationBaseSpec {
       }
     }
   }
+
 }

@@ -52,6 +52,7 @@ class ErrorHandlerSpec extends UnitSpec with GuiceOneAppPerSuite {
       "bootstrap.errorHandler.warnOnly.statusCodes"     -> List.empty,
       "metrics.enabled"                                 -> false
     )
+
     val handler                      = new ErrorHandler(configuration, auditConnector, httpAuditEvent)
   }
 
@@ -158,4 +159,5 @@ class ErrorHandlerSpec extends UnitSpec with GuiceOneAppPerSuite {
       }
     }
   }
+
 }

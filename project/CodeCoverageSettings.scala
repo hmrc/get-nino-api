@@ -11,4 +11,5 @@ object CodeCoverageSettings {
     coverageFailOnMinimum := true,
     coverageHighlighting := true
   )
+
 }

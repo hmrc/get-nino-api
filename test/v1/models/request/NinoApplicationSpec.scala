@@ -44,6 +44,7 @@ class NinoApplicationSpec extends UnitSpec {
 
   private val ninoRegex          = "^([ACEHJLMOPRSWXY][A-CEGHJ-NPR-TW-Z]|B[A-CEHJ-NPR-TW-Z]|" +
     "G[ACEGHJ-NPR-TW-Z]|[KT][A-CEGHJ-MPR-TW-Z]|N[A-CEGHJL-NPR-SW-Z]|Z[A-CEGHJ-NPR-TW-Y])[0-9]{6}[A-D]$"
+
   private val officeNumberRegex  = "^([0-9]{1,10})$"
   private val contactNumberRegex = "^([0-9]{1,72})$"
 
@@ -394,4 +395,5 @@ class NinoApplicationSpec extends UnitSpec {
       }
     }
   }
+
 }

@@ -27,4 +27,5 @@ trait UnitSpec extends AnyWordSpecLike with EitherValues with Matchers with Futu
   protected def flatJsObject(properties: (String, String)*): JsObject = JsObject(
     properties.map(prop => (prop._1, JsString(prop._2)))
   )
+
 }

@@ -622,4 +622,5 @@ object NinoApplicationTestData {
       nationalityCode = Some("GBR")
     )
   }
+
 }

@@ -32,6 +32,7 @@ class ApiDocumentationControllerISpec extends IntegrationBaseSpec {
       setupStubs()
       await(buildRequest("/api/definition").get())
     }
+
   }
 
   "Calling the /api/definition endpoint" should {
@@ -79,4 +80,5 @@ class ApiDocumentationControllerISpec extends IntegrationBaseSpec {
       response().json shouldBe expectedJson
     }
   }
+
 }
