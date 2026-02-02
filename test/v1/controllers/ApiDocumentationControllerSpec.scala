@@ -32,7 +32,7 @@ class ApiDocumentationControllerSpec extends ControllerBaseSpec with MockApiDefi
 
   private val mockHttpErrorHandler: HttpErrorHandler = mock[HttpErrorHandler]
 
-  private val assetsMetadata: DefaultAssetsMetadata  = new DefaultAssetsMetadata(
+  private val assetsMetadata: DefaultAssetsMetadata = new DefaultAssetsMetadata(
     config = AssetsConfiguration(),
     resource = _ => None,
     fileMimeTypes = new DefaultFileMimeTypes(FileMimeTypesConfiguration())

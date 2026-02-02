@@ -53,7 +53,7 @@ class ErrorHandlerSpec extends UnitSpec with GuiceOneAppPerSuite {
       "metrics.enabled"                                 -> false
     )
 
-    val handler                      = new ErrorHandler(configuration, auditConnector, httpAuditEvent)
+    val handler = new ErrorHandler(configuration, auditConnector, httpAuditEvent)
   }
 
   "ErrorHandler" when {

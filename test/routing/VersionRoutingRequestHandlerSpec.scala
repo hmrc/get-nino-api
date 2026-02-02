@@ -94,7 +94,7 @@ class VersionRoutingRequestHandlerSpec extends UnitSpec with Matchers with Insid
     val auditConnector: AuditConnector       = mock[AuditConnector]
     val httpAuditEvent: HttpAuditEvent       = mock[HttpAuditEvent]
 
-    val configuration: Configuration         =
+    val configuration: Configuration =
       Configuration(
         "appName"                                         -> "myApp",
         "bootstrap.errorHandler.warnOnly.statusCodes"     -> Seq.empty[Int],

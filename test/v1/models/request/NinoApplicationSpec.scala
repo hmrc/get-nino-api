@@ -42,7 +42,7 @@ class NinoApplicationSpec extends UnitSpec {
   private val invalidContactNumberLength     = "1234567890123456789012345678901234567890123456789012345678901234567890123"
   private val invalidContactNumberNoLength   = ""
 
-  private val ninoRegex          = "^([ACEHJLMOPRSWXY][A-CEGHJ-NPR-TW-Z]|B[A-CEHJ-NPR-TW-Z]|" +
+  private val ninoRegex = "^([ACEHJLMOPRSWXY][A-CEGHJ-NPR-TW-Z]|B[A-CEHJ-NPR-TW-Z]|" +
     "G[ACEGHJ-NPR-TW-Z]|[KT][A-CEGHJ-MPR-TW-Z]|N[A-CEGHJL-NPR-SW-Z]|Z[A-CEGHJ-NPR-TW-Y])[0-9]{6}[A-D]$"
 
   private val officeNumberRegex  = "^([0-9]{1,10})$"
