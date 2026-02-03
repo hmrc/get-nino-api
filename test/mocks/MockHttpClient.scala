@@ -36,6 +36,7 @@ trait MockHttpClient extends UnitSpec {
   val mockRequestBuilder: RequestBuilder = mock[RequestBuilder]
 
   object MockedHttpClient {
+
     def post(response: HttpPostResponse): Unit = {
 
       when(mockHttpClient.post(any[URL]())(any[HeaderCarrier]())).thenReturn(mockRequestBuilder)
@@ -50,5 +51,7 @@ trait MockHttpClient extends UnitSpec {
       when(mockRequestBuilder.execute(any[HttpReads[HttpPostResponse]](), any[ExecutionContext]()))
         .thenReturn(Future.successful(response))
     }
+
   }
+
 }

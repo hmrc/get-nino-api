@@ -140,4 +140,5 @@ class AddressLineSpec extends AnyWordSpec with Matchers {
       }
     }
   }
+
 }

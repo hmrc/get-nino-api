@@ -117,4 +117,5 @@ class RegisterNinoResponseHttpParserSpec extends UnitSpec {
       }
     }
   }
+
 }

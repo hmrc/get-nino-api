@@ -25,9 +25,7 @@ import scala.concurrent.{ExecutionContext, Future}
 class CorrelationIdPredicate @Inject() (
   ec: ExecutionContext,
   val controllerComponents: ControllerComponents
-) extends ActionFilter[Request]
-    with BaseController
-    with Logging {
+) extends ActionFilter[Request] with BaseController with Logging {
 
   val CORRELATION_ID = "CorrelationId"
 

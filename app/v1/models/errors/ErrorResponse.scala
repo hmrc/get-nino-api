@@ -36,6 +36,7 @@ sealed trait ErrorResponse {
 }
 
 object ErrorResponse {
+
   implicit val validationWrites: Writes[JsonValidationError] = Writes { model =>
     Json.obj(
       "code"    -> model.code,
@@ -46,6 +47,7 @@ object ErrorResponse {
 
   implicit val writes: Writes[ErrorResponse] = (o: ErrorResponse) =>
     JsObject(Seq("code" -> JsString(o.code), "message" -> JsString(o.message)))
+
 }
 
 object ServiceUnavailableError extends ErrorResponse {
@@ -96,8 +98,10 @@ object MethodNotAllowedError extends ErrorResponse {
 object UnsupportedVersionError extends ErrorResponse {
   val statusCode: Int = NOT_FOUND
   val code: String    = "MATCHING_RESOURCE_NOT_FOUND"
+
   val message: String =
     "The version of the requested resource specified in the Accept header does not exist or is not supported"
+
 }
 
 object OriginatorIdMissingError extends ErrorResponse {
@@ -139,4 +143,5 @@ final case class JsonValidationError(jsErrors: JsError) extends ErrorResponse {
       )
     )
   })
+
 }

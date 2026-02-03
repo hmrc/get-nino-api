@@ -170,4 +170,5 @@ class MarriageSpec extends UnitSpec {
       }
     }
   }
+
 }

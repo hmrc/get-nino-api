@@ -27,6 +27,7 @@ trait MockApiDefinitionConfig extends UnitSpec {
   val mockApiDefinitionConfig: ApiDefinitionConfig = mock[ApiDefinitionConfig]
 
   object MockedApiDefinitionConfig {
+
     def status(): OngoingStubbing[String] =
       when(mockApiDefinitionConfig.status())
 
@@ -35,5 +36,7 @@ trait MockApiDefinitionConfig extends UnitSpec {
 
     def endpointsEnabled(): OngoingStubbing[Boolean] =
       when(mockApiDefinitionConfig.endpointsEnabled())
+
   }
+
 }

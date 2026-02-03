@@ -39,9 +39,7 @@ class RegisterNinoController @Inject() (
   originatorIdPredicate: OriginatorIdPredicate,
   appConfig: AppConfig
 )(implicit val ec: ExecutionContext)
-    extends BackendController(cc)
-    with JsonBodyUtil
-    with Logging {
+    extends BackendController(cc) with JsonBodyUtil with Logging {
 
   def register(): Action[AnyContent] =
     (privilegedApplicationPredicate andThen originatorIdPredicate andThen correlationIdPredicate).async {
@@ -76,4 +74,5 @@ class RegisterNinoController @Inject() (
     logger.warn(s"[RegisterNinoController][logErrorResult] Error JSON: ${Json.prettyPrint(Json.toJson(error))}")
     error.result
   }
+
 }

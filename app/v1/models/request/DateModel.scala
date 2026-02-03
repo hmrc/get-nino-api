@@ -31,6 +31,7 @@ final case class DateModel(
 object DateModel extends Logging {
 
   private val dwpDateRegex: String = """^\d{2}-\d{2}-\d{4}$"""
+
   private val npsDateRegex: String =
     """^(((19|20)([2468][048]|[13579][26]|0[48])|2000)[-]02[-]29|((19|20)[0-9]{2}[-]
       |(0[469]|11)[-](0[1-9]|1[0-9]|2[0-9]|30)|(19|20)[0-9]{2}[-](0[13578]|1[02])[-]

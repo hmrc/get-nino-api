@@ -26,7 +26,7 @@ class OriginDataSpec extends UnitSpec {
   private val minOriginDataJson: JsObject = JsObject.empty
 
   private val maxOriginDataJson: Boolean => JsObject = isWrite => {
-    val addressLinePrefix = (lineNo: Int) => if (isWrite) s"addressLine$lineNo" else s"line$lineNo"
+    val addressLinePrefix             = (lineNo: Int) => if (isWrite) s"addressLine$lineNo" else s"line$lineNo"
     Json.obj(
       "birthTown"             -> "Birth town value",
       "birthProvince"         -> "Birth province value",
@@ -236,4 +236,5 @@ class OriginDataSpec extends UnitSpec {
       }
     }
   }
+
 }

@@ -28,6 +28,7 @@ import scala.util.{Failure, Success, Try}
 object RegisterNinoResponseHttpParser {
 
   implicit object RegisterNinoResponseReads extends HttpReads[HttpPostResponse] with Logging {
+
     override def read(method: String, url: String, response: HttpResponse): HttpPostResponse =
       (response.status, Try(response.json.validate[DesError])) match {
         case (Status.ACCEPTED, _)                             =>
@@ -58,5 +59,7 @@ object RegisterNinoResponseHttpParser {
           )
           Left(ServiceUnavailableError)
       }
+
   }
+
 }

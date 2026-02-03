@@ -17,6 +17,7 @@
 package v1.models.errors
 
 object DesErrorTranslator {
+
   def translate(desError: DesError): DownstreamValidationError = desError match {
     case DesError("INVALID_ENTRY_DATE", _) =>
       DownstreamValidationError(
@@ -25,4 +26,5 @@ object DesErrorTranslator {
       )
     case DesError(code, reason)            => DownstreamValidationError(code, reason)
   }
+
 }

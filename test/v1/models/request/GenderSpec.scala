@@ -86,4 +86,5 @@ class GenderSpec extends UnitSpec {
       }
     }
   }
+
 }

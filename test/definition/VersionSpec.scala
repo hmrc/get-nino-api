@@ -31,4 +31,5 @@ class VersionSpec extends UnitSpec {
       }
     }
   }
+
 }

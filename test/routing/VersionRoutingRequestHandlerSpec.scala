@@ -93,7 +93,8 @@ class VersionRoutingRequestHandlerSpec extends UnitSpec with Matchers with Insid
     val httpConfiguration: HttpConfiguration = HttpConfiguration("context")
     val auditConnector: AuditConnector       = mock[AuditConnector]
     val httpAuditEvent: HttpAuditEvent       = mock[HttpAuditEvent]
-    val configuration: Configuration         =
+
+    val configuration: Configuration =
       Configuration(
         "appName"                                         -> "myApp",
         "bootstrap.errorHandler.warnOnly.statusCodes"     -> Seq.empty[Int],
@@ -122,6 +123,7 @@ class VersionRoutingRequestHandlerSpec extends UnitSpec with Matchers with Insid
         .foldLeft(FakeRequest("GET", path)) { (req, accept) =>
           req.withHeaders((ACCEPT, accept))
         }
+
   }
 
   def errorToJson(error: ErrorResponse): JsValue =
@@ -227,4 +229,5 @@ class VersionRoutingRequestHandlerSpec extends UnitSpec with Matchers with Insid
         }
       }
     }
+
 }

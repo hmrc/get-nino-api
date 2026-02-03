@@ -29,7 +29,7 @@ object AuthStub extends WireMockMethods {
   def notAuthorised(): StubMapping = when(uri = authoriseUri)
     .thenReturn(status = UNAUTHORIZED, Map("WWW-Authenticate" -> """MDTP detail="someReason""""))
 
-  def authDown(): StubMapping      = when(uri = authoriseUri).thenReturn(status = BAD_GATEWAY)
+  def authDown(): StubMapping = when(uri = authoriseUri).thenReturn(status = BAD_GATEWAY)
 
   def otherStatus(): StubMapping = when(uri = authoriseUri).thenReturn(status = NOT_IMPLEMENTED)
 }

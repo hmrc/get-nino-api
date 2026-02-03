@@ -15,6 +15,7 @@
  */
 
 package v1.models.request
+
 import play.api.Logging
 import play.api.libs.json._
 
@@ -23,6 +24,7 @@ sealed trait MaritalStatus {
 }
 
 object MaritalStatus extends Logging {
+
   private[models] val allStatuses: Map[String, MaritalStatus] = Seq(
     MARRIAGE_TERMINATED,
     MARRIAGE_ANNULLED,
@@ -38,8 +40,8 @@ object MaritalStatus extends Logging {
     CIVIL_PARTNERSHIP_ANNULLED
   ).map(status => status.value -> status).toMap
 
-  val maritalStatusErrorMessage                               = "Marital Status is invalid. Please check against valid types."
-  val maritalStatusError                                      = new JsonValidationError(Seq(maritalStatusErrorMessage))
+  val maritalStatusErrorMessage = "Marital Status is invalid. Please check against valid types."
+  val maritalStatusError        = new JsonValidationError(Seq(maritalStatusErrorMessage))
 
   def validateMaritalStatus(maritalStatus: String): Boolean = {
     val passedValidation = allStatuses.values.map(_.value).toSeq.contains(maritalStatus)

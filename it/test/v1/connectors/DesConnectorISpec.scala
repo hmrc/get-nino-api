@@ -30,9 +30,10 @@ import scala.concurrent.ExecutionContext.Implicits.global
 
 class DesConnectorISpec extends IntegrationBaseSpec {
 
-  private implicit lazy val hc: HeaderCarrier = HeaderCarrier()
+  implicit private lazy val hc: HeaderCarrier = HeaderCarrier()
 
   private trait Test {
+
     def stubSuccess(): StubMapping =
       stubFor(
         post("/register")
@@ -51,6 +52,7 @@ class DesConnectorISpec extends IntegrationBaseSpec {
               .withStatus(INTERNAL_SERVER_ERROR)
           )
       )
+
   }
 
   "DesConnector" when {
@@ -87,4 +89,5 @@ class DesConnectorISpec extends IntegrationBaseSpec {
       }
     }
   }
+
 }

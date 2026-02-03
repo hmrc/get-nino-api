@@ -32,11 +32,8 @@ import scala.concurrent.{ExecutionContext, Future}
 class PrivilegedApplicationPredicate @Inject() (
   val authConnector: AuthConnector,
   val controllerComponents: ControllerComponents,
-  override implicit val executionContext: ExecutionContext
-) extends ActionBuilder[Request, AnyContent]
-    with AuthorisedFunctions
-    with BaseController
-    with Logging {
+  implicit override val executionContext: ExecutionContext
+) extends ActionBuilder[Request, AnyContent] with AuthorisedFunctions with BaseController with Logging {
 
   override def invokeBlock[A](request: Request[A], block: Request[A] => Future[Result]): Future[Result] = {
     implicit val hc: HeaderCarrier = HeaderCarrierConverter.fromRequest(request)

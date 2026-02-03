@@ -46,13 +46,12 @@ class MaritalStatusSpec extends UnitSpec {
 
   ".validateMaritalStatus" should {
 
-    "return true" when {
+    "return true" when
       MaritalStatus.allStatuses.values.map(_.value).toSeq.foreach { maritalValue =>
         s"$maritalValue is passed in" in {
           MaritalStatus.validateMaritalStatus(maritalValue) shouldBe true
         }
       }
-    }
 
     "return false" when {
       "a value that is not a valid status is passed in" in {

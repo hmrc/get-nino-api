@@ -100,4 +100,5 @@ class AddressTypeSpec extends AnyWordSpec with Matchers {
       }
     }
   }
+
 }
