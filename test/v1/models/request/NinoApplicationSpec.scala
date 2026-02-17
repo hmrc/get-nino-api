@@ -176,7 +176,7 @@ class NinoApplicationSpec extends UnitSpec {
     }
 
     ".validateAge" should {
-      val (year, month, day): (Long, Long, Long) = (15, 8, 1)
+      val (year, month, day): (Long, Long, Long) = (15.toLong, 8.toLong, 1.toLong)
       val today: LocalDateTime                   = LocalDateTime.now()
 
       "return true" when {

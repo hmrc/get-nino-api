@@ -44,11 +44,10 @@ trait MockHttpClient extends UnitSpec {
 
       when(
         mockRequestBuilder
-          .withBody(any[JsValue]())(any[BodyWritable[JsValue]](), any[Tag[JsValue]](), any[ExecutionContext]())
-      )
-        .thenReturn(mockRequestBuilder)
+          .withBody(any[JsValue]())(using any[BodyWritable[JsValue]](), any[Tag[JsValue]](), any[ExecutionContext]())
+      ).thenReturn(mockRequestBuilder)
 
-      when(mockRequestBuilder.execute(any[HttpReads[HttpPostResponse]](), any[ExecutionContext]()))
+      when(mockRequestBuilder.execute(using any[HttpReads[HttpPostResponse]](), any[ExecutionContext]()))
         .thenReturn(Future.successful(response))
     }
 

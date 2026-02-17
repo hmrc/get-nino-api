@@ -25,7 +25,7 @@ import play.core.DefaultWebCommands
 import utils.ErrorHandler
 import v1.models.errors.{InvalidAcceptHeaderError, UnsupportedVersionError}
 
-import javax.inject.{Inject, Singleton}
+import javax.inject.{Inject, Provider, Singleton}
 
 @Singleton
 class VersionRoutingRequestHandler @Inject() (
@@ -38,7 +38,7 @@ class VersionRoutingRequestHandler @Inject() (
 ) extends DefaultHttpRequestHandler(
       webCommands = new DefaultWebCommands,
       optDevContext = None,
-      router = () => versionRoutingMap.defaultRouter,
+      new Provider[Router] { override def get(): Router = versionRoutingMap.defaultRouter },
       errorHandler = errorHandler,
       configuration = httpConfiguration,
       filters = filters.filters

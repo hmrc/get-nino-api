@@ -17,8 +17,8 @@
 package v1.models.request
 
 import play.api.Logging
-import play.api.libs.functional.syntax._
-import play.api.libs.json._
+import play.api.libs.functional.syntax.*
+import play.api.libs.json.*
 
 final case class OriginData(
   birthTown: Option[String] = None,

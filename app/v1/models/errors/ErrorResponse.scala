@@ -16,8 +16,8 @@
 
 package v1.models.errors
 
-import play.api.http.Status._
-import play.api.libs.json._
+import play.api.http.Status.*
+import play.api.libs.json.*
 import play.api.mvc.Result
 import play.api.mvc.Results.Status
 

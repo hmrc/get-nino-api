@@ -16,12 +16,12 @@
 
 package v1.models.request
 
+import play.api.libs.functional.syntax.*
+import play.api.libs.json.*
+
 import java.time.format.DateTimeFormatter
 import java.time.temporal.ChronoUnit
 import java.time.{LocalDate, LocalDateTime, ZoneId}
-
-import play.api.libs.functional.syntax._
-import play.api.libs.json._
 
 final case class NinoApplication(
   nino: String,

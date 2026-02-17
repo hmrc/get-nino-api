@@ -17,17 +17,18 @@
 package v1.connectors
 
 import config.AppConfig
-import javax.inject._
 import play.api.Logging
 import play.api.libs.json.Json
-import uk.gov.hmrc.http._
+import play.api.libs.ws.JsonBodyWritables.writeableOf_JsValue
+import uk.gov.hmrc.http.*
 import uk.gov.hmrc.http.client.HttpClientV2
 import v1.connectors.httpParsers.HttpResponseTypes.HttpPostResponse
 import v1.connectors.httpParsers.RegisterNinoResponseHttpParser.RegisterNinoResponseReads
 import v1.models.request.NinoApplication
 
 import java.util.UUID.randomUUID
-import scala.concurrent._
+import javax.inject.*
+import scala.concurrent.*
 import scala.util.matching.Regex
 
 @Singleton

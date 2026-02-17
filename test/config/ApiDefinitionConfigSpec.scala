@@ -38,7 +38,7 @@ class ApiDefinitionConfigSpec extends UnitSpec {
           when(mockConfig.get[String](ArgumentMatchers.eq("api.status"))(any[ConfigLoader[String]]))
             .thenReturn("BETA")
 
-          target.status shouldBe "BETA"
+          target.status() shouldBe "BETA"
         }
       }
 
@@ -48,7 +48,7 @@ class ApiDefinitionConfigSpec extends UnitSpec {
             .thenThrow(new RuntimeException("error"))
 
           intercept[RuntimeException] {
-            target.status
+            target.status()
           }
         }
       }
@@ -63,7 +63,7 @@ class ApiDefinitionConfigSpec extends UnitSpec {
           )
             .thenReturn(Some("PUBLIC"))
 
-          target.accessType shouldBe "PUBLIC"
+          target.accessType() shouldBe "PUBLIC"
         }
       }
 
@@ -75,7 +75,7 @@ class ApiDefinitionConfigSpec extends UnitSpec {
           )
             .thenReturn(None)
 
-          target.accessType shouldBe "PRIVATE"
+          target.accessType() shouldBe "PRIVATE"
         }
       }
     }
