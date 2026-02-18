@@ -16,15 +16,15 @@
 
 package config
 
-import play.api._
+import play.api.*
 import support.UnitSpec
 import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 
 class AppConfigSpec extends UnitSpec {
 
   private def createAppConfig(config: (String, Any)*): AppConfigImpl = {
-    val configuration = Configuration(config: _*)
-    new AppConfigImpl()(new ServicesConfig(configuration), configuration)
+    val configuration = Configuration(config *)
+    new AppConfigImpl()(using new ServicesConfig(configuration), configuration)
   }
 
   "AppConfigImpl" when {

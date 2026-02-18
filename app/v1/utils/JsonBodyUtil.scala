@@ -23,7 +23,7 @@ import v1.models.errors.{ErrorResponse, InvalidBodyTypeError, JsonValidationErro
 
 trait JsonBodyUtil extends Logging {
 
-  def parsedJsonBody[T](implicit request: Request[_], reads: Reads[T]): Either[ErrorResponse, T] = request.body match {
+  def parsedJsonBody[T](implicit request: Request[?], reads: Reads[T]): Either[ErrorResponse, T] = request.body match {
     case body: AnyContentAsJson =>
       body.json.validate[T] match {
         case jsErrors: JsError            =>

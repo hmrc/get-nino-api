@@ -16,12 +16,12 @@
 
 package v1.models.request
 
-import java.time.LocalDateTime
-import java.time.format.DateTimeFormatter
-
 import play.api.libs.json.{JsResultException, Json}
 import support.UnitSpec
-import utils.NinoApplicationTestData._
+import utils.NinoApplicationTestData.*
+
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 
 class NinoApplicationSpec extends UnitSpec {
 

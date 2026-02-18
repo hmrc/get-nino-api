@@ -25,9 +25,9 @@ import org.slf4j.MDC
 import play.api.libs.json.{JsonValidationError => JavaJsonValidationError, _}
 import play.api.mvc._
 import play.api.test.FakeRequest
-import play.api.test.Helpers._
+import play.api.test.Helpers.*
 import support.ControllerBaseSpec
-import uk.gov.hmrc.auth.core._
+import uk.gov.hmrc.auth.core.*
 import uk.gov.hmrc.auth.core.authorise.Predicate
 import uk.gov.hmrc.auth.core.retrieve.Retrieval
 import uk.gov.hmrc.http._
@@ -36,7 +36,7 @@ import v1.controllers.predicates._
 import v1.models.errors.{JsonValidationError => NinoJsonValidationError, _}
 import v1.services.DesService
 
-import scala.concurrent._
+import scala.concurrent.*
 
 class RegisterNinoControllerSpec extends ControllerBaseSpec with MockAppConfig {
 
@@ -83,13 +83,16 @@ class RegisterNinoControllerSpec extends ControllerBaseSpec with MockAppConfig {
             "return 202 ACCEPTED" in new Setup(logDwpJson = true) {
               when(
                 mockAuthConnector
-                  .authorise(any[Predicate](), any[Retrieval[Unit]]())(any[HeaderCarrier](), any[ExecutionContext]())
+                  .authorise(any[Predicate](), any[Retrieval[Unit]]())(using
+                    any[HeaderCarrier](),
+                    any[ExecutionContext]()
+                  )
               )
                 .thenReturn(Future.successful((): Unit))
 
               when(
                 mockDesService
-                  .registerNino(ArgumentMatchers.eq(maxRegisterNinoRequestModel))(
+                  .registerNino(ArgumentMatchers.eq(maxRegisterNinoRequestModel))(using
                     any[HeaderCarrier](),
                     any[ExecutionContext]()
                   )
@@ -120,13 +123,16 @@ class RegisterNinoControllerSpec extends ControllerBaseSpec with MockAppConfig {
             "return 503 SERVICE_UNAVAILABLE with ServiceUnavailableError response" in new Setup(logDwpJson = false) {
               when(
                 mockAuthConnector
-                  .authorise(any[Predicate](), any[Retrieval[Unit]]())(any[HeaderCarrier](), any[ExecutionContext]())
+                  .authorise(any[Predicate](), any[Retrieval[Unit]]())(using
+                    any[HeaderCarrier](),
+                    any[ExecutionContext]()
+                  )
               )
                 .thenReturn(Future.successful((): Unit))
 
               when(
                 mockDesService
-                  .registerNino(ArgumentMatchers.eq(maxRegisterNinoRequestModel))(
+                  .registerNino(ArgumentMatchers.eq(maxRegisterNinoRequestModel))(using
                     any[HeaderCarrier](),
                     any[ExecutionContext]()
                   )
@@ -157,7 +163,10 @@ class RegisterNinoControllerSpec extends ControllerBaseSpec with MockAppConfig {
             "return 400 BAD_REQUEST with OriginatorIdMissingError response" in {
               when(
                 mockAuthConnector
-                  .authorise(any[Predicate](), any[Retrieval[Unit]]())(any[HeaderCarrier](), any[ExecutionContext]())
+                  .authorise(any[Predicate](), any[Retrieval[Unit]]())(using
+                    any[HeaderCarrier](),
+                    any[ExecutionContext]()
+                  )
               )
                 .thenReturn(Future.successful((): Unit))
 
@@ -180,7 +189,10 @@ class RegisterNinoControllerSpec extends ControllerBaseSpec with MockAppConfig {
             "return 400 BAD_REQUEST with OriginatorIdIncorrectError response" in {
               when(
                 mockAuthConnector
-                  .authorise(any[Predicate](), any[Retrieval[Unit]]())(any[HeaderCarrier](), any[ExecutionContext]())
+                  .authorise(any[Predicate](), any[Retrieval[Unit]]())(using
+                    any[HeaderCarrier](),
+                    any[ExecutionContext]()
+                  )
               )
                 .thenReturn(Future.successful((): Unit))
 
@@ -204,7 +216,10 @@ class RegisterNinoControllerSpec extends ControllerBaseSpec with MockAppConfig {
             "return 400 BAD_REQUEST with CorrelationIdMissingError response" in {
               when(
                 mockAuthConnector
-                  .authorise(any[Predicate](), any[Retrieval[Unit]]())(any[HeaderCarrier](), any[ExecutionContext]())
+                  .authorise(any[Predicate](), any[Retrieval[Unit]]())(using
+                    any[HeaderCarrier](),
+                    any[ExecutionContext]()
+                  )
               )
                 .thenReturn(Future.successful((): Unit))
 
@@ -227,7 +242,10 @@ class RegisterNinoControllerSpec extends ControllerBaseSpec with MockAppConfig {
             "return 400 BAD_REQUEST with CorrelationIdIncorrectError response" in {
               when(
                 mockAuthConnector
-                  .authorise(any[Predicate](), any[Retrieval[Unit]]())(any[HeaderCarrier](), any[ExecutionContext]())
+                  .authorise(any[Predicate](), any[Retrieval[Unit]]())(using
+                    any[HeaderCarrier](),
+                    any[ExecutionContext]()
+                  )
               )
                 .thenReturn(Future.successful((): Unit))
 
@@ -252,7 +270,10 @@ class RegisterNinoControllerSpec extends ControllerBaseSpec with MockAppConfig {
           "return 415 UNSUPPORTED_MEDIA_TYPE with InvalidBodyTypeError response" in new Setup(logDwpJson = true) {
             when(
               mockAuthConnector
-                .authorise(any[Predicate](), any[Retrieval[Unit]]())(any[HeaderCarrier](), any[ExecutionContext]())
+                .authorise(any[Predicate](), any[Retrieval[Unit]]())(using
+                  any[HeaderCarrier](),
+                  any[ExecutionContext]()
+                )
             )
               .thenReturn(Future.successful((): Unit))
 
@@ -275,7 +296,10 @@ class RegisterNinoControllerSpec extends ControllerBaseSpec with MockAppConfig {
           "return a 400 BAD_REQUEST with JsonValidationError response" in new Setup(logDwpJson = false) {
             when(
               mockAuthConnector
-                .authorise(any[Predicate](), any[Retrieval[Unit]]())(any[HeaderCarrier](), any[ExecutionContext]())
+                .authorise(any[Predicate](), any[Retrieval[Unit]]())(using
+                  any[HeaderCarrier](),
+                  any[ExecutionContext]()
+                )
             )
               .thenReturn(Future.successful((): Unit))
 
@@ -303,7 +327,7 @@ class RegisterNinoControllerSpec extends ControllerBaseSpec with MockAppConfig {
                   }
                 )
               )
-            )(ErrorResponse.validationWrites)
+            )(using ErrorResponse.validationWrites)
           }
         }
       }
@@ -313,7 +337,10 @@ class RegisterNinoControllerSpec extends ControllerBaseSpec with MockAppConfig {
           "return 401 UNAUTHORIZED with UnauthorisedError response" in {
             when(
               mockAuthConnector
-                .authorise(any[Predicate](), any[Retrieval[Unit]]())(any[HeaderCarrier](), any[ExecutionContext]())
+                .authorise(any[Predicate](), any[Retrieval[Unit]]())(using
+                  any[HeaderCarrier](),
+                  any[ExecutionContext]()
+                )
             )
               .thenReturn(Future.failed(InvalidBearerToken()))
 
@@ -341,7 +368,10 @@ class RegisterNinoControllerSpec extends ControllerBaseSpec with MockAppConfig {
           "return 503 SERVICE_UNAVAILABLE with ServiceUnavailableError response" in {
             when(
               mockAuthConnector
-                .authorise(any[Predicate](), any[Retrieval[Unit]]())(any[HeaderCarrier](), any[ExecutionContext]())
+                .authorise(any[Predicate](), any[Retrieval[Unit]]())(using
+                  any[HeaderCarrier](),
+                  any[ExecutionContext]()
+                )
             )
               .thenReturn(Future.failed(new Exception("")))
 

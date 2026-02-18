@@ -153,6 +153,6 @@ object NinoApplication {
         .filter(commonError("nationality code"))(nationalityCode =>
           nationalityCode.fold(true)(validateAgainstRegex(_, nationalityCodeRegex))
         )
-  )(NinoApplication.apply _)
+  )(NinoApplication.apply)
 
 }

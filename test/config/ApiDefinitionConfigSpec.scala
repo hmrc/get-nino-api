@@ -35,7 +35,7 @@ class ApiDefinitionConfigSpec extends UnitSpec {
     ".status" should {
       "retrieve the status specified" when {
         "a value is added to the configuration" in new Test {
-          when(mockConfig.get[String](ArgumentMatchers.eq("api.status"))(any[ConfigLoader[String]]))
+          when(mockConfig.get[String](ArgumentMatchers.eq("api.status"))(using any[ConfigLoader[String]]))
             .thenReturn("BETA")
 
           target.status() shouldBe "BETA"
@@ -44,7 +44,7 @@ class ApiDefinitionConfigSpec extends UnitSpec {
 
       "return a runtime exception" when {
         "no value is added to the configuration" in new Test {
-          when(mockConfig.get[String](ArgumentMatchers.eq("api.status"))(any[ConfigLoader[String]]))
+          when(mockConfig.get[String](ArgumentMatchers.eq("api.status"))(using any[ConfigLoader[String]]))
             .thenThrow(new RuntimeException("error"))
 
           intercept[RuntimeException] {
@@ -59,7 +59,7 @@ class ApiDefinitionConfigSpec extends UnitSpec {
         "a value is added to the configuration" in new Test {
           when(
             mockConfig
-              .getOptional[String](ArgumentMatchers.eq("api.access.type"))(any[ConfigLoader[String]]())
+              .getOptional[String](ArgumentMatchers.eq("api.access.type"))(using any[ConfigLoader[String]]())
           )
             .thenReturn(Some("PUBLIC"))
 
@@ -71,7 +71,7 @@ class ApiDefinitionConfigSpec extends UnitSpec {
         "no value is added to the configuration" in new Test {
           when(
             mockConfig
-              .getOptional[String](ArgumentMatchers.eq("api.access.type"))(any[ConfigLoader[String]]())
+              .getOptional[String](ArgumentMatchers.eq("api.access.type"))(using any[ConfigLoader[String]]())
           )
             .thenReturn(None)
 

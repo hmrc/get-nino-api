@@ -129,7 +129,7 @@ object OriginData extends Logging {
           foreignSocialSecurityValidation
         ) and
       lastEUAddressPath.readNullable[LastEUAddress]
-  )(OriginData.apply _)
+  )(OriginData.apply)
 
   implicit val writes: Writes[OriginData] = Json.writes[OriginData]
 

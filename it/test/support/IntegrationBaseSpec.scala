@@ -17,14 +17,14 @@
 package support
 
 import config.AppConfig
-import org.scalatest.wordspec.AnyWordSpecLike
-import org.scalatest._
+import org.scalatest.*
 import org.scalatest.matchers.should.Matchers
+import org.scalatest.wordspec.AnyWordSpecLike
 import org.scalatestplus.play.guice.GuiceOneServerPerSuite
+import play.api.*
 import play.api.inject.guice.GuiceApplicationBuilder
-import play.api.libs.ws._
-import play.api.test._
-import play.api._
+import play.api.libs.ws.*
+import play.api.test.*
 import uk.gov.hmrc.http.client.HttpClientV2
 import v1.connectors.DesConnector
 

@@ -16,12 +16,12 @@
 
 package v1.connectors
 
-import com.github.tomakehurst.wiremock.client.WireMock._
+import com.github.tomakehurst.wiremock.client.WireMock.*
 import com.github.tomakehurst.wiremock.stubbing.StubMapping
-import play.api.http.Status._
+import play.api.http.Status.*
 import support.IntegrationBaseSpec
-import uk.gov.hmrc.http._
-import utils.ItNinoApplicationTestData._
+import uk.gov.hmrc.http.*
+import utils.ItNinoApplicationTestData.*
 import v1.connectors.httpParsers.HttpResponseTypes.HttpPostResponse
 import v1.models.errors.ServiceUnavailableError
 import v1.stubs.AuditStub

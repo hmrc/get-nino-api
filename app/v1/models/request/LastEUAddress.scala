@@ -35,7 +35,7 @@ object LastEUAddress {
       (__ \ "line3").readNullable[AddressLine] and
       (__ \ "line4").readNullable[AddressLine] and
       (__ \ "line5").readNullable[AddressLine]
-  )(LastEUAddress.apply _)
+  )(LastEUAddress.apply)
 
   implicit val writes: Writes[LastEUAddress] = Json.writes[LastEUAddress]
 }

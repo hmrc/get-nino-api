@@ -22,7 +22,7 @@ import org.mockito.Mockito.when
 import org.scalatestplus.mockito.MockitoSugar.mock
 import support.UnitSpec
 import uk.gov.hmrc.http.{BadGatewayException, GatewayTimeoutException, HeaderCarrier}
-import utils.NinoApplicationTestData._
+import utils.NinoApplicationTestData.*
 import v1.connectors.DesConnector
 import v1.models.errors.ServiceUnavailableError
 
@@ -42,6 +42,7 @@ class DesServiceSpec extends UnitSpec {
         when(
           mockConnector
             .sendRegisterRequest(ArgumentMatchers.eq(maxRegisterNinoRequestModel))(
+              using
               any[HeaderCarrier](),
               any[ExecutionContext]()
             )
@@ -61,6 +62,7 @@ class DesServiceSpec extends UnitSpec {
         when(
           mockConnector
             .sendRegisterRequest(ArgumentMatchers.eq(maxRegisterNinoRequestModel))(
+              using
               any[HeaderCarrier](),
               any[ExecutionContext]()
             )
@@ -77,6 +79,7 @@ class DesServiceSpec extends UnitSpec {
         when(
           mockConnector
             .sendRegisterRequest(ArgumentMatchers.eq(maxRegisterNinoRequestModel))(
+              using
               any[HeaderCarrier](),
               any[ExecutionContext]()
             )
@@ -92,7 +95,7 @@ class DesServiceSpec extends UnitSpec {
 
         when(
           mockConnector
-            .sendRegisterRequest(ArgumentMatchers.eq(maxRegisterNinoRequestModel))(
+            .sendRegisterRequest(ArgumentMatchers.eq(maxRegisterNinoRequestModel))(using
               any[HeaderCarrier](),
               any[ExecutionContext]()
             )
