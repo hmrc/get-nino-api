@@ -28,7 +28,7 @@ sealed trait ErrorResponse {
 
   private def convertJsErrorsToReadableFormat: JsValue =
     this match {
-      case validationError: JsonValidationError => Json.toJson(validationError)(ErrorResponse.validationWrites)
+      case validationError: JsonValidationError => Json.toJson(validationError)(using ErrorResponse.validationWrites)
       case _                                    => Json.toJson(this)
     }
 

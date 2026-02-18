@@ -71,7 +71,7 @@ class DesConnector @Inject() (
     http
       .post(url"$url")
       .withBody(requestBody)
-      .setHeader(desHeaders: _*)
+      .setHeader(desHeaders *)
       .execute[HttpPostResponse]
   }
 

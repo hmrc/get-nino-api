@@ -61,7 +61,7 @@ class RegisterNinoController @Inject() (
 
         Future(parsedJsonBody[NinoApplication]).flatMap {
           case Right(ninoModel) =>
-            desService.registerNino(ninoModel)(hcWithOriginatorIdAndCorrelationId, ec).map {
+            desService.registerNino(ninoModel)(using hcWithOriginatorIdAndCorrelationId, ec).map {
               case Right(_)    => Accepted
               case Left(error) => logErrorResult(error)
             }
