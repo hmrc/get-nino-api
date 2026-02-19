@@ -32,6 +32,11 @@ import uk.gov.hmrc.auth.core.authorise.Predicate
 import uk.gov.hmrc.auth.core.retrieve.Retrieval
 import uk.gov.hmrc.http._
 import utils.NinoApplicationTestData._
+
+private val mockAuthConnector: AuthConnector = mock[AuthConnector]
+
+private val mockDesService: DesService = mock[DesService]
+
 import v1.controllers.predicates._
 import v1.models.errors.{JsonValidationError => NinoJsonValidationError, _}
 import v1.services.DesService
@@ -41,10 +46,6 @@ import scala.concurrent.*
 class RegisterNinoControllerSpec extends ControllerBaseSpec with MockAppConfig {
 
   implicit private val executionContext: ExecutionContext = stubControllerComponents().executionContext
-
-  private val mockAuthConnector: AuthConnector = mock[AuthConnector]
-
-  private val mockDesService: DesService = mock[DesService]
 
   private val privilegedApplicationPredicate: PrivilegedApplicationPredicate = new PrivilegedApplicationPredicate(
     authConnector = mockAuthConnector,

@@ -26,13 +26,13 @@ trait JsonBodyUtil extends Logging {
   def parsedJsonBody[T](implicit request: Request[?], reads: Reads[T]): Either[ErrorResponse, T] = request.body match {
     case body: AnyContentAsJson =>
       body.json.validate[T] match {
-        case jsErrors: JsError            =>
+        case jsErrors: JsError   =>
           logger.debug(
             s"[RegisterNinoController][parsedJsonBody] Json received, but could not validate. Errors: $jsErrors"
           )
           logger.warn("[RegisterNinoController][parsedJsonBody] Json received, but could not validate.")
           Left(JsonValidationError(jsErrors))
-        case validatedModel: JsSuccess[T] => Right(validatedModel.value)
+        case JsSuccess(value, _) => Right(value)
       }
     case _                      =>
       logger.warn("[RegisterNinoController][parsedJsonBody] Body of request was not JSON.")
