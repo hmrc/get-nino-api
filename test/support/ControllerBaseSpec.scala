@@ -16,8 +16,8 @@
 
 package support
 
-import play.api.mvc._
-import play.api.test._
+import play.api.mvc.*
+import play.api.test.*
 
 trait ControllerBaseSpec extends UnitSpec {
   implicit lazy val fakeRequest: FakeRequest[AnyContent] = FakeRequest()

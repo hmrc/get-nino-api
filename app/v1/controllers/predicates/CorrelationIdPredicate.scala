@@ -17,8 +17,9 @@
 package v1.controllers.predicates
 
 import play.api.Logging
-import play.api.mvc._
+import play.api.mvc.*
 import v1.models.errors.{CorrelationIdIncorrectError, CorrelationIdMissingError}
+
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 

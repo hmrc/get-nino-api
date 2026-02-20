@@ -17,7 +17,7 @@
 package v1.stubs
 
 import com.github.tomakehurst.wiremock.stubbing.StubMapping
-import play.api.http.Status._
+import play.api.http.Status.*
 import support.WireMockMethods
 
 object AuthStub extends WireMockMethods {

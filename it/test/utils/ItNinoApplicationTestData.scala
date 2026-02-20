@@ -16,8 +16,8 @@
 
 package utils
 
-import play.api.libs.json._
-import v1.models.request._
+import play.api.libs.json.*
+import v1.models.request.*
 
 object ItNinoApplicationTestData {
 

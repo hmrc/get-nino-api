@@ -17,7 +17,7 @@
 package v1.controllers.predicates
 
 import play.api.Logging
-import play.api.mvc._
+import play.api.mvc.*
 import v1.models.errors.{OriginatorIdIncorrectError, OriginatorIdMissingError}
 
 import javax.inject.Inject

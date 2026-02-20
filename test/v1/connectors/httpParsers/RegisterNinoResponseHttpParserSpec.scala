@@ -16,12 +16,12 @@
 
 package v1.connectors.httpParsers
 
-import play.api.http.Status._
-import play.api.libs.json._
+import play.api.http.Status.*
+import play.api.libs.json.*
 import support.UnitSpec
 import uk.gov.hmrc.http.HttpResponse
-import v1.connectors.httpParsers.RegisterNinoResponseHttpParser._
-import v1.models.errors._
+import v1.connectors.httpParsers.RegisterNinoResponseHttpParser.*
+import v1.models.errors.*
 
 class RegisterNinoResponseHttpParserSpec extends UnitSpec {
 
@@ -69,7 +69,7 @@ class RegisterNinoResponseHttpParserSpec extends UnitSpec {
         )
       )
 
-      inputArgs.foreach(args => (test _).tupled(args))
+      inputArgs.foreach(args => test.tupled(args))
     }
 
     "return ServiceUnavailableError response" when {

@@ -21,8 +21,8 @@ import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import org.scalatestplus.mockito.MockitoSugar.mock
 import support.UnitSpec
-import uk.gov.hmrc.http.HeaderCarrier
-import utils.NinoApplicationTestData._
+import uk.gov.hmrc.http.{BadGatewayException, GatewayTimeoutException, HeaderCarrier}
+import utils.NinoApplicationTestData.*
 import v1.connectors.DesConnector
 import v1.models.errors.ServiceUnavailableError
 
@@ -42,6 +42,7 @@ class DesServiceSpec extends UnitSpec {
         when(
           mockConnector
             .sendRegisterRequest(ArgumentMatchers.eq(maxRegisterNinoRequestModel))(
+              using
               any[HeaderCarrier](),
               any[ExecutionContext]()
             )
@@ -53,6 +54,7 @@ class DesServiceSpec extends UnitSpec {
         response shouldBe Right(())
       }
     }
+
     "return an error model" when {
       "an error is returned from the connector" in {
         val returnedError = ServiceUnavailableError
@@ -60,6 +62,7 @@ class DesServiceSpec extends UnitSpec {
         when(
           mockConnector
             .sendRegisterRequest(ArgumentMatchers.eq(maxRegisterNinoRequestModel))(
+              using
               any[HeaderCarrier](),
               any[ExecutionContext]()
             )
@@ -69,6 +72,39 @@ class DesServiceSpec extends UnitSpec {
         val response = await(service.registerNino(maxRegisterNinoRequestModel))
 
         response shouldBe Left(returnedError)
+      }
+
+      "the connector throws a GatewayTimeoutException" in {
+
+        when(
+          mockConnector
+            .sendRegisterRequest(ArgumentMatchers.eq(maxRegisterNinoRequestModel))(
+              using
+              any[HeaderCarrier](),
+              any[ExecutionContext]()
+            )
+        )
+          .thenReturn(Future.failed(new GatewayTimeoutException("timeout")))
+
+        val response = await(service.registerNino(maxRegisterNinoRequestModel))
+
+        response shouldBe Left(ServiceUnavailableError)
+      }
+
+      "the connector throws a BadGatewayException" in {
+
+        when(
+          mockConnector
+            .sendRegisterRequest(ArgumentMatchers.eq(maxRegisterNinoRequestModel))(using
+              any[HeaderCarrier](),
+              any[ExecutionContext]()
+            )
+        )
+          .thenReturn(Future.failed(new BadGatewayException("bad gateway")))
+
+        val response = await(service.registerNino(maxRegisterNinoRequestModel))
+
+        response shouldBe Left(ServiceUnavailableError)
       }
     }
   }

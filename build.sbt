@@ -3,7 +3,7 @@ import uk.gov.hmrc.DefaultBuildSettings.*
 val appName = "get-nino-api"
 
 ThisBuild / majorVersion := 0
-ThisBuild / scalaVersion := "2.13.16"
+ThisBuild / scalaVersion := "3.7.4"
 
 lazy val microservice = Project(appName, file("."))
   .enablePlugins(PlayScala, SbtDistributablesPlugin)
@@ -11,7 +11,7 @@ lazy val microservice = Project(appName, file("."))
   .settings(libraryDependencies ++= AppDependencies())
   .settings(PlayKeys.playDefaultPort := 9750)
   .settings(CodeCoverageSettings.settings)
-  .settings(scalacOptions += "-Wconf:cat=unused-imports&src=routes/.*:s")
+  .settings(scalacOptions += "-feature")
 
 lazy val it = project
   .enablePlugins(PlayScala)

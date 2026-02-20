@@ -16,17 +16,17 @@
 
 package utils
 
-import javax.inject.{Inject, Singleton}
-import play.api.http.Status._
+import play.api.http.Status.*
 import play.api.mvc.{RequestHeader, Result}
 import play.api.{Configuration, Logging}
 import uk.gov.hmrc.auth.core.AuthorisationException
-import uk.gov.hmrc.http._
+import uk.gov.hmrc.http.*
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
-import uk.gov.hmrc.play.bootstrap.config.HttpAuditEvent
 import uk.gov.hmrc.play.bootstrap.backend.http.JsonErrorHandler
-import v1.models.errors._
+import uk.gov.hmrc.play.bootstrap.config.HttpAuditEvent
+import v1.models.errors.*
 
+import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton

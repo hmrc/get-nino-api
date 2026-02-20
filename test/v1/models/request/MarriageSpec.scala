@@ -16,11 +16,11 @@
 
 package v1.models.request
 
-import java.time.format.DateTimeFormatter
-import java.time.{LocalDate, ZoneId}
-
 import play.api.libs.json.{JsObject, Json}
 import support.UnitSpec
+
+import java.time.format.DateTimeFormatter
+import java.time.{LocalDate, ZoneId}
 
 class MarriageSpec extends UnitSpec {
 

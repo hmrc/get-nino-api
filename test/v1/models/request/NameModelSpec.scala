@@ -16,11 +16,11 @@
 
 package v1.models.request
 
+import play.api.libs.json.*
+import support.UnitSpec
+
 import java.time.format.DateTimeFormatter
 import java.time.{LocalDate, ZoneId}
-
-import play.api.libs.json._
-import support.UnitSpec
 
 class NameModelSpec extends UnitSpec {
 

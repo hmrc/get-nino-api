@@ -35,20 +35,20 @@ class ApiDefinitionConfigSpec extends UnitSpec {
     ".status" should {
       "retrieve the status specified" when {
         "a value is added to the configuration" in new Test {
-          when(mockConfig.get[String](ArgumentMatchers.eq("api.status"))(any[ConfigLoader[String]]))
+          when(mockConfig.get[String](ArgumentMatchers.eq("api.status"))(using any[ConfigLoader[String]]))
             .thenReturn("BETA")
 
-          target.status shouldBe "BETA"
+          target.status() shouldBe "BETA"
         }
       }
 
       "return a runtime exception" when {
         "no value is added to the configuration" in new Test {
-          when(mockConfig.get[String](ArgumentMatchers.eq("api.status"))(any[ConfigLoader[String]]))
+          when(mockConfig.get[String](ArgumentMatchers.eq("api.status"))(using any[ConfigLoader[String]]))
             .thenThrow(new RuntimeException("error"))
 
           intercept[RuntimeException] {
-            target.status
+            target.status()
           }
         }
       }
@@ -59,11 +59,11 @@ class ApiDefinitionConfigSpec extends UnitSpec {
         "a value is added to the configuration" in new Test {
           when(
             mockConfig
-              .getOptional[String](ArgumentMatchers.eq("api.access.type"))(any[ConfigLoader[String]]())
+              .getOptional[String](ArgumentMatchers.eq("api.access.type"))(using any[ConfigLoader[String]]())
           )
             .thenReturn(Some("PUBLIC"))
 
-          target.accessType shouldBe "PUBLIC"
+          target.accessType() shouldBe "PUBLIC"
         }
       }
 
@@ -71,11 +71,11 @@ class ApiDefinitionConfigSpec extends UnitSpec {
         "no value is added to the configuration" in new Test {
           when(
             mockConfig
-              .getOptional[String](ArgumentMatchers.eq("api.access.type"))(any[ConfigLoader[String]]())
+              .getOptional[String](ArgumentMatchers.eq("api.access.type"))(using any[ConfigLoader[String]]())
           )
             .thenReturn(None)
 
-          target.accessType shouldBe "PRIVATE"
+          target.accessType() shouldBe "PRIVATE"
         }
       }
     }
