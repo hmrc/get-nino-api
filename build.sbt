@@ -11,7 +11,7 @@ lazy val microservice = Project(appName, file("."))
   .settings(libraryDependencies ++= AppDependencies())
   .settings(PlayKeys.playDefaultPort := 9750)
   .settings(CodeCoverageSettings.settings)
-  .settings(scalacOptions += "-Wconf:cat=unused-imports&src=routes/.*:s")
+  .settings(scalacOptions += "-feature")
 
 lazy val it = project
   .enablePlugins(PlayScala)
