@@ -27,10 +27,10 @@ import play.api.Configuration
 import play.api.http.HeaderNames.ACCEPT
 import play.api.http.{HttpConfiguration, HttpFilters}
 import play.api.libs.json.JsValue
-import play.api.mvc._
+import play.api.mvc.*
 import play.api.routing.Router
 import play.api.test.FakeRequest
-import play.api.test.Helpers._
+import play.api.test.Helpers.*
 import support.UnitSpec
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 import uk.gov.hmrc.play.bootstrap.config.HttpAuditEvent
@@ -47,7 +47,7 @@ class VersionRoutingRequestHandlerSpec extends UnitSpec with Matchers with Insid
   implicit private val mat: Materializer        = Materializer(actorSystem)
 
   import play.api.mvc.Handler
-  import play.api.routing.sird._
+  import play.api.routing.sird.*
 
   object DefaultHandler extends Handler
 
@@ -132,13 +132,13 @@ class VersionRoutingRequestHandlerSpec extends UnitSpec with Matchers with Insid
   "Routing requests with no version" should {
     implicit val acceptHeader: None.type = None
 
-    handleWithDefaultRoutes(acceptHeader)
+    handleWithDefaultRoutes(using acceptHeader)
   }
 
   "Routing requests with valid version" should {
     implicit val acceptHeader: Some[String] = Some("application/vnd.hmrc.1.0+json")
 
-    handleWithDefaultRoutes(acceptHeader)
+    handleWithDefaultRoutes(using acceptHeader)
   }
 
   "Routing requests to non default router with no version" should {

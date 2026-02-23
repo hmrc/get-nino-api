@@ -16,9 +16,9 @@
 
 package config
 
-import java.time.{Clock, ZoneOffset}
-
 import com.google.inject.AbstractModule
+
+import java.time.{Clock, ZoneOffset}
 
 class Module extends AbstractModule {
 

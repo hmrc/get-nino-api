@@ -17,7 +17,7 @@
 package v1.models.request
 
 import play.api.Logging
-import play.api.libs.json._
+import play.api.libs.json.*
 
 sealed trait Gender {
   val value: String

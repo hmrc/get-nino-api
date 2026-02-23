@@ -20,7 +20,7 @@ import izumi.reflect.Tag
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import org.scalatestplus.mockito.MockitoSugar.mock
-import play.api.libs.json._
+import play.api.libs.json.*
 import play.api.libs.ws.BodyWritable
 import support.UnitSpec
 import uk.gov.hmrc.http.client.{HttpClientV2, RequestBuilder}
@@ -28,7 +28,7 @@ import uk.gov.hmrc.http.{HeaderCarrier, HttpReads}
 import v1.connectors.httpParsers.HttpResponseTypes.HttpPostResponse
 
 import java.net.URL
-import scala.concurrent._
+import scala.concurrent.*
 
 trait MockHttpClient extends UnitSpec {
 
@@ -39,16 +39,15 @@ trait MockHttpClient extends UnitSpec {
 
     def post(response: HttpPostResponse): Unit = {
 
-      when(mockHttpClient.post(any[URL]())(any[HeaderCarrier]())).thenReturn(mockRequestBuilder)
+      when(mockHttpClient.post(any[URL]())(using any[HeaderCarrier]())).thenReturn(mockRequestBuilder)
       when(mockRequestBuilder.setHeader(any[(String, String)]())).thenReturn(mockRequestBuilder)
 
       when(
         mockRequestBuilder
-          .withBody(any[JsValue]())(any[BodyWritable[JsValue]](), any[Tag[JsValue]](), any[ExecutionContext]())
-      )
-        .thenReturn(mockRequestBuilder)
+          .withBody(any[JsValue]())(using any[BodyWritable[JsValue]](), any[Tag[JsValue]](), any[ExecutionContext]())
+      ).thenReturn(mockRequestBuilder)
 
-      when(mockRequestBuilder.execute(any[HttpReads[HttpPostResponse]](), any[ExecutionContext]()))
+      when(mockRequestBuilder.execute(using any[HttpReads[HttpPostResponse]](), any[ExecutionContext]()))
         .thenReturn(Future.successful(response))
     }
 

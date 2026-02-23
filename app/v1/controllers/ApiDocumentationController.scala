@@ -18,12 +18,12 @@ package v1.controllers
 
 import config.ApiDefinitionConfig
 import controllers.Assets
-import javax.inject._
 import play.api.http.HttpErrorHandler
 import play.api.libs.json.Json
-import play.api.mvc._
+import play.api.mvc.*
 import uk.gov.hmrc.api.controllers.DocumentationController
 
+import javax.inject.*
 import scala.concurrent.Future
 
 @Singleton

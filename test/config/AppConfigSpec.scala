@@ -16,15 +16,15 @@
 
 package config
 
-import play.api._
+import play.api.*
 import support.UnitSpec
 import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 
 class AppConfigSpec extends UnitSpec {
 
   private def createAppConfig(config: (String, Any)*): AppConfigImpl = {
-    val configuration = Configuration(config: _*)
-    new AppConfigImpl()(new ServicesConfig(configuration), configuration)
+    val configuration = Configuration(config *)
+    new AppConfigImpl()(using new ServicesConfig(configuration), configuration)
   }
 
   "AppConfigImpl" when {
@@ -36,7 +36,7 @@ class AppConfigSpec extends UnitSpec {
             "microservice.services.des.port" -> "1234"
           )
 
-          appConfig.desBaseUrl shouldBe "http://des-host:1234"
+          appConfig.desBaseUrl() shouldBe "http://des-host:1234"
         }
 
         "return a runtime exception" when {
@@ -44,7 +44,7 @@ class AppConfigSpec extends UnitSpec {
             val appConfig = createAppConfig()
 
             intercept[RuntimeException] {
-              appConfig.desBaseUrl
+              appConfig.desBaseUrl()
             }
           }
         }
@@ -55,7 +55,7 @@ class AppConfigSpec extends UnitSpec {
       "return the DES env" when {
         "a value is added to the configuration" in {
           val appConfig = createAppConfig("microservice.services.des.env" -> "TEST_ENV")
-          appConfig.desEnvironment shouldBe "TEST_ENV"
+          appConfig.desEnvironment() shouldBe "TEST_ENV"
         }
       }
 
@@ -64,7 +64,7 @@ class AppConfigSpec extends UnitSpec {
           val appConfig = createAppConfig()
 
           intercept[RuntimeException] {
-            appConfig.desEnvironment
+            appConfig.desEnvironment()
           }
         }
       }
@@ -74,7 +74,7 @@ class AppConfigSpec extends UnitSpec {
       "return the DES token" when {
         "token is added to the configuration" in {
           val appConfig = createAppConfig("microservice.services.des.token" -> "some-token")
-          appConfig.desToken shouldBe "some-token"
+          appConfig.desToken() shouldBe "some-token"
         }
       }
 
@@ -83,7 +83,7 @@ class AppConfigSpec extends UnitSpec {
           val appConfig = createAppConfig()
 
           intercept[RuntimeException] {
-            appConfig.desToken
+            appConfig.desToken()
           }
         }
       }
@@ -93,7 +93,7 @@ class AppConfigSpec extends UnitSpec {
       "return the DES endpoint" when {
         "a value is added to the configuration" in {
           val appConfig = createAppConfig("microservice.services.des.endpoint" -> "/register")
-          appConfig.desEndpoint shouldBe "/register"
+          appConfig.desEndpoint() shouldBe "/register"
         }
       }
 
@@ -102,7 +102,7 @@ class AppConfigSpec extends UnitSpec {
           val appConfig = createAppConfig()
 
           intercept[RuntimeException] {
-            appConfig.desEndpoint
+            appConfig.desEndpoint()
           }
         }
       }
@@ -112,14 +112,14 @@ class AppConfigSpec extends UnitSpec {
       "return true" when {
         "the value true is added to the configuration" in {
           val appConfig = createAppConfig("feature-switch.logDesJson" -> true)
-          appConfig.logDesJson shouldBe true
+          appConfig.logDesJson() shouldBe true
         }
       }
 
       "default to false" when {
         "no value is added to the configuration" in {
           val appConfig = createAppConfig()
-          appConfig.logDesJson shouldBe false
+          appConfig.logDesJson() shouldBe false
         }
       }
     }
@@ -128,14 +128,14 @@ class AppConfigSpec extends UnitSpec {
       "return true" when {
         "the value true is added to the configuration" in {
           val appConfig = createAppConfig("feature-switch.logDwpJson" -> true)
-          appConfig.logDwpJson shouldBe true
+          appConfig.logDwpJson() shouldBe true
         }
       }
 
       "default to false" when {
         "no value is added to the configuration" in {
           val appConfig = createAppConfig()
-          appConfig.logDwpJson shouldBe false
+          appConfig.logDwpJson() shouldBe false
         }
       }
     }

@@ -18,7 +18,7 @@ package utils
 
 import play.api.libs.json.Json.JsValueWrapper
 import play.api.libs.json.{JsObject, Json}
-import v1.models.request._
+import v1.models.request.*
 
 object NinoApplicationTestData {
 

@@ -16,8 +16,8 @@
 
 package v1.models.errors
 
-import play.api.http.Status._
-import play.api.libs.json._
+import play.api.http.Status.*
+import play.api.libs.json.*
 import play.api.mvc.Result
 import play.api.mvc.Results.Status
 
@@ -28,7 +28,7 @@ sealed trait ErrorResponse {
 
   private def convertJsErrorsToReadableFormat: JsValue =
     this match {
-      case validationError: JsonValidationError => Json.toJson(validationError)(ErrorResponse.validationWrites)
+      case validationError: JsonValidationError => Json.toJson(validationError)(using ErrorResponse.validationWrites)
       case _                                    => Json.toJson(this)
     }
 

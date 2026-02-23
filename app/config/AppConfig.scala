@@ -16,9 +16,10 @@
 
 package config
 
-import javax.inject._
 import play.api.Configuration
 import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
+
+import javax.inject.*
 
 trait AppConfig {
   def desBaseUrl(): String
@@ -43,10 +44,10 @@ class AppConfigImpl @Inject() (implicit val configuration: ServicesConfig, confi
 
   def featureSwitch: Option[Configuration] = config.getOptional[Configuration]("feature-switch")
 
-  override lazy val desBaseUrl: String     = configuration.baseUrl("des")
-  override lazy val desEnvironment: String = configuration.getString(s"$desServicePrefix.env")
-  override lazy val desToken: String       = configuration.getString(s"$desServicePrefix.token")
-  override lazy val desEndpoint: String    = configuration.getString(s"$desServicePrefix.endpoint")
-  override lazy val logDesJson: Boolean    = config.getOptional[Boolean]("feature-switch.logDesJson").getOrElse(false)
-  override lazy val logDwpJson: Boolean    = config.getOptional[Boolean]("feature-switch.logDwpJson").getOrElse(false)
+  override def desBaseUrl(): String     = configuration.baseUrl("des")
+  override def desEnvironment(): String = configuration.getString(s"$desServicePrefix.env")
+  override def desToken(): String       = configuration.getString(s"$desServicePrefix.token")
+  override def desEndpoint(): String    = configuration.getString(s"$desServicePrefix.endpoint")
+  override def logDesJson(): Boolean    = config.getOptional[Boolean]("feature-switch.logDesJson").getOrElse(false)
+  override def logDwpJson(): Boolean    = config.getOptional[Boolean]("feature-switch.logDwpJson").getOrElse(false)
 }

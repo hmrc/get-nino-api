@@ -17,8 +17,9 @@
 package routing
 
 import com.google.inject.ImplementedBy
-import play.api.routing.Router
 import definition.Versions.VERSION_1
+import play.api.routing.Router
+
 import javax.inject.Inject
 
 // So that we can have API-independent implementations of

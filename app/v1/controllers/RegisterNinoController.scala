@@ -19,16 +19,16 @@ package v1.controllers
 import config.AppConfig
 import play.api.Logging
 import play.api.libs.json.Json
-import play.api.mvc._
+import play.api.mvc.*
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.bootstrap.backend.controller.BackendController
-import v1.controllers.predicates._
+import v1.controllers.predicates.*
 import v1.models.request.NinoApplication
 import v1.services.DesService
 import v1.utils.JsonBodyUtil
 
-import javax.inject._
-import scala.concurrent._
+import javax.inject.*
+import scala.concurrent.*
 
 @Singleton
 class RegisterNinoController @Inject() (
@@ -61,7 +61,7 @@ class RegisterNinoController @Inject() (
 
         Future(parsedJsonBody[NinoApplication]).flatMap {
           case Right(ninoModel) =>
-            desService.registerNino(ninoModel)(hcWithOriginatorIdAndCorrelationId, ec).map {
+            desService.registerNino(ninoModel)(using hcWithOriginatorIdAndCorrelationId, ec).map {
               case Right(_)    => Accepted
               case Left(error) => logErrorResult(error)
             }

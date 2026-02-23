@@ -16,12 +16,12 @@
 
 package v1.models.request
 
-import java.time.LocalDateTime
-import java.time.format.DateTimeFormatter
-
 import play.api.libs.json.{JsResultException, Json}
 import support.UnitSpec
-import utils.NinoApplicationTestData._
+import utils.NinoApplicationTestData.*
+
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 
 class NinoApplicationSpec extends UnitSpec {
 
@@ -176,7 +176,7 @@ class NinoApplicationSpec extends UnitSpec {
     }
 
     ".validateAge" should {
-      val (year, month, day): (Long, Long, Long) = (15, 8, 1)
+      val (year, month, day): (Long, Long, Long) = (15L, 8L, 1L)
       val today: LocalDateTime                   = LocalDateTime.now()
 
       "return true" when {

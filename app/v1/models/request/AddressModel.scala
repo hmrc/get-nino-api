@@ -16,11 +16,11 @@
 
 package v1.models.request
 
+import play.api.Logging
+import play.api.libs.json.*
+
 import java.time.format.DateTimeFormatter
 import java.time.{LocalDate, ZoneId}
-
-import play.api.Logging
-import play.api.libs.json._
 
 final case class AddressModel(
   addressType: Option[AddressType],

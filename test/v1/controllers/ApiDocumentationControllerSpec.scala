@@ -16,14 +16,14 @@
 
 package v1.controllers
 
-import controllers._
+import controllers.*
 import mocks.MockApiDefinitionConfig
 import org.scalatestplus.mockito.MockitoSugar.mock
 import play.api.Environment
-import play.api.http._
-import play.api.libs.json._
+import play.api.http.*
+import play.api.libs.json.*
 import play.api.mvc.Result
-import play.api.test.Helpers._
+import play.api.test.Helpers.*
 import support.ControllerBaseSpec
 
 import scala.concurrent.Future

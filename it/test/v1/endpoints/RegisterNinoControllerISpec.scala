@@ -17,13 +17,13 @@
 package v1.endpoints
 
 import com.github.tomakehurst.wiremock.stubbing.StubMapping
-import play.api.libs.json._
-import play.api.libs.ws._
-import play.api.test.Helpers._
+import play.api.libs.json.*
+import play.api.libs.ws.*
+import play.api.test.Helpers.*
 import support.IntegrationBaseSpec
-import utils.ItNinoApplicationTestData._
-import v1.models.errors._
-import v1.stubs._
+import utils.ItNinoApplicationTestData.*
+import v1.models.errors.*
+import v1.stubs.*
 
 import scala.concurrent.Future
 

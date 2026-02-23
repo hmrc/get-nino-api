@@ -16,10 +16,10 @@
 
 package v1.connectors
 
-import mocks._
+import mocks.*
 import support.UnitSpec
-import uk.gov.hmrc.http._
-import utils.NinoApplicationTestData._
+import uk.gov.hmrc.http.*
+import utils.NinoApplicationTestData.*
 import v1.connectors.httpParsers.HttpResponseTypes.HttpPostResponse
 import v1.models.errors.DownstreamValidationError
 
