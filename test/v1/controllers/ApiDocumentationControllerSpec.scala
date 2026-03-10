@@ -18,11 +18,13 @@ package v1.controllers
 
 import controllers.*
 import mocks.MockApiDefinitionConfig
+import org.mockito.ArgumentMatchers.*
+import org.mockito.Mockito.when
 import org.scalatestplus.mockito.MockitoSugar.mock
 import play.api.Environment
 import play.api.http.*
 import play.api.libs.json.*
-import play.api.mvc.Result
+import play.api.mvc.{Result, Results}
 import play.api.test.Helpers.*
 import support.ControllerBaseSpec
 
@@ -31,6 +33,7 @@ import scala.concurrent.Future
 class ApiDocumentationControllerSpec extends ControllerBaseSpec with MockApiDefinitionConfig {
 
   private val mockHttpErrorHandler: HttpErrorHandler = mock[HttpErrorHandler]
+  when(mockHttpErrorHandler.onClientError(any(), any(), any())).thenReturn(Future.successful(Results.NotFound))
 
   private val assetsMetadata: DefaultAssetsMetadata = new DefaultAssetsMetadata(
     config = AssetsConfiguration(),
@@ -75,7 +78,6 @@ class ApiDocumentationControllerSpec extends ControllerBaseSpec with MockApiDefi
     val apiDocumentationController: ApiDocumentationController = new ApiDocumentationController(
       cc = stubControllerComponents(),
       assets = assets,
-      errorHandler = mockHttpErrorHandler,
       apiConfig = mockApiDefinitionConfig
     )
 
@@ -88,6 +90,14 @@ class ApiDocumentationControllerSpec extends ControllerBaseSpec with MockApiDefi
 
         status(result)        shouldBe OK
         contentAsJson(result) shouldBe expectedJson
+      }
+    }
+
+    ".conf" should {
+      "return a NOT_FOUND response for a missing asset" in new Setup {
+        val result: Future[Result] = apiDocumentationController.conf("1.0", "application.raml")(fakeRequest)
+
+        status(result) shouldBe NOT_FOUND
       }
     }
   }

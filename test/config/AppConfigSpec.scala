@@ -23,7 +23,7 @@ import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 class AppConfigSpec extends UnitSpec {
 
   private def createAppConfig(config: (String, Any)*): AppConfigImpl = {
-    val configuration = Configuration(config *)
+    val configuration = Configuration(config*)
     new AppConfigImpl()(using new ServicesConfig(configuration), configuration)
   }
 
