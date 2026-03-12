@@ -41,8 +41,7 @@ class DesServiceSpec extends UnitSpec {
 
         when(
           mockConnector
-            .sendRegisterRequest(ArgumentMatchers.eq(maxRegisterNinoRequestModel))(
-              using
+            .sendRegisterRequest(ArgumentMatchers.eq(maxRegisterNinoRequestModel))(using
               any[HeaderCarrier](),
               any[ExecutionContext]()
             )
@@ -61,8 +60,7 @@ class DesServiceSpec extends UnitSpec {
 
         when(
           mockConnector
-            .sendRegisterRequest(ArgumentMatchers.eq(maxRegisterNinoRequestModel))(
-              using
+            .sendRegisterRequest(ArgumentMatchers.eq(maxRegisterNinoRequestModel))(using
               any[HeaderCarrier](),
               any[ExecutionContext]()
             )
@@ -78,8 +76,7 @@ class DesServiceSpec extends UnitSpec {
 
         when(
           mockConnector
-            .sendRegisterRequest(ArgumentMatchers.eq(maxRegisterNinoRequestModel))(
-              using
+            .sendRegisterRequest(ArgumentMatchers.eq(maxRegisterNinoRequestModel))(using
               any[HeaderCarrier](),
               any[ExecutionContext]()
             )

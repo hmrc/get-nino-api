@@ -18,10 +18,8 @@ package v1.controllers
 
 import config.ApiDefinitionConfig
 import controllers.Assets
-import play.api.http.HttpErrorHandler
 import play.api.libs.json.Json
 import play.api.mvc.*
-import uk.gov.hmrc.api.controllers.DocumentationController
 
 import javax.inject.*
 import scala.concurrent.Future
@@ -30,11 +28,13 @@ import scala.concurrent.Future
 class ApiDocumentationController @Inject() (
   cc: ControllerComponents,
   assets: Assets,
-  errorHandler: HttpErrorHandler,
   apiConfig: ApiDefinitionConfig
-) extends DocumentationController(cc, assets, errorHandler) {
+) extends AbstractController(cc) {
 
-  override def definition(): Action[AnyContent] = Action.async {
+  def conf(version: String, file: String): Action[AnyContent] =
+    assets.at(s"/public/api/conf/$version", file)
+
+  def definition(): Action[AnyContent] = Action.async {
     val apiDefinition = Json.parse(
       s"""
          |{
