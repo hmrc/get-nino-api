@@ -60,9 +60,7 @@ class ApiDocumentationControllerSpec extends ControllerBaseSpec with MockApiDefi
       |        "version": "1.0",
       |        "status": "BETA",
       |        "endpointsEnabled": true,
-      |        "access" : {
-      |          "type": "PRIVATE"
-      |        }
+      |        "access": "INTERNAL"
       |      }
       |    ]
       |  }
@@ -72,7 +70,7 @@ class ApiDocumentationControllerSpec extends ControllerBaseSpec with MockApiDefi
 
   private trait Setup {
     MockedApiDefinitionConfig.status().thenReturn("BETA")
-    MockedApiDefinitionConfig.accessType().thenReturn("PRIVATE")
+    MockedApiDefinitionConfig.access().thenReturn("INTERNAL")
     MockedApiDefinitionConfig.endpointsEnabled().thenReturn(true)
 
     val apiDocumentationController: ApiDocumentationController = new ApiDocumentationController(

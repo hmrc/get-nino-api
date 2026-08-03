@@ -65,9 +65,7 @@ class ApiDocumentationControllerISpec extends IntegrationBaseSpec {
           |        "version": "1.0",
           |        "status": "BETA",
           |        "endpointsEnabled": true,
-          |        "access" : {
-          |          "type": "PRIVATE"
-          |        }
+          |        "access": "INTERNAL"
           |      }
           |    ]
           |  }

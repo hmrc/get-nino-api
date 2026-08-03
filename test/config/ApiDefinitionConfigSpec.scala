@@ -54,28 +54,28 @@ class ApiDefinitionConfigSpec extends UnitSpec {
       }
     }
 
-    ".accessType" should {
+    ".access" should {
       "retrieve the API access setting specified" when {
         "a value is added to the configuration" in new Test {
           when(
             mockConfig
-              .getOptional[String](ArgumentMatchers.eq("api.access.type"))(using any[ConfigLoader[String]]())
+              .getOptional[String](ArgumentMatchers.eq("api.access"))(using any[ConfigLoader[String]]())
           )
             .thenReturn(Some("PUBLIC"))
 
-          target.accessType() shouldBe "PUBLIC"
+          target.access() shouldBe "PUBLIC"
         }
       }
 
-      "retrieve the default API access setting (PRIVATE)" when {
+      "retrieve the default API access setting (INTERNAL)" when {
         "no value is added to the configuration" in new Test {
           when(
             mockConfig
-              .getOptional[String](ArgumentMatchers.eq("api.access.type"))(using any[ConfigLoader[String]]())
+              .getOptional[String](ArgumentMatchers.eq("api.access"))(using any[ConfigLoader[String]]())
           )
             .thenReturn(None)
 
-          target.accessType() shouldBe "PRIVATE"
+          target.access() shouldBe "INTERNAL"
         }
       }
     }
