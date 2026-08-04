@@ -24,7 +24,7 @@ trait ApiDefinitionConfig {
 
   def status(): String
 
-  def accessType(): String
+  def access(): String
 
   def endpointsEnabled(): Boolean
 
@@ -33,10 +33,10 @@ trait ApiDefinitionConfig {
 @Singleton
 class ApiDefinitionConfigImpl @Inject() (configuration: Configuration) extends ApiDefinitionConfig {
 
-  private val PRIVATE = "PRIVATE"
+  private val INTERNAL = "INTERNAL"
 
-  override def status(): String     = configuration.get[String]("api.status")
-  override def accessType(): String = configuration.getOptional[String]("api.access.type").getOrElse(PRIVATE)
+  override def status(): String = configuration.get[String]("api.status")
+  override def access(): String = configuration.getOptional[String]("api.access").getOrElse(INTERNAL)
 
   override def endpointsEnabled(): Boolean =
     configuration.getOptional[Boolean]("api.endpointsEnabled").getOrElse(false)

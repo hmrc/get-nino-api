@@ -31,8 +31,8 @@ trait MockApiDefinitionConfig extends UnitSpec {
     def status(): OngoingStubbing[String] =
       when(mockApiDefinitionConfig.status())
 
-    def accessType(): OngoingStubbing[String] =
-      when(mockApiDefinitionConfig.accessType())
+    def access(): OngoingStubbing[String] =
+      when(mockApiDefinitionConfig.access())
 
     def endpointsEnabled(): OngoingStubbing[Boolean] =
       when(mockApiDefinitionConfig.endpointsEnabled())

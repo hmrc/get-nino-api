@@ -48,9 +48,7 @@ class ApiDocumentationController @Inject() (
          |        "version": "1.0",
          |        "status": "${apiConfig.status()}",
          |        "endpointsEnabled": ${apiConfig.endpointsEnabled()},
-         |        "access" : {
-         |          "type": "${apiConfig.accessType()}"
-         |        }
+         |        "access": "${apiConfig.access()}"
          |      }
          |    ]
          |  }
