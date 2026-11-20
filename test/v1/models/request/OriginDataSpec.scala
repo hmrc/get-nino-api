@@ -21,7 +21,7 @@ import support.UnitSpec
 
 class OriginDataSpec extends UnitSpec {
 
-  private val (lineNo1, lineNo2, lineNo3, lineNo4, lineNo5): (Int, Int, Int, Int, Int) = (1, 2, 3, 4, 5)
+  private val (lineNo1, lineNo2, lineNo3, lineNo4, lineNo5) = (1, 2, 3, 4, 5)
 
   private val minOriginDataJson: JsObject = JsObject.empty
 

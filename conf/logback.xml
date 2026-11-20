@@ -12,11 +12,6 @@
         <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
             <pattern>%date{ISO8601} level=[%level] logger=[%logger] thread=[%thread] rid=[%X{X-Request-ID}] user=[%X{Authorization}] message=[%message] %replace(exception=[%xException]){'^exception=\[\]$',''}%n</pattern>
         </encoder>
-
-        <!-- Uncomment the below line, and comment out the whole encoder tag above if you want to see the same logging that Kibana gets.
-        This allows you to see the session and request ids -->
-
-        <!--<encoder class="uk.gov.hmrc.play.logging.JsonEncoder"/>-->
     </appender>
 
     <logger name="com.google.inject" level="WARN"/>
