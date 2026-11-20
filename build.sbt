@@ -1,7 +1,8 @@
 import uk.gov.hmrc.DefaultBuildSettings.*
 
-ThisBuild / majorVersion := 1
-ThisBuild / scalaVersion := "3.3.8"
+ThisBuild / majorVersion := 2
+ThisBuild / scalaVersion := "3.9.0"
+ThisBuild / targetJvm := "jvm-21"
 
 lazy val microservice = Project("get-nino-api", file("."))
   .enablePlugins(PlayScala, SbtDistributablesPlugin)

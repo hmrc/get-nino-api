@@ -36,7 +36,7 @@ object NinoApplicationTestData {
   private def laterDateForAddresses(implicit isWrite: Boolean): String =
     if (isWrite) "2000-10-10" else "10-10-2000"
 
-  private val (lineNo1, lineNo2, lineNo3, lineNo4, lineNo5): (Int, Int, Int, Int, Int) = (1, 2, 3, 4, 5)
+  private val (lineNo1, lineNo2, lineNo3, lineNo4, lineNo5) = (1, 2, 3, 4, 5)
 
   val minRegisterNinoRequestJson: Boolean => JsObject = implicit isWrite => {
     val nameJsObject: (String, JsValueWrapper) = if (isWrite) {
