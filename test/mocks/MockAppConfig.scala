@@ -29,21 +29,6 @@ trait MockAppConfig extends UnitSpec {
 
   object MockedAppConfig {
 
-    def desBaseUrl(): OngoingStubbing[String] =
-      when(mockAppConfig.desBaseUrl())
-
-    def desEnvironment(): OngoingStubbing[String] =
-      when(mockAppConfig.desEnvironment())
-
-    def desToken(): OngoingStubbing[String] =
-      when(mockAppConfig.desToken())
-
-    def desEndpoint(): OngoingStubbing[String] =
-      when(mockAppConfig.desEndpoint())
-
-    def logDesJson(): OngoingStubbing[Boolean] =
-      when(mockAppConfig.logDesJson())
-
     def logDwpJson(): OngoingStubbing[Boolean] =
       when(mockAppConfig.logDwpJson())
 

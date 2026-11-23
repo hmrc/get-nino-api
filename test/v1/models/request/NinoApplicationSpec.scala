@@ -176,8 +176,8 @@ class NinoApplicationSpec extends UnitSpec {
     }
 
     ".validateAge" should {
-      val (year, month, day): (Long, Long, Long) = (15L, 8L, 1L)
-      val today: LocalDateTime                   = LocalDateTime.now()
+      val (year, month, day)   = (15L, 8L, 1L)
+      val today: LocalDateTime = LocalDateTime.now()
 
       "return true" when {
         "the provided age is above 15 years and 8 months" in {
@@ -206,7 +206,7 @@ class NinoApplicationSpec extends UnitSpec {
     }
 
     ".validateCountry" should {
-      val (minCountryIndex, maxCountryIndex): (Int, Int) = (0, 286)
+      val (minCountryIndex, maxCountryIndex) = (0, 286)
 
       "return true" when {
         "the country value is at the minimum" in {
